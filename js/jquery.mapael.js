@@ -45,6 +45,13 @@
 				areas[id] = {'mapElem' : paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
 			}
 			
+            if (external)
+			    paper.forEach(function (el) {
+			        if (el.type == "path") {
+                        areas[el.id] = {'mapElem' : el};
+			        }
+                });
+
 			// Init map areas in a second loop (prevent texts to be hidden by map elements)
 			for (id in mapConf.elems) {
 				elemOptions = $.fn.mapael.getElemOptions(
