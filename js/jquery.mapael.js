@@ -20,15 +20,16 @@
 		
 			var $self = $(this)
 				, $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none")
-				, $container = $('.' + options.map.cssClass, this).empty().append($tooltip)
-				, mapConf = $.fn.mapael.maps[options.map.name]
-				, paper = new Raphael($container[0], mapConf.width, mapConf.height)
+				, $container = (!options.map.paper) ? $('.' + options.map.cssClass, this).empty().append($tooltip) : $('.' + options.map.cssClass, this).append($tooltip)
+				, mapConf = (!options.map.paper) ? $.fn.mapael.maps[options.map.name] : {width:options.map.paper.width,height:options.map.paper.height,getCoords:function(x,y) {return {x:x,y:y}},elems:{}}
+				, paper = (!options.map.paper) ? new Raphael($container[0], mapConf.width, mapConf.height) : options.map.paper
 				, elemOptions = {}
 				, resizeTO = 0
 				, areas = {}
 				, plots = {}
 				, areaLegend = {}
 				, plotLegend = {}
+				, external = options.map.paper ? true : false
 				, id = 0;
 			
 			options.map.tooltip.css && $tooltip.css(options.map.tooltip.css);
