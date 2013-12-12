@@ -48,9 +48,10 @@
             if (external)
 			    paper.forEach(function (el) {
 			        if (el.type == "path") {
-                        areas[el.id] = {'mapElem' : el};
-                        mapConf.elems[el.id] = el.attrs.path.toString();
-                        options.areas[el.id] = {attrs : el.attrs};
+			            id = el.data().id ? el.data().id : el.id;
+                                   areas[id] = {'mapElem' : el};
+                                   mapConf.elems[id] = el.attrs.path.toString();
+                                   options.areas[id] = {attrs : el.attrs};
 			        }
                 });
 
