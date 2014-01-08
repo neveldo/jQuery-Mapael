@@ -19,7 +19,7 @@
 		return this.each(function() {
 		
 			var $self = $(this)
-				, $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none")
+				, $tooltip = ($('.'+options.map.tooltip.cssClass).length) ? $('.'+options.map.tooltip.cssClass).css("display", "none") : $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none")
 				, $container = $('.' + options.map.cssClass, this).empty().append($tooltip)
 				, mapConf = $.fn.mapael.maps[options.map.name]
 				, paper = new Raphael($container[0], mapConf.width, mapConf.height)
@@ -420,8 +420,8 @@
 	*/
 	$.fn.mapael.initZoom = function($container, paper, mapWidth, mapHeight, options) {
 		var $parentContainer = $container.parent()
-			, $zoomIn = $("<div>").addClass(options.zoomInCssClass).html("+")
-			, $zoomOut = $("<div>").addClass(options.zoomOutCssClass).html("&#x2212;")
+			, $zoomIn = ($("div."+options.zoomInCssClass).length) ? $("div."+options.zoomInCssClass) : $("<div>").addClass(options.zoomInCssClass).html("+")
+			, $zoomOut = ($("div."+options.zoomOutCssClass).length) ? $("div."+options.zoomOutCssClass) : $("<div>").addClass(options.zoomOutCssClass).html("&#x2212;")
 			, mousedown  = false
 			, previousX = 0
 			, previousY = 0;
