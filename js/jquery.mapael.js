@@ -335,8 +335,13 @@
 		}
 		
 		$.fn.mapael.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
-		if (animDuration > 0)
-			elem.mapElem.animate(elemOptions.attrs, animDuration);
+        if (animDuration > 0) {
+            //opacity changed - important in combination with gradients
+            //direct animation of attribute change in combination with gradients leads to ugly black elements when transformation will be done ==> svg issue
+            elem.mapElem.attr({ opacity: 0 });
+            elem.mapElem.animate(elemOptions.attrs, 0);
+            elem.mapElem.animate({ opacity: 1 }, animDuration)
+        }
 		else
 			elem.mapElem.attr(elemOptions.attrs);
 		
