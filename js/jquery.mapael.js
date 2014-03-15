@@ -520,7 +520,7 @@
 	};
 	
 	/**
-	* Set a tooltip for the areas and plots
+	* Set zoomcapability to elements
 	* @param elem area or plot element
 	* @param paper to detect correct container
 	*/
