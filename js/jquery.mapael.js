@@ -1024,8 +1024,8 @@
 				, step : 0.25
 				, zoomInCssClass : "zoomIn"
 				, zoomOutCssClass : "zoomOut"
-				, directZoomToElement: true
-                , updatePlotSize: true				
+				, directZoomToElement: false
+                , updatePlotSize: false				
 			}
 
 		}
