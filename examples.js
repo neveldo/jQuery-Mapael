@@ -7820,7 +7820,10 @@ $(function(){
 	// Example #6
 	$(".maparea6").mapael({
 		map : {
-			name : "world_countries",
+			name : "world_countries"
+			, zoom: {
+				enabled: true
+			},
 			defaultArea: {
 				attrs : {
 					stroke : "#fff", 
