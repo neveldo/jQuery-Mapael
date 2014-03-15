@@ -99,6 +99,11 @@
                 newHeight
             )
             }
+			
+			//if updatePlotSize set to true - size of plots will be changed dependent of the current zoomlevel
+            if (options.map.zoom.updatePlotSize) {
+                $.fn.mapael.updatePlotLegend($container, options, currentLevel, oldLevel, options.map.zoom.step);
+            }
 
 			});
 			
@@ -120,7 +125,9 @@
                 var ratio = arearatio / mapratio;
                 height = ratio * height;
             }
-            var oldlevel = $container.parent().data("zoomLevel");
+            var oldLevel = $container.parent().data("zoomLevel");
+			if (typeof oldLevel == 'undefined')
+			oldLevel = 0;
             //detect and round to currentLevel
             var currentLevel = (mapConf.width - width) / (width * options.map.zoom.step);
             currentLevel = Math.floor(currentLevel);
@@ -130,6 +137,10 @@
             var offsety = y - (height / 2);
             //animate the zoom change with easing function
             $.fn.mapael.animateViewBox(offsetx, offsety, width, height, 200, 50, ">",paper);
+			//if updatePlotSize set to true - size of plots will be changed dependent of the current zoomlevel
+            if (options.map.zoom.updatePlotSize) {
+                $.fn.mapael.updatePlotLegend($container, options, currentLevel, oldLevel, options.map.zoom.step);
+            }
 			});
 			
 			
@@ -699,6 +710,9 @@
 			, elem = {}
 			, label = {};
 		
+
+		
+		
 		if(legendOptions.title) {
 			title = paper.text(legendOptions.marginLeftTitle, legendOptions.marginBottom, legendOptions.title)
 				.attr(legendOptions.titleAttrs);
@@ -799,6 +813,17 @@
 		paper.setSize(width, height)
 		return paper;
 	}
+
+	$.fn.mapael.updatePlotLegend = function (container,options, currentLevel, oldLevel, zoomStep) {
+            var slices = options.legend.plot.slices
+            for (var slice in slices) {
+                var basicvalue = slices[slice].size * (1 + oldLevel * zoomStep);
+                slices[slice].size = basicvalue / (1 + currentLevel * zoomStep);
+            }
+            container.trigger("update", [{ legend: options.legend }, "{}", "{}", { resetPlots: false }]);
+
+    }
+	
 	
 	/**
 	* Set the attributes on hover and the attributes to restore for a map element
@@ -999,7 +1024,8 @@
 				, step : 0.25
 				, zoomInCssClass : "zoomIn"
 				, zoomOutCssClass : "zoomOut"
-				, directZoomToElement: false			
+				, directZoomToElement: true
+                , updatePlotSize: true				
 			}
 
 		}
