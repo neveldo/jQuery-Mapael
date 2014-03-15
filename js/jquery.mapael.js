@@ -102,6 +102,38 @@
 
 			});
 			
+			$self.on("zoomToElement", function(e,x, y, width, height) {
+			
+            // get ratio for the map object
+            var mapratio = mapConf.width / mapConf.height;
+            // get ratio for the area
+            var arearatio = width / height;
+            //adapt arearatio to mapratio to center the area correctly
+            // if ratio of area smaller than the mapratio
+            if (arearatio < mapratio) {
+                // extend the width
+                var ratio = mapratio / arearatio;
+                width = ratio * width;
+            }
+            else if (arearatio > mapratio) {
+                //extend the height
+                var ratio = arearatio / mapratio;
+                height = ratio * height;
+            }
+            var oldlevel = $container.parent().data("zoomLevel");
+            //detect and round to currentLevel
+            var currentLevel = (mapConf.width - width) / (width * options.map.zoom.step);
+            currentLevel = Math.floor(currentLevel);
+            $container.parent().data("zoomLevel", currentLevel);
+            //get correct offset value for the coordinates
+            var offsetx = x - (width / 2);
+            var offsety = y - (height / 2);
+            //animate the zoom change with easing function
+            $.fn.mapael.animateViewBox(offsetx, offsety, width, height, 200, 50, ">",paper);
+			});
+			
+			
+			
 			// Enable zoom
 			if (options.map.zoom.enabled)
 				$.fn.mapael.initZoom($container, paper, mapConf.width, mapConf.height, options.map.zoom);
@@ -267,14 +299,41 @@
 			$(paper.desc).append(" and Mapael (http://neveldo.fr/mapael)");
 		});
 	};
-	
+	$.fn.mapael.animateViewBox = function (x, y, w, h, duration, interval, easing_function, paper ,callback) {
+            var cx = paper._viewBox[0],
+                dx = x - cx,
+                cy = paper._viewBox[1],
+                dy = y - cy,
+                cw = paper._viewBox[2],
+                dw = w - cw,
+                ch = paper._viewBox[3],
+                dh = h - ch,
+
+            easing_function = easing_function || "linear";
+
+            var steps = duration / interval;
+            var current_step = 0;
+            var easing_formula = Raphael.easing_formulas[easing_function];
+
+            var intervalID = setInterval(function () {
+                var ratio = current_step / steps;
+                paper.setViewBox(cx + dx * easing_formula(ratio),
+                                 cy + dy * easing_formula(ratio),
+                                 cw + dw * easing_formula(ratio),
+                                 ch + dh * easing_formula(ratio), false);
+                if (current_step++ >= steps) {
+                    clearInterval(intervalID);
+                    callback && callback();
+                }
+            }, interval);
+    }
 	/**
 	* Init the element 'elem' on the map (drawing, setting attributes, events, tooltip, ...)
 	*/
 	$.fn.mapael.initElem = function(paper, elem, options, $tooltip, id) {
 		var bbox = {}, textPosition = {};
 		$.fn.mapael.setHoverOptions(elem.mapElem, options.attrs, options.attrsHover);
-		
+		$.fn.mapael.setDirectZoomToElement(elem.mapElem,paper,$tooltip.parent());
 		if (options.text && typeof options.text.content != 'undefined') {
 			// Set a text label in the area
 			bbox = elem.mapElem.getBBox();
@@ -461,6 +520,36 @@
 	};
 	
 	/**
+	* Set a tooltip for the areas and plots
+	* @param elem area or plot element
+	* @param paper to detect correct container
+	*/
+    $.fn.mapael.setDirectZoomToElement = function (elem,paper,container) {
+		if (Raphael.type === 'SVG') 
+		{
+			$(elem.node).on("dblclick", function (e) {
+				if ($.fn.mapael.getDirectZoomSetting()) {
+					var bbox = elem.getBBox();
+					if ($(this).data("directZoom")) {
+						$(this).data("directZoom", false);
+						container.parent().trigger("zoom", 0);
+					}
+					else {
+						if (typeof (container.data("elemnode")) != 'undefined') {
+							container.data("elemnode").data("directZoom", false);
+						}
+						$(this).data("directZoom", true);
+						container.data("elemnode", $(this));
+						container.parent().trigger("zoomToElement", [bbox.x + (bbox.width / 2), bbox.y + (bbox.height / 2), bbox.width, bbox.height]);
+					}
+				}
+			});
+		}
+	}
+
+	
+	
+	/**
 	* Set user defined handlers for events on areas and plots
 	* @param id the id of the element 
 	* @param elemOptions the element parameters
@@ -501,6 +590,8 @@
 		$zoomIn.on("click", function() {$parentContainer.trigger("zoom", $parentContainer.data("zoomLevel") + 1);});
 		$zoomOut.on("click", function() {$parentContainer.trigger("zoom", $parentContainer.data("zoomLevel") - 1);});
 		
+
+			
 		// Panning
 		$('body').on("mouseup", function(e) {
 			mousedown  = false;
@@ -584,6 +675,10 @@
             posArray = [posX, posY];
             return posArray;
         }
+		$.fn.mapael.getDirectZoomSetting = function () {
+			return options.directZoomToElement;
+		}
+		
     }
 	
 	
@@ -904,7 +999,9 @@
 				, step : 0.25
 				, zoomInCssClass : "zoomIn"
 				, zoomOutCssClass : "zoomOut"
+				, directZoomToElement: false			
 			}
+
 		}
 		, legend : {
 			area : {
