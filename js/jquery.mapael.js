@@ -72,23 +72,44 @@
 			}
 			
 			$self.on("zoom", function(e, level, x, y) {
-				var currentLevel = Math.min(Math.max(level, 0), options.map.zoom.maxLevel);
-				$self.data("zoomLevel", currentLevel);
-				
-				(typeof x == "undefined") && (x = (paper._viewBox[0] + paper._viewBox[2] / 2));
-				(typeof y == "undefined") && (y = (paper._viewBox[1] + paper._viewBox[3] / 2));
-				
-				// Update zoom level of the map
-				if (currentLevel == 0) {
-					paper.setViewBox(0, 0, mapConf.width, mapConf.height);
-				} else {
-					paper.setViewBox(
-						Math.min(Math.max(0, x - (mapConf.width / (1 + currentLevel * options.map.zoom.step))/2), (mapConf.width - (mapConf.width / (1 + currentLevel * options.map.zoom.step)))), 
-						Math.min(Math.max(0, y - (mapConf.height / (1 + currentLevel * options.map.zoom.step))/2), (mapConf.height - (mapConf.height / (1 + currentLevel * options.map.zoom.step)))), 
-						mapConf.width / (1 + currentLevel * options.map.zoom.step), 
-						mapConf.height / (1 + currentLevel * options.map.zoom.step)
-					);
-				}
+			
+            //oldlevel - level before zoom functionality was triggered 
+            //needed for later update of the plot size
+            var oldLevel = $container.parent().data("zoomLevel");
+            //currentLevel - the new level which will be used for the calculation and zoom
+            var currentLevel = Math.min(Math.max(level, 0), options.map.zoom.maxLevel);
+            //save new level
+            $container.parent().data("zoomLevel", currentLevel);
+
+            //new width and height dependent of new zoomlevel
+            var newWidth = mapConf.width / (1 + currentLevel * options.map.zoom.step);
+            var newHeight = mapConf.height / (1 + currentLevel * options.map.zoom.step);
+
+            //change mouse coordinates to map coordinates for old viewbox (old zoomlevel) width and height
+            var oldX = x / (paper.width / paper._viewBox[2]);
+            var oldY = y / (paper.height / paper._viewBox[3]);
+            //change mouse coordinates to map coordinates for new viewbox (new zoomlevel) width and height
+            var newX = x / (paper.width / newWidth);
+            var newY = y / (paper.height / newHeight);
+
+            //take delta of old and new mouse coordinates to get the distance difference and then sum with current viewbox coordinates
+            //to get the coordinates of the viewbox
+            var viewboxX = oldX - newX + paper._viewBox[0];
+            var viewboxY = oldY - newY + paper._viewBox[1];
+
+            // Update viewbox
+            if (currentLevel == 0) {
+                paper.setViewBox(0, 0, mapConf.width, mapConf.height);
+            } else {
+
+                paper.setViewBox(
+                viewboxX,
+                viewboxY,
+                newWidth,
+                newHeight
+            )
+            }
+
 			});
 			
 			// Enable zoom
@@ -349,8 +370,13 @@
 		
 		// Update elements attrs and attrsHover
 		$.fn.mapael.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
-		if (animDuration > 0)
-			elem.mapElem.animate(elemOptions.attrs, animDuration);
+        if (animDuration > 0) {
+            //opacity changed - important in combination with gradients
+            //direct animation of attribute change in combination with gradients leads to ugly black elements when transformation will be done ==> svg issue
+            elem.mapElem.attr({ opacity: 0 });
+            elem.mapElem.animate(elemOptions.attrs, 0);
+            elem.mapElem.animate({ opacity: 1 }, animDuration)
+        }
 		else
 			elem.mapElem.attr(elemOptions.attrs);
 		
@@ -533,7 +559,59 @@
 			}
 			return false;
 		});
-	}
+	
+	         var mousewheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel";
+        var wheelcontainer = $container[0];
+        if (wheelcontainer.attachEvent) //if IE (and Opera depending on user setting)
+            wheelcontainer.attachEvent("on" + mousewheelevt, handleScroll);
+        else if (wheelcontainer.addEventListener) //WC3 browsers
+            wheelcontainer.addEventListener(mousewheelevt, handleScroll, false);
+
+        function handleScroll(e) {
+            var evt = window.event || e,
+                delta = evt.detail ? evt.detail : evt.wheelDelta * -1,
+                zoomCenter = $.fn.mapael.getRelativePosition(evt, wheelcontainer);
+            
+            if (delta > 0) delta = -1;
+            else if (delta < 0) delta = 1;
+            if (evt.preventDefault) 
+			evt.preventDefault();
+            else evt.returnValue = false;
+            $parentContainer.trigger("zoom", [$parentContainer.data("zoomLevel") + delta, zoomCenter.x, zoomCenter.y]);
+
+            return false;
+        }
+        $.fn.mapael.getRelativePosition = function(e, obj) {
+            var x, y, pos;
+            if (e.pageX || e.pageY) {
+                x = e.pageX;
+                y = e.pageY;
+            } else {
+                x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            }
+
+            pos = $.fn.mapael.findPos(obj);
+            x -= pos[0];
+            y -= pos[1];
+
+            return { x: x, y: y };
+        }
+        $.fn.mapael.findPos = function(obj) {
+            var posX = obj.offsetLeft, posY = obj.offsetTop, posArray;
+            while (obj.offsetParent) {
+                if (obj == document.getElementsByTagName('body')[0]) { break; }
+                else {
+                    posX = posX + obj.offsetParent.offsetLeft;
+                    posY = posY + obj.offsetParent.offsetTop;
+                    obj = obj.offsetParent;
+                }
+            }
+            posArray = [posX, posY];
+            return posArray;
+        }
+    }
+	
 	
 	/**
 	* Draw a legend for areas and / or plots
