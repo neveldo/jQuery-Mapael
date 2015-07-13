@@ -327,7 +327,15 @@
 		
 		// Init the tooltip
 		if (options.tooltip && options.tooltip.content) {
-			elem.mapElem.tooltipContent = options.tooltip.content;
+			
+			if (options.tooltip.type && options.tooltip.type == "GET") {
+				$.get(options.tooltip.content, function(data){
+					elem.mapElem.tooltipContent = data;
+				});
+			} else {
+				elem.mapElem.tooltipContent = options.tooltip.content;
+			}
+			
 			$.fn.mapael.setTooltip(elem.mapElem, $tooltip);
 			
 			if (options.text && typeof options.text.content != "undefined") {
