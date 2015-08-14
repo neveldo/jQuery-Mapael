@@ -105,7 +105,11 @@
 				
 				// Update zoom level of the map
 				if (newLevel == 0) {
-					paper.setViewBox(panX, panY, mapConf.width, mapConf.height);
+					if (options.map.zoom.animDuration > 0) {
+							$.fn.mapael.animateViewBox(paper, panX, panY, mapConf.width, mapConf.height, options.map.zoom.animDuration, options.map.zoom.animEasing, options.map.zoom.animCallback);
+					} else {
+						paper.setViewBox(panX, panY, mapConf.width, mapConf.height);
+					}
 				} else {
 					if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter == true) {
 						if (zoomLevel == previousZoomLevel) return;
@@ -120,7 +124,11 @@
 						panY = Math.min(Math.max(0, zoomOptions.y - (mapConf.height / zoomLevel)/2), (mapConf.height - (mapConf.height / zoomLevel)));
 					}
 					
-					paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
+					if (options.map.zoom.animDuration > 0) {
+						$.fn.mapael.animateViewBox(paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, options.map.zoom.animDuration, options.map.zoom.animEasing, options.map.zoom.animCallback);
+					} else {
+						paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
+					}
 				}
 				$self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : zoomOptions.x, "zoomY" : zoomOptions.y});
 			});
@@ -1083,6 +1091,53 @@
 		}
 		return {};
 	};
+
+	$.fn.mapael.animationIntervalID = null;
+
+	/**
+	 * Animated view box changes
+	 * As from http://code.voidblossom.com/animating-viewbox-easing-formulas/,
+	 * (from https://github.com/theshaun works on mapael)
+	 * @param paper paper Raphael paper object
+	 * @param x coordinate of the point to focus on
+	 * @param y coordinate of the point to focus on
+	 * @param w map defined width
+	 * @param h map defined height
+	 * @param duration defined length of time for animation
+	 * @param easying_function defined Raphael supported easing_formula to use
+	 * @param callback method when animated action is complete
+	 */
+	$.fn.mapael.animateViewBox = function animateViewBox(paper, x, y, w, h, duration, easingFunction, callback ) {
+		var cx = paper._viewBox ? paper._viewBox[0] : 0
+			, dx = x - cx
+			, cy = paper._viewBox ? paper._viewBox[1] : 0
+			, dy = y - cy
+			, cw = paper._viewBox ? paper._viewBox[2] : paper.width
+			, dw = w - cw
+			, ch = paper._viewBox ? paper._viewBox[3] : paper.height
+			, dh = h - ch
+			, easingFunction = easingFunction || "linear"
+			, interval = 25
+			, steps = duration / interval
+			, current_step = 0
+			, easingFormula = Raphael.easing_formulas[easingFunction];
+
+		clearInterval($.fn.mapael.animationIntervalID);
+	 
+		$.fn.mapael.animationIntervalID = setInterval(function() {
+				var ratio = current_step / steps;
+				paper.setViewBox(cx + dx * easingFormula(ratio),
+								cy + dy * easingFormula(ratio),
+								cw + dw * easingFormula(ratio),
+								ch + dh * easingFormula(ratio), false);
+				if (current_step++ >= steps) {
+					clearInterval($.fn.mapael.animationIntervalID);
+					callback && callback();
+				}
+			}
+			, interval
+		);
+	};
 	
 	// Default map options
 	$.fn.mapael.defaultOptions = {
@@ -1174,6 +1229,9 @@
 				, zoomInCssClass : "zoomIn"
 				, zoomOutCssClass : "zoomOut"
 				, mousewheel : true
+				, animDuration : 200
+				, animEasing : "linear"
+				, animCallack : null
 			}
 		}
 		, legend : {
