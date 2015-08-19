@@ -640,21 +640,41 @@
 		$zoomOut.on("click", function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") - 1});});
 		
 		// Panning
-		$("body").on("mouseup", function(e) {
+		$("body").on("mouseup touchend", function(e) {
 			mousedown = false;
 			setTimeout(function () {$.fn.mapael.panning = false;}, 50);
 		});
 		
-		$container.on("mousedown", function(e) {
-			mousedown = true;
-			previousX = e.pageX;
-			previousY = e.pageY;
-			return false;
-		}).on("mousemove", function(e) {
-			var currentLevel = $parentContainer.data("zoomLevel");
+		$container.on("mousedown touchstart", function(e) {
+			if (typeof e.pageX !== 'undefined') {
+				mousedown = true;
+				previousX = e.pageX;
+				previousY = e.pageY;
+			} else {
+				if (e.originalEvent.touches.length === 1) {
+					mousedown = true;
+					previousX = e.originalEvent.touches[0].pageX;
+					previousY = e.originalEvent.touches[0].pageY;
+				}
+			}
+		}).on("mousemove touchmove", function(e) {
+			var currentLevel = $parentContainer.data("zoomLevel")
+				, pageX = 0
+				, pageY = 0;
 			if (mousedown && currentLevel != 0) {
-				var offsetX = (previousX - e.pageX) / (1 + (currentLevel * options.step)) * (mapWidth / paper.width)
-					, offsetY = (previousY - e.pageY) / (1 + (currentLevel * options.step)) * (mapHeight / paper.height)
+
+				if (typeof e.pageX !== 'undefined') {
+					pageX = e.pageX;
+					pageY = e.pageY;
+				} else {
+					if (e.originalEvent.touches.length === 1) {
+						pageX = e.originalEvent.touches[0].pageX;
+						pageY = e.originalEvent.touches[0].pageY;
+					}
+				}
+
+				var offsetX = (previousX - pageX) / (1 + (currentLevel * options.step)) * (mapWidth / paper.width)
+					, offsetY = (previousY - pageY) / (1 + (currentLevel * options.step)) * (mapHeight / paper.height)
 					, panX = Math.min(Math.max(0, paper._viewBox[0] + offsetX), (mapWidth - paper._viewBox[2]))
 					, panY = Math.min(Math.max(0, paper._viewBox[1] + offsetY), (mapHeight - paper._viewBox[3]));					
 				
@@ -663,12 +683,12 @@
 					
 					paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
 					
-					previousX = e.pageX;
-					previousY = e.pageY;
+					previousX = pageX;
+					previousY = pageY;
 					$.fn.mapael.panning = true;
 				}
+				return false;
 			}
-			return false;
 		});
 	};
 	
