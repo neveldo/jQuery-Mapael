@@ -56,6 +56,9 @@
 				);
 				areas[id] = {"mapElem" : paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
 			}
+
+			// Hook that allows to add custom processing on the map
+			options.map.beforeInit && options.map.beforeInit($self, paper, options);
 			
 			// Init map areas in a second loop (prevent texts to be hidden by map elements)
 			for (id in mapConf.elems) {
