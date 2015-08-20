@@ -151,6 +151,9 @@
 				return false;
 			});
 
+			/**
+			* Update the zoom level of the map on touch pinch
+			*/
 			options.map.zoom.enabled && $self.on("touchstart", function(e) {
 				if (e.originalEvent.touches.length === 2) {
 					zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
