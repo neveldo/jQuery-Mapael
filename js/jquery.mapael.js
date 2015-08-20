@@ -39,7 +39,10 @@
 				, areas = {}
 				, plots = {}
 				, legends = []
-				, id = 0;
+				, id = 0
+				, zoomCenterX = 0
+				, zoomCenterY = 0
+				, previousPinchDist = 0;
 			
 			options.map.tooltip.css && $tooltip.css(options.map.tooltip.css);
 			paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
@@ -123,7 +126,6 @@
 						panX = Math.min(Math.max(0, zoomOptions.x - (mapConf.width / zoomLevel)/2), (mapConf.width - (mapConf.width / zoomLevel)));
 						panY = Math.min(Math.max(0, zoomOptions.y - (mapConf.height / zoomLevel)/2), (mapConf.height - (mapConf.height / zoomLevel)));
 					}
-					
 					if (options.map.zoom.animDuration > 0) {
 						$.fn.mapael.animateViewBox(paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, options.map.zoom.animDuration, options.map.zoom.animEasing, options.map.zoom.animCallback);
 					} else {
@@ -143,12 +145,41 @@
 					, zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step)
 					, x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $self.data("panX")
 					, y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $self.data("panY");
-					
-				$self.trigger("zoom", {fixedCenter : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+
+				$self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
 					
 				return false;
 			});
-			
+
+			options.map.zoom.enabled && $self.on("touchstart", function(e) {
+				if (e.originalEvent.touches.length === 2) {
+					zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
+					zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
+					previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+				}
+			});
+
+			options.map.zoom.enabled && $self.on("touchmove", function(e) {
+				var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
+
+				if (e.originalEvent.touches.length === 2) {
+					pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+
+					if (Math.abs(pinchDist - previousPinchDist) > 15) {
+						offset = $container.offset();
+						initFactor = (options.map.width) ? ($.fn.mapael.maps[options.map.name].width / options.map.width) : ($.fn.mapael.maps[options.map.name].width / $container.width());
+						zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step);
+						x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $self.data("panX");
+						y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $self.data("panY");
+
+						zoomLevel = (pinchDist - previousPinchDist) / Math.abs(pinchDist - previousPinchDist);
+						$self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+						previousPinchDist = pinchDist;
+					}
+					return false;
+				}
+			});
+
 			// Enable zoom
 			if (options.map.zoom.enabled)
 				$.fn.mapael.initZoom($container, paper, mapConf.width, mapConf.height, options.map.zoom);
@@ -661,18 +692,20 @@
 			var currentLevel = $parentContainer.data("zoomLevel")
 				, pageX = 0
 				, pageY = 0;
-			if (mousedown && currentLevel != 0) {
 
-				if (typeof e.pageX !== 'undefined') {
-					pageX = e.pageX;
-					pageY = e.pageY;
+			if (typeof e.pageX !== 'undefined') {
+				pageX = e.pageX;
+				pageY = e.pageY;
+			} else {
+				if (e.originalEvent.touches.length === 1) {
+					pageX = e.originalEvent.touches[0].pageX;
+					pageY = e.originalEvent.touches[0].pageY;
 				} else {
-					if (e.originalEvent.touches.length === 1) {
-						pageX = e.originalEvent.touches[0].pageX;
-						pageY = e.originalEvent.touches[0].pageY;
-					}
+					mousedown = false;
 				}
+			}
 
+			if (mousedown && currentLevel != 0) {
 				var offsetX = (previousX - pageX) / (1 + (currentLevel * options.step)) * (mapWidth / paper.width)
 					, offsetY = (previousY - pageY) / (1 + (currentLevel * options.step)) * (mapHeight / paper.height)
 					, panX = Math.min(Math.max(0, paper._viewBox[0] + offsetX), (mapWidth - paper._viewBox[2]))
@@ -1244,7 +1277,7 @@
 			}
 			, zoom : {
 				enabled : false
-				, maxLevel : 5
+				, maxLevel : 10
 				, step : 0.25
 				, zoomInCssClass : "zoomIn"
 				, zoomOutCssClass : "zoomOut"
