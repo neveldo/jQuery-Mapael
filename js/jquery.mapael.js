@@ -804,7 +804,7 @@
 						sliceAttrs[i].r = legendOptions.slices[i].size / 2;
 				}
 				
-				if(legendOptions.slices[i].type == "image" || legendType == "area") {
+				if(legendOptions.slices[i].type == "square" || legendOptions.slices[i].type == "image" || legendType == "area") {
 					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].height/2);
 				} else {
 					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].r);
