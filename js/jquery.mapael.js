@@ -296,6 +296,8 @@
 						elemOptions.attrs.x = plots[id].mapElem.attrs.x - (elemOptions.size - plots[id].mapElem.attrs.width) / 2;
 						elemOptions.attrs.y = plots[id].mapElem.attrs.y - (elemOptions.size - plots[id].mapElem.attrs.height) / 2;
 					} else if (elemOptions.type == "image") {
+						elemOptions.attrs.width = elemOptions.width;
+						elemOptions.attrs.height = elemOptions.height;
 						elemOptions.attrs.x = plots[id].mapElem.attrs.x - (elemOptions.width - plots[id].mapElem.attrs.width) / 2;
 						elemOptions.attrs.y = plots[id].mapElem.attrs.y - (elemOptions.height - plots[id].mapElem.attrs.height) / 2;
 					} else { // Default : circle
@@ -489,23 +491,31 @@
 	* Update the element "elem" on the map with the new elemOptions options
 	*/
 	$.fn.mapael.updateElem = function(elemOptions, elem, $tooltip, animDuration) {
-		var bbox, textPosition, plotOffset;
+		var bbox, textPosition, plotOffsetX, plotOffsetY;
 		if (typeof elemOptions.value != "undefined")
 			elem.value = elemOptions.value;
-		
+
 		// Update the label
 		if (elem.textElem) {
 			if (typeof elemOptions.text != "undefined" && typeof elemOptions.text.content != "undefined" && elemOptions.text.content != elem.textElem.attrs.text)
 				elem.textElem.attr({text : elemOptions.text.content});
 
 			bbox = elem.mapElem.getBBox();
-			if (elemOptions.size) {
-				plotOffset = (elemOptions.size - bbox.height) / 2;
-				bbox.x -= plotOffset;
-				bbox.x2 += plotOffset;
-				bbox.y -= plotOffset;
-				bbox.y2 += plotOffset;
+
+			if (elemOptions.size || (elemOptions.width && elemOptions.height)) {
+				if (elemOptions.type == "image" || elemOptions.type == "svg") {
+					plotOffsetX = (elemOptions.width - bbox.width) / 2;
+					plotOffsetY = (elemOptions.height - bbox.height) / 2;
+				} else {
+					plotOffsetX = (elemOptions.size - bbox.width) / 2;
+					plotOffsetY = (elemOptions.size - bbox.height) / 2;
+				}
+				bbox.x -= plotOffsetX;
+				bbox.x2 += plotOffsetX;
+				bbox.y -= plotOffsetY;
+				bbox.y2 += plotOffsetY;
 			}
+
 			textPosition = $.fn.mapael.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
 			if (textPosition.x != elem.textElem.attrs.x || textPosition.y != elem.textElem.attrs.y) {
 				if (animDuration > 0) {
@@ -528,7 +538,12 @@
 			elem.mapElem.animate(elemOptions.attrs, animDuration);
 		else
 			elem.mapElem.attr(elemOptions.attrs);
-		
+
+		// Update dimensions of SVG plots
+		if (elemOptions.type == "svg") {
+			elem.mapElem.transform("m"+(elemOptions.width / elem.mapElem.originalWidth)+",0,0,"+(elemOptions.height / elem.mapElem.originalHeight)+","+bbox.x+","+bbox.y);
+		}
+
 		// Update the tooltip
 		if (elemOptions.tooltip && typeof elemOptions.tooltip.content != "undefined") {
 			if (typeof elem.mapElem.tooltipContent == "undefined") {
@@ -588,12 +603,16 @@
 					, elemOptions.height
 				).attr(elemOptions.attrs)
 			};
+		} else if (elemOptions.type == "svg") {
+			plot = {"mapElem" : paper.path(elemOptions.path).attr(elemOptions.attrs)};
+			plot.mapElem.originalWidth = plot.mapElem.getBBox().width;
+			plot.mapElem.originalHeight = plot.mapElem.getBBox().height;
+			plot.mapElem.transform("m"+(elemOptions.width / plot.mapElem.originalWidth)+",0,0,"+(elemOptions.height / plot.mapElem.originalHeight)+","+(coords.x - elemOptions.width / 2)+","+(coords.y - elemOptions.height / 2));
 		} else { // Default = circle
 			plot = {"mapElem" : paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
 		}
 		
 		$.fn.mapael.initElem(paper, plot, elemOptions, $tooltip, id);
-		
 		return plot;
 	};
 	
@@ -794,7 +813,7 @@
 						sliceAttrs[i].width = legendOptions.slices[i].size;
 					if (typeof sliceAttrs[i].height == "undefined")
 						sliceAttrs[i].height = legendOptions.slices[i].size;
-				} else if (legendOptions.slices[i].type == "image") {
+				} else if (legendOptions.slices[i].type == "image" || legendOptions.slices[i].type == "svg") {
 					if (typeof sliceAttrs[i].width == "undefined")
 						sliceAttrs[i].width = legendOptions.slices[i].width;
 					if (typeof sliceAttrs[i].height == "undefined")
@@ -804,10 +823,10 @@
 						sliceAttrs[i].r = legendOptions.slices[i].size / 2;
 				}
 				
-				if(legendOptions.slices[i].type == "square" || legendOptions.slices[i].type == "image" || legendType == "area") {
-					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].height/2);
+				if(typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle") {
+					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].r);	
 				} else {
-					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].r);
+					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].height/2);
 				}
 			}
 				
@@ -839,7 +858,7 @@
 						
 						elem = paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
 							
-					} else if(legendOptions.slices[i].type == "image") {					
+					} else if(legendOptions.slices[i].type == "image" || legendOptions.slices[i].type == "svg") {					
 						if (legendOptions.mode == "horizontal") {
 							x = width + legendOptions.marginLeft;
 							y = yCenter - (0.5 * scale * sliceAttrs[i].height);
@@ -848,8 +867,13 @@
 							y = height;
 						}
 
-						elem = paper.image(
-							legendOptions.slices[i].url, x, y, scale * sliceAttrs[i].width, scale * sliceAttrs[i].height);
+						if (legendOptions.slices[i].type == "image") {
+							elem = paper.image(
+								legendOptions.slices[i].url, x, y, scale * sliceAttrs[i].width, scale * sliceAttrs[i].height);
+						} else {
+							elem = paper.path(legendOptions.slices[i].path);
+							elem.transform("m"+((scale*legendOptions.slices[i].width) / elem.getBBox().width)+",0,0,"+((scale*legendOptions.slices[i].height) / elem.getBBox().height)+","+x+","+y);
+						}
 					} else {
 						if (legendOptions.mode == "horizontal") {
 							x = width + legendOptions.marginLeft + scale * (sliceAttrs[i].r);
@@ -867,7 +891,7 @@
 					delete sliceAttrs[i].r;
 					elem.attr(sliceAttrs[i]);
 					elemBBox = elem.getBBox();
-					
+
 					// Draw the label associated with the element
 					if (legendOptions.mode == "horizontal") {
 						x = width + legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel;
