@@ -38,6 +38,7 @@
 				, resizeTO = 0
 				, areas = {}
 				, plots = {}
+				, links = {}
 				, legends = []
 				, id = 0
 				, zoomCenterX = 0
@@ -69,10 +70,10 @@
 				);
 				$.fn.mapael.initElem(paper, areas[id], elemOptions, $tooltip, id);
 			}
-			
+
 			// Draw links
-			$.fn.mapael.drawLinksCollection(paper, options, mapConf.getCoords, $tooltip);
-			
+			links = $.fn.mapael.drawLinksCollection(paper, options, options.links, mapConf.getCoords, $tooltip);
+
 			// Draw plots
 			for (id in options.plots) {
 				plots[id] = $.fn.mapael.drawPlot(id, options, mapConf, paper, $tooltip);
@@ -209,7 +210,10 @@
 			*  opt.animDuration animation duration in ms (default = 0)
 			*  opt.resetAreas true to reset previous areas options
 			*  opt.resetPlots true to reset previous plots options
+			*  opt.resetLinks true to reset previous links options
 			*  opt.afterUpdate Hook that allows to add custom processing on the map
+			*  opt.newLinks new links to add to the map
+			*  opt.deletedLinks links to remove from the map
 			*/
 			$self.on("update", function(e, updatedOptions, newPlots, deletedPlots, opt) {
 				var i = 0
@@ -229,11 +233,12 @@
 				if (typeof opt != "undefined") {
 					(opt.resetAreas) && (options.areas = {});
 					(opt.resetPlots) && (options.plots = {});
+					(opt.resetLinks) && (options.links = {});
 					(opt.animDuration) && (animDuration = opt.animDuration);
 				}
 				
 				$.extend(true, options, updatedOptions);
-				
+
 				// Delete plots
 				if (typeof deletedPlots == "object") {
 					for (;i < deletedPlots.length; i++) {
@@ -255,6 +260,28 @@
 						}
 					}
 				}
+
+				// Delete links
+				if (typeof opt != "undefined" && typeof opt.deletedLinks == "object") {
+					for (i = 0;i < opt.deletedLinks.length; i++) {
+						if (typeof links[opt.deletedLinks[i]] != "undefined") {
+							if (animDuration > 0) {
+								(function(plot) {
+									plot.mapElem.animate({"opacity":0}, animDuration, "linear", function() {plot.mapElem.remove();});
+									if (plot.textElem) {
+										plot.textElem.animate({"opacity":0}, animDuration, "linear", function() {plot.textElem.remove();});
+									}
+								})(links[opt.deletedLinks[i]]);
+							} else {
+								links[opt.deletedLinks[i]].mapElem.remove();
+								if (links[opt.deletedLinks[i]].textElem) {
+									links[opt.deletedLinks[i]].textElem.remove();
+								}
+							}
+							delete links[opt.deletedLinks[i]];
+						}
+					}
+				}
 				
 				// New plots
 				if (typeof newPlots == "object") {
@@ -264,14 +291,35 @@
 							plots[id] = $.fn.mapael.drawPlot(id, options, mapConf, paper, $tooltip);
 							if (animDuration > 0) {
 								plots[id].mapElem.attr({opacity : 0});
-								plots[id].textElem.attr({opacity : 0});
+								
 								plots[id].mapElem.animate({"opacity": (typeof plots[id].mapElem.originalAttrs.opacity != "undefined") ? plots[id].mapElem.originalAttrs.opacity : 1}, animDuration);
-								plots[id].textElem.animate({"opacity": (typeof plots[id].textElem.originalAttrs.opacity != "undefined") ? plots[id].textElem.originalAttrs.opacity : 1}, animDuration);
+								
+								if (plots[id].textElem) {
+									plots[id].textElem.attr({opacity : 0});
+									plots[id].textElem.animate({"opacity": (typeof plots[id].textElem.originalAttrs.opacity != "undefined") ? plots[id].textElem.originalAttrs.opacity : 1}, animDuration);
+								}
 							}
 						}
 					}
 				}
-				
+
+				// New links
+				if (typeof opt != "undefined" && typeof opt.newLinks == "object") {
+					var newLinks = $.fn.mapael.drawLinksCollection(paper, options, opt.newLinks, mapConf.getCoords, $tooltip);
+					$.extend(links);
+					if (animDuration > 0) {
+						for (id in newLinks) {
+							newLinks[id].mapElem.attr({opacity : 0});
+							newLinks[id].textElem.attr({opacity : 0});
+
+							if (newLinks[id].textElem) {
+								newLinks[id].mapElem.animate({"opacity": (typeof newLinks[id].mapElem.originalAttrs.opacity != "undefined") ? newLinks[id].mapElem.originalAttrs.opacity : 1}, animDuration);
+								newLinks[id].textElem.animate({"opacity": (typeof newLinks[id].textElem.originalAttrs.opacity != "undefined") ? newLinks[id].textElem.originalAttrs.opacity : 1}, animDuration);
+							}
+						}
+					}
+				}
+
 				// Update areas attributes and tooltips
 				for (id in areas) {
 					elemOptions = $.fn.mapael.getElemOptions(
@@ -305,6 +353,17 @@
 					}
 					
 					$.fn.mapael.updateElem(elemOptions, plots[id], $tooltip, animDuration);
+				}
+
+				// Update links attributes and tooltips
+				for (id in links) {
+					elemOptions = $.fn.mapael.getElemOptions(
+						options.map.defaultLink
+						, (options.links[id] ? options.links[id] : {})
+						, {}
+					);
+					
+					$.fn.mapael.updateElem(elemOptions, links[id], $tooltip, animDuration);
 				}
 				
 				if(typeof opt != "undefined")
@@ -402,26 +461,27 @@
 	/**
 	* Draw all links between plots on the paper
 	*/
-	$.fn.mapael.drawLinksCollection = function(paper, options, getCoords, $tooltip) {
+	$.fn.mapael.drawLinksCollection = function(paper, options, linksCollection, getCoords, $tooltip) {
 		var p1 = {}
 			, p2 = {}
 			, elemOptions = {}
 			, coordsP1 = {}
-			, coordsP2 ={};
+			, coordsP2 ={}
+			, links = {};
 		
-		for (var id in options.links) {
-			elemOptions = $.fn.mapael.getElemOptions(options.map.defaultLink, options.links[id], {});
+		for (var id in linksCollection) {
+			elemOptions = $.fn.mapael.getElemOptions(options.map.defaultLink, linksCollection[id], {});
 			
-			if (typeof options.links[id].between[0] == 'string') {
-				p1 = options.plots[options.links[id].between[0]];
+			if (typeof linksCollection[id].between[0] == 'string') {
+				p1 = options.plots[linksCollection[id].between[0]];
 			} else {
-				p1 = options.links[id].between[0];
+				p1 = linksCollection[id].between[0];
 			}
 			
-			if (typeof options.links[id].between[1] == 'string') {
-				p2 = options.plots[options.links[id].between[1]];
+			if (typeof linksCollection[id].between[1] == 'string') {
+				p2 = options.plots[linksCollection[id].between[1]];
 			} else {
-				p2 = options.links[id].between[1];
+				p2 = linksCollection[id].between[1];
 			}
 			
 			if (typeof p1.latitude != "undefined" && typeof p1.longitude != "undefined") {
@@ -437,7 +497,8 @@
 				coordsP2.x = p2.x;
 				coordsP2.y = p2.y;
 			}
-			$.fn.mapael.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions, $tooltip);
+			links[id] = $.fn.mapael.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions, $tooltip);
+			return links;
 		}
 	};
 	
