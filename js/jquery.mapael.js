@@ -695,15 +695,16 @@
 	* @param content the content to set in the tooltip
 	*/
 	$.fn.mapael.setTooltip = function(elem, $tooltip) {
-		var tooltipTO = 0
-			, $container = $tooltip.parent()
-			, containerY2 = $container.offset().left + $container.width();
+		var tooltipTO = 0, $container = $tooltip.parent();
 	
 		$(elem.node).on("mouseover", function(e) {
 			tooltipTO = setTimeout(
 				function() {
 					elem.tooltipContent && $tooltip.html(elem.tooltipContent).css("display", "block");
-					$tooltip.css({"left" : Math.min(containerY2 - $tooltip.outerWidth() - 5, e.pageX + 10 - $(window).scrollLeft()), "top" : e.pageY + 20 - $(window).scrollTop()});
+					$tooltip.css({
+						"left" : Math.min($container.offset().left + $container.width() - $tooltip.outerWidth() - 5, e.pageX + 10) - $(window).scrollLeft(),
+						"top" : Math.min($container.offset().top + $container.height() - $tooltip.outerHeight() - 5, e.pageY + 20) - $(window).scrollTop()
+					});
 				}
 				, 120
 			);
@@ -711,7 +712,10 @@
 			clearTimeout(tooltipTO);
 			$tooltip.css("display", "none");
 		}).on("mousemove", function(e) {
-			$tooltip.css({"left" : Math.min(containerY2 - $tooltip.outerWidth() - 5, e.pageX + 10 - $(window).scrollLeft()), "top" : e.pageY + 20 - $(window).scrollTop()});
+			$tooltip.css({
+				"left" : Math.min($container.offset().left + $container.width() - $tooltip.outerWidth() - 5, e.pageX + 10) - $(window).scrollLeft(),
+				"top" : Math.min($container.offset().top + $container.height() - $tooltip.outerHeight() - 5 , e.pageY + 20)- $(window).scrollTop()
+			});
 		});
 	};
 	
