@@ -432,12 +432,12 @@
 		}
 		
 		// Init the tooltip
-		if (options.tooltip && options.tooltip.content) {
-			elem.mapElem.tooltipContent = options.tooltip.content;
+		if (options.tooltip) {
+			elem.mapElem.tooltip = options.tooltip;
 			$.fn.mapael.setTooltip(elem.mapElem, $tooltip);
 			
 			if (options.text && typeof options.text.content != "undefined") {
-				elem.textElem.tooltipContent = options.tooltip.content;
+				elem.textElem.tooltip = options.tooltip;
 				$.fn.mapael.setTooltip(elem.textElem, $tooltip);
 			}
 		}
@@ -606,13 +606,13 @@
 		}
 
 		// Update the tooltip
-		if (elemOptions.tooltip && typeof elemOptions.tooltip.content != "undefined") {
-			if (typeof elem.mapElem.tooltipContent == "undefined") {
+		if (elemOptions.tooltip) {
+			if (typeof elem.mapElem.tooltip == "undefined") {
 				$.fn.mapael.setTooltip(elem.mapElem, $tooltip);
 				(elem.textElem) && $.fn.mapael.setTooltip(elem.textElem, $tooltip);
 			}
-			elem.mapElem.tooltipContent = elemOptions.tooltip.content;
-			(elem.textElem) && (elem.textElem.tooltipContent = elemOptions.tooltip.content);
+			elem.mapElem.tooltip = elemOptions.tooltip;
+			(elem.textElem) && (elem.textElem.tooltip = elemOptions.tooltip);
 		}
 		
 		// Update the link
@@ -695,12 +695,20 @@
 	* @param content the content to set in the tooltip
 	*/
 	$.fn.mapael.setTooltip = function(elem, $tooltip) {
-		var tooltipTO = 0, $container = $tooltip.parent();
+		var tooltipTO = 0, $container = $tooltip.parent(), cssClass = $tooltip.attr('class');
 	
 		$(elem.node).on("mouseover", function(e) {
 			tooltipTO = setTimeout(
 				function() {
-					elem.tooltipContent && $tooltip.html(elem.tooltipContent).css("display", "block");
+					$tooltip.attr("class", cssClass);
+					if (typeof elem.tooltip != "undefined") {
+						if (typeof elem.tooltip.content != "undefined") {
+							$tooltip.html(elem.tooltip.content).css("display", "block");
+						}
+						if (typeof elem.tooltip.cssClass != "undefined") {
+							$tooltip.addClass(elem.tooltip.cssClass);
+						} 
+					}
 					$tooltip.css({
 						"left" : Math.min($container.offset().left + $container.width() - $tooltip.outerWidth() - 5, e.pageX + 10) - $(window).scrollLeft(),
 						"top" : Math.min($container.offset().top + $container.height() - $tooltip.outerHeight() - 5, e.pageY + 20) - $(window).scrollTop()
