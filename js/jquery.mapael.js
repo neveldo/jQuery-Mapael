@@ -158,7 +158,7 @@
 			/**
 			* Update the zoom level of the map on touch pinch
 			*/
-			options.map.zoom.enabled && $self.on("touchstart", function(e) {
+			options.map.zoom.enabled && options.map.zoom.touch && $self.on("touchstart", function(e) {
 				if (e.originalEvent.touches.length === 2) {
 					zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
 					zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
@@ -166,7 +166,7 @@
 				}
 			});
 
-			options.map.zoom.enabled && $self.on("touchmove", function(e) {
+			options.map.zoom.enabled && options.map.zoom.touch && $self.on("touchmove", function(e) {
 				var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
 
 				if (e.originalEvent.touches.length === 2) {
@@ -769,12 +769,12 @@
 		$zoomOut.on("click", function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") - 1});});
 		
 		// Panning
-		$("body").on("mouseup touchend", function(e) {
+		$("body").on("mouseup" + (options.touch ? " touchend" : ""), function(e) {
 			mousedown = false;
 			setTimeout(function () {$.fn.mapael.panning = false;}, 50);
 		});
 		
-		$container.on("mousedown touchstart", function(e) {
+		$container.on("mousedown" + (options.touch ? " touchstart" : ""), function(e) {
 			if (typeof e.pageX !== 'undefined') {
 				mousedown = true;
 				previousX = e.pageX;
@@ -786,7 +786,7 @@
 					previousY = e.originalEvent.touches[0].pageY;
 				}
 			}
-		}).on("mousemove touchmove", function(e) {
+		}).on("mousemove" + (options.touch ? " touchmove" : ""), function(e) {
 			var currentLevel = $parentContainer.data("zoomLevel")
 				, pageX = 0
 				, pageY = 0;
@@ -1385,6 +1385,7 @@
 				, zoomInCssClass : "zoomIn"
 				, zoomOutCssClass : "zoomOut"
 				, mousewheel : true
+				, touch : true
 				, animDuration : 200
 				, animEasing : "linear"
 				, animCallack : null
