@@ -13,6 +13,7 @@
 
 	"use strict";
 	
+
 	$.fn.mapael = function(options) {
 	
 		// Extend legend default options with user options
@@ -78,7 +79,7 @@
 			for (id in options.plots) {
 				plots[id] = $.fn.mapael.drawPlot(id, options, mapConf, paper, $tooltip);
 			}
-			
+
 			/**
 			* Zoom on the map at a specific level focused on specific coordinates
 			* If no coordinates are specified, the zoom will be focused on the center of the map
@@ -111,16 +112,17 @@
 					zoomOptions.y = (paper._viewBox[1] + paper._viewBox[3] / 2);
 				
 				// Update zoom level of the map
+				if (zoomLevel == previousZoomLevel) return;
 				if (newLevel == 0) {
 					if (options.map.zoom.animDuration > 0) {
-							$.fn.mapael.animateViewBox(paper, panX, panY, mapConf.width, mapConf.height, options.map.zoom.animDuration, options.map.zoom.animEasing, options.map.zoom.animCallback);
+						$.fn.mapael.animateViewBox($container, paper, panX, panY, mapConf.width, mapConf.height, options.map.zoom.animDuration, options.map.zoom.animEasing);
 					} else {
 						paper.setViewBox(panX, panY, mapConf.width, mapConf.height);
+						clearTimeout($.fn.mapael.zoomTO);
+						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("zoomEnd", {x1 : panX, y1 : panY, x2 : (panX+mapConf.width), y2 : (panY+mapConf.height)});}, 150);
 					}
 				} else {
 					if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter == true) {
-						if (zoomLevel == previousZoomLevel) return;
-						
 						offsetX = $self.data("panX") + ((zoomOptions.x - $self.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
 						offsetY = $self.data("panY") + ((zoomOptions.y - $self.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
 					
@@ -131,9 +133,11 @@
 						panY = Math.min(Math.max(0, zoomOptions.y - (mapConf.height / zoomLevel)/2), (mapConf.height - (mapConf.height / zoomLevel)));
 					}
 					if (options.map.zoom.animDuration > 0) {
-						$.fn.mapael.animateViewBox(paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, options.map.zoom.animDuration, options.map.zoom.animEasing, options.map.zoom.animCallback);
+						$.fn.mapael.animateViewBox($container, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, options.map.zoom.animDuration, options.map.zoom.animEasing);
 					} else {
 						paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
+						clearTimeout($.fn.mapael.zoomTO);
+						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("zoomEnd", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
 					}
 				}
 				$self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : zoomOptions.x, "zoomY" : zoomOptions.y});
@@ -403,6 +407,8 @@
 			$(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
 		});
 	};
+
+	$.fn.mapael.zoomTO = 0;
 	
 	/**
 	* Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
@@ -744,6 +750,7 @@
 	};
 	
 	$.fn.mapael.panning = false;
+	$.fn.mapael.panningTO = 0;
 	
 	/**
 	* Init zoom and panning for the map
@@ -813,7 +820,10 @@
 					$parentContainer.data({"panX" : panX, "panY" : panY});
 					
 					paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
-					
+
+					clearTimeout($.fn.mapael.panningTO);
+					$.fn.mapael.panningTO = setTimeout(function(){$container.trigger("panningEnd", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
+
 					previousX = pageX;
 					previousY = pageY;
 					$.fn.mapael.panning = true;
@@ -1263,7 +1273,7 @@
 	 * @param easying_function defined Raphael supported easing_formula to use
 	 * @param callback method when animated action is complete
 	 */
-	$.fn.mapael.animateViewBox = function animateViewBox(paper, x, y, w, h, duration, easingFunction, callback ) {
+	$.fn.mapael.animateViewBox = function animateViewBox($container, paper, x, y, w, h, duration, easingFunction ) {
 		var cx = paper._viewBox ? paper._viewBox[0] : 0
 			, dx = x - cx
 			, cy = paper._viewBox ? paper._viewBox[1] : 0
@@ -1288,7 +1298,8 @@
 								ch + dh * easingFormula(ratio), false);
 				if (current_step++ >= steps) {
 					clearInterval($.fn.mapael.animationIntervalID);
-					callback && callback();
+					clearTimeout($.fn.mapael.zoomTO);
+					$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("zoomEnd", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
 				}
 			}
 			, interval
@@ -1388,7 +1399,6 @@
 				, touch : true
 				, animDuration : 200
 				, animEasing : "linear"
-				, animCallack : null
 			}
 		}
 		, legend : {
