@@ -119,7 +119,7 @@
 					} else {
 						paper.setViewBox(panX, panY, mapConf.width, mapConf.height);
 						clearTimeout($.fn.mapael.zoomTO);
-						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("zoomEnd", {x1 : panX, y1 : panY, x2 : (panX+mapConf.width), y2 : (panY+mapConf.height)});}, 150);
+						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+mapConf.width), y2 : (panY+mapConf.height)});}, 150);
 					}
 				} else {
 					if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter == true) {
@@ -137,7 +137,7 @@
 					} else {
 						paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
 						clearTimeout($.fn.mapael.zoomTO);
-						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("zoomEnd", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
+						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
 					}
 				}
 				$self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : zoomOptions.x, "zoomY" : zoomOptions.y});
@@ -822,7 +822,7 @@
 					paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
 
 					clearTimeout($.fn.mapael.panningTO);
-					$.fn.mapael.panningTO = setTimeout(function(){$container.trigger("panningEnd", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
+					$.fn.mapael.panningTO = setTimeout(function(){$container.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
 
 					previousX = pageX;
 					previousY = pageY;
@@ -1299,7 +1299,7 @@
 				if (current_step++ >= steps) {
 					clearInterval($.fn.mapael.animationIntervalID);
 					clearTimeout($.fn.mapael.zoomTO);
-					$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("zoomEnd", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
+					$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("afterZoom", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
 				}
 			}
 			, interval
