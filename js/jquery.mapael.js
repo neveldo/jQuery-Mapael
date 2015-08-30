@@ -474,7 +474,7 @@
 			, coordsP1 = {}
 			, coordsP2 ={}
 			, links = {};
-		
+
 		for (var id in linksCollection) {
 			elemOptions = $.fn.mapael.getElemOptions(options.map.defaultLink, linksCollection[id], {});
 			
@@ -483,20 +483,20 @@
 			} else {
 				p1 = linksCollection[id].between[0];
 			}
-			
+
 			if (typeof linksCollection[id].between[1] == 'string') {
 				p2 = options.plots[linksCollection[id].between[1]];
 			} else {
 				p2 = linksCollection[id].between[1];
 			}
-			
+
 			if (typeof p1.latitude != "undefined" && typeof p1.longitude != "undefined") {
 				coordsP1 = getCoords(p1.latitude, p1.longitude);
 			} else {
 				coordsP1.x = p1.x;
 				coordsP1.y = p1.y;
 			}
-		
+
 			if (typeof p2.latitude != "undefined" && typeof p2.longitude != "undefined") {
 				coordsP2 = getCoords(p2.latitude, p2.longitude);
 			} else {
@@ -504,8 +504,8 @@
 				coordsP2.y = p2.y;
 			}
 			links[id] = $.fn.mapael.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions, $tooltip);
-			return links;
 		}
+		return links;
 	};
 	
 	/**
