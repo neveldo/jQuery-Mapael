@@ -295,7 +295,6 @@
 							plots[id] = $.fn.mapael.drawPlot(id, options, mapConf, paper, $tooltip);
 							if (animDuration > 0) {
 								plots[id].mapElem.attr({opacity : 0});
-								
 								plots[id].mapElem.animate({"opacity": (typeof plots[id].mapElem.originalAttrs.opacity != "undefined") ? plots[id].mapElem.originalAttrs.opacity : 1}, animDuration);
 								
 								if (plots[id].textElem) {
@@ -314,10 +313,10 @@
 					if (animDuration > 0) {
 						for (id in newLinks) {
 							newLinks[id].mapElem.attr({opacity : 0});
-							newLinks[id].textElem.attr({opacity : 0});
+							newLinks[id].mapElem.animate({"opacity": (typeof newLinks[id].mapElem.originalAttrs.opacity != "undefined") ? newLinks[id].mapElem.originalAttrs.opacity : 1}, animDuration);
 
 							if (newLinks[id].textElem) {
-								newLinks[id].mapElem.animate({"opacity": (typeof newLinks[id].mapElem.originalAttrs.opacity != "undefined") ? newLinks[id].mapElem.originalAttrs.opacity : 1}, animDuration);
+								newLinks[id].textElem.attr({opacity : 0});
 								newLinks[id].textElem.animate({"opacity": (typeof newLinks[id].textElem.originalAttrs.opacity != "undefined") ? newLinks[id].textElem.originalAttrs.opacity : 1}, animDuration);
 							}
 						}
