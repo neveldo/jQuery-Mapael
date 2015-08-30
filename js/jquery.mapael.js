@@ -1091,7 +1091,7 @@
 		$(label.node).on("click", hideMapElems);
 		$(elem.node).on("click", hideMapElems);
 
-		if (typeof sliceOptions.hidden !== "undefined" && sliceOptions.hidden === true) {
+		if (typeof sliceOptions.clicked !== "undefined" && sliceOptions.clicked === true) {
 			$(elem.node).trigger('click', false);
 		}
 	};
