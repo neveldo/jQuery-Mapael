@@ -19,12 +19,13 @@ As Raphaël, Mapael supports Firefox 3.0+, Safari 3.0+, Chrome 5.0+, Opera 9.5+ a
 
 *   based on **jQuery and raphael.js**. And optionnaly based on jQuery mousewheel for the zoom on mousewheel feature.
 *   **Interactive.** Set href, tooltip, add events and many more on the elements of your map.
-*   **Plottable cities**  Cities can be plotted on the map with circles, squares or images by their latitude and longitude
+*   **Plottable cities**  Cities can be plotted on the map with circles, squares, images or SVG paths by their latitude and longitude
 *   **Areas and plotted points colorization with legends.** Mapael automatically sets attributes like color and size to each area and plotted point displayed on map and generates an interactive legend in order to build pretty dataviz
+*   **Links between cities.** You can draw links between the cities of the map.
 *   **Easy to add new maps.** Build your own maps based on SVG paths
 *   **SEO-friendly.** An alternative content can be set for non-JS users and web crawlers
 *   **Resizable** Maps are easily resizable.
-*   **Zoom** Zoom and panning abilities.
+*   **Zoom** Zoom and panning abilities (also on mobile devices).
 
 ## Basic code example
 
