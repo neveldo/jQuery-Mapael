@@ -901,7 +901,7 @@
 						sliceAttrs[i].r = legendOptions.slices[i].size / 2;
 				}
 				
-				if(typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle") {
+				if(legendType == "plot" && (typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle")) {
 					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].r);	
 				} else {
 					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].height/2);
