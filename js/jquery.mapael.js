@@ -3,7 +3,7 @@
 * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
 * Requires jQuery and raphael.js
 *
-* Version: 1.0.1
+* Version: 1.1.0
 *
 * Copyright (c) 2015 Vincent Brouté (http://www.vincentbroute.fr/mapael)
 * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
@@ -110,36 +110,32 @@
 
 				if (typeof zoomOptions.y == "undefined")
 					zoomOptions.y = (paper._viewBox[1] + paper._viewBox[3] / 2);
-				
-				// Update zoom level of the map
-				if (zoomLevel == previousZoomLevel) return;
+
 				if (newLevel == 0) {
-					if (options.map.zoom.animDuration > 0) {
-						$.fn.mapael.animateViewBox($container, paper, panX, panY, mapConf.width, mapConf.height, options.map.zoom.animDuration, options.map.zoom.animEasing);
-					} else {
-						paper.setViewBox(panX, panY, mapConf.width, mapConf.height);
-						clearTimeout($.fn.mapael.zoomTO);
-						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+mapConf.width), y2 : (panY+mapConf.height)});}, 150);
-					}
+					panX = 0;
+					panY = 0;
+				} else if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter == true) {
+					offsetX = $self.data("panX") + ((zoomOptions.x - $self.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+					offsetY = $self.data("panY") + ((zoomOptions.y - $self.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+				
+					panX = Math.min(Math.max(0, offsetX), (mapConf.width - (mapConf.width / zoomLevel)));
+					panY = Math.min(Math.max(0, offsetY), (mapConf.height - (mapConf.height / zoomLevel)));
 				} else {
-					if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter == true) {
-						offsetX = $self.data("panX") + ((zoomOptions.x - $self.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-						offsetY = $self.data("panY") + ((zoomOptions.y - $self.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-					
-						panX = Math.min(Math.max(0, offsetX), (mapConf.width - (mapConf.width / zoomLevel)));
-						panY = Math.min(Math.max(0, offsetY), (mapConf.height - (mapConf.height / zoomLevel)));
-					} else {
-						panX = Math.min(Math.max(0, zoomOptions.x - (mapConf.width / zoomLevel)/2), (mapConf.width - (mapConf.width / zoomLevel)));
-						panY = Math.min(Math.max(0, zoomOptions.y - (mapConf.height / zoomLevel)/2), (mapConf.height - (mapConf.height / zoomLevel)));
-					}
-					if (options.map.zoom.animDuration > 0) {
-						$.fn.mapael.animateViewBox($container, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, options.map.zoom.animDuration, options.map.zoom.animEasing);
-					} else {
-						paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
-						clearTimeout($.fn.mapael.zoomTO);
-						$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
-					}
+					panX = Math.min(Math.max(0, zoomOptions.x - (mapConf.width / zoomLevel)/2), (mapConf.width - (mapConf.width / zoomLevel)));
+					panY = Math.min(Math.max(0, zoomOptions.y - (mapConf.height / zoomLevel)/2), (mapConf.height - (mapConf.height / zoomLevel)));
 				}
+
+				// Update zoom level of the map
+				if (zoomLevel == previousZoomLevel && panX == $self.data('panX') && panY == $self.data('panY')) return;
+
+				if (options.map.zoom.animDuration > 0) {
+					$.fn.mapael.animateViewBox($container, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, options.map.zoom.animDuration, options.map.zoom.animEasing);
+				} else {
+					paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
+					clearTimeout($.fn.mapael.zoomTO);
+					$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
+				}
+
 				$self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : zoomOptions.x, "zoomY" : zoomOptions.y});
 			});
 			
