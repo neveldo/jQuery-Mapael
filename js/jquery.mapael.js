@@ -136,7 +136,7 @@
 					$.fn.mapael.zoomTO = setTimeout(function(){$container.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
 				}
 
-				$self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : zoomOptions.x, "zoomY" : zoomOptions.y});
+				$self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
 			});
 			
 			/**
@@ -812,7 +812,7 @@
 					, panY = Math.min(Math.max(0, paper._viewBox[1] + offsetY), (mapHeight - paper._viewBox[3]));					
 				
 				if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
-					$parentContainer.data({"panX" : panX, "panY" : panY});
+					$parentContainer.data({"panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
 					
 					paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
 
