@@ -1037,9 +1037,9 @@
 				, hiddenNewAttr = (hidden == 0) ? {"data-hidden": 1} : {"data-hidden": 0};
 
 			if (hidden == 0) {
-				label.animate({"opacity":0.5}, 300);
+				label.animate({"opacity":0.5}, legendOptions.hideElemsOnClick.animDuration);
 			} else {
-				label.animate({"opacity":1}, 300);
+				label.animate({"opacity":1}, legendOptions.hideElemsOnClick.animDuration);
 			}
 			
 			for (var id in elems) {
@@ -1056,15 +1056,15 @@
 				) {
 					(function(id) {
 						if (hidden == 0) {
-							elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, 300, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].mapElem.hide();});
-							elems[id].textElem && elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, 300, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].textElem.hide();});
+							elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].mapElem.hide();});
+							elems[id].textElem && elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].textElem.hide();});
 						} else {
 							if (legendOptions.hideElemsOnClick.opacity == 0) {
 								elems[id].mapElem.show();
 								elems[id].textElem && elems[id].textElem.show();
 							}
-							elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, 300);
-							elems[id].textElem && elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, 300);
+							elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
+							elems[id].textElem && elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
 						}
 					})(id);
 				}
@@ -1431,6 +1431,7 @@
 			, hideElemsOnClick : {
 				enabled : true
 				, opacity : 0.2
+				, animDuration : 300
 			}
 			, slices : []
 			, mode : "vertical"
