@@ -222,12 +222,12 @@
 					, elemOptions = {};
 				
 				// Reset hidden map elements (when user click on legend elements)
-				legends.forEach(function(el) {
+				$.each(legends, function(index, el) {
 					el.forEach && el.forEach(function(el) {
 						if(typeof el.hidden != "undefined" && el.hidden == true) {
 							$(el.node).trigger("click");
 						}
-					})
+					});
 				});
 				
 				if (typeof opt != "undefined") {
