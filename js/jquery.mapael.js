@@ -88,6 +88,7 @@
 			*	"x" or "latitude" : x coordinate or latitude of the point to focus on
 			*	"y" or "longitude" : y coordinate or longitude of the point to focus on
 			*	"fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
+			*	"animDuration" : zoom duration
 			*/
 			$self.on("zoom", function(e, zoomOptions) {
 				var newLevel = Math.min(Math.max(zoomOptions.level, 0), options.map.zoom.maxLevel)
@@ -95,6 +96,7 @@
 					, panY = 0
 					, previousZoomLevel = (1 + $self.data("zoomLevel") * options.map.zoom.step)
 					, zoomLevel = (1 + newLevel * options.map.zoom.step)
+					, animDuration = (typeof zoomOptions.animDuration != 'undefined') ? zoomOptions.animDuration : options.map.zoom.animDuration
 					, offsetX = 0
 					, offsetY = 0
 					, coords = {};
@@ -128,8 +130,8 @@
 				// Update zoom level of the map
 				if (zoomLevel == previousZoomLevel && panX == $self.data('panX') && panY == $self.data('panY')) return;
 
-				if (options.map.zoom.animDuration > 0) {
-					$.fn.mapael.animateViewBox($container, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, options.map.zoom.animDuration, options.map.zoom.animEasing);
+				if (animDuration > 0) {
+					$.fn.mapael.animateViewBox($container, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, options.map.zoom.animEasing);
 				} else {
 					paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
 					clearTimeout($.fn.mapael.zoomTO);
@@ -193,6 +195,9 @@
 			
 			// Set initial zoom
 			if (typeof options.map.zoom.init != "undefined") {
+				if (typeof options.map.zoom.init.animDuration == "undefined") {
+					options.map.zoom.init.animDuration = 0;
+				}
 				$self.trigger("zoom", options.map.zoom.init);
 			}
 			
