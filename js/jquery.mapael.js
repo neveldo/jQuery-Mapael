@@ -842,7 +842,7 @@
 			, paper = {}
 			, width = 0
 			, height = 0
-			, title = {}
+			, title = null
 			, elem = {}
 			, elemBBox = {}
 			, label = {}
@@ -861,7 +861,7 @@
 			height = width = 0;
 			
 			// Set the title of the legend
-			if(legendOptions.title) {
+			if(legendOptions.title && legendOptions.title !== "") {
 				title = paper.text(legendOptions.marginLeftTitle, 0, legendOptions.title).attr(legendOptions.titleAttrs);
 				title.attr({y : 0.5 * title.getBBox().height});
 					
@@ -871,6 +871,8 @@
 			
 			// Calculate attrs (and width, height and r (radius)) for legend elements, and yCenter for horizontal legends
 			for(i = 0, length = legendOptions.slices.length; i < length; ++i) {
+				var current_yCenter = 0;
+				
 				if (typeof legendOptions.slices[i].legendSpecificAttrs == "undefined")
 					legendOptions.slices[i].legendSpecificAttrs = {};
 					
@@ -901,11 +903,19 @@
 						sliceAttrs[i].r = legendOptions.slices[i].size / 2;
 				}
 				
-				if(legendType == "plot" && (typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle")) {
-					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].r);	
-				} else {
-					yCenter = Math.max(yCenter, legendOptions.marginBottomTitle + title.getBBox().height + scale * sliceAttrs[i].height/2);
+				// Compute yCenter for this legend slice
+				current_yCenter = legendOptions.marginBottomTitle;
+				// Add title height if it exists
+				if (title) {
+					current_yCenter += title.getBBox().height;
 				}
+				if(legendType == "plot" && (typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle")) {
+					current_yCenter += scale * sliceAttrs[i].r;	
+				} else {
+					current_yCenter += scale * sliceAttrs[i].height/2;
+				}
+				// Update yCenter if current larger
+				yCenter = Math.max(yCenter, current_yCenter);
 			}
 				
 			if (legendOptions.mode == "horizontal") {
@@ -983,12 +993,16 @@
 					
 					// Update the width and height for the paper
 					if (legendOptions.mode == "horizontal") {
+						var current_height = legendOptions.marginBottom + elemBBox.height;
 						width += legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width;
-						if(legendOptions.slices[i].type == "image" || legendType == "area") {
-							height = Math.max(height, legendOptions.marginBottom + title.getBBox().height + elemBBox.height);
-						} else {
-							height = Math.max(height, legendOptions.marginBottomTitle + legendOptions.marginBottom + title.getBBox().height + elemBBox.height);
+						if(legendOptions.slices[i].type != "image" && legendType != "area") {
+							current_height += legendOptions.marginBottomTitle;
 						}
+						// Add title height if it exists
+						if (title) {
+							current_height += title.getBBox().height;
+						}
+						height = Math.max(height, current_height);
 					} else {
 						width = Math.max(width, legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width);
 						height += legendOptions.marginBottom + elemBBox.height;
