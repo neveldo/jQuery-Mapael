@@ -696,7 +696,26 @@
 	* @param content the content to set in the tooltip
 	*/
 	$.fn.mapael.setTooltip = function(elem, $tooltip) {
-		var tooltipTO = 0, $container = $tooltip.parent(), cssClass = $tooltip.attr('class');
+		var tooltipTO = 0
+			, $container = $tooltip.parent()
+			, cssClass = $tooltip.attr('class')
+			, updateTooltipPosition = function(x, y) {
+				var tooltipPosition = {
+					"left" : Math.min($container.width() - $tooltip.outerWidth() - 5, x - $container.offset().left + 10),
+					"top" : Math.min($container.height() - $tooltip.outerHeight() - 5, y - $container.offset().top + 20)
+				};
+
+				if (typeof elem.tooltip.overflow != "undefined") {
+					if (typeof elem.tooltip.overflow.right != "undefined" && elem.tooltip.overflow.right === true) {
+						tooltipPosition.left = x - $container.offset().left + 10;
+					}
+					if (typeof elem.tooltip.overflow.bottom != "undefined" && elem.tooltip.overflow.bottom === true) {
+						tooltipPosition.top = y - $container.offset().top + 20;
+					}
+				}
+				
+				$tooltip.css(tooltipPosition);
+			};
 	
 		$(elem.node).on("mouseover", function(e) {
 			tooltipTO = setTimeout(
@@ -710,22 +729,14 @@
 							$tooltip.addClass(elem.tooltip.cssClass);
 						} 
 					}
-					$tooltip.css({
-						"left" : Math.min($container.width() - $tooltip.outerWidth() - 5, e.pageX - $container.offset().left + 10),
-						"top" : Math.min($container.height() - $tooltip.outerHeight() - 5, e.pageY - $container.offset().top + 20)
-					});
+					updateTooltipPosition(e.pageX, e.pageY);
 				}
 				, 120
 			);
 		}).on("mouseout", function(e) {
 			clearTimeout(tooltipTO);
 			$tooltip.css("display", "none");
-		}).on("mousemove", function(e) {
-			$tooltip.css({
-				"left" : Math.min($container.width() - $tooltip.outerWidth() - 5, e.pageX - $container.offset().left + 10),
-				"top" : Math.min($container.height() - $tooltip.outerHeight() - 5, e.pageY - $container.offset().top + 20)
-			});
-		});
+		}).on("mousemove", function(e) {updateTooltipPosition(e.pageX, e.pageY);});
 	};
 	
 	/**
