@@ -10,7 +10,7 @@ jQuery Mapael is a [jQuery](http://jquery.com/) plugin based on [raphael.js](htt
 
 For example, with Mapael, you can display a map of the world with clickable countries. You can also build simple dataviz by setting some parameters in order to automatically set a color depending on a value to each area of your map and display the associated legend. Moreover, you can plot cities on the map with circles, squares or images by their latitude and longitude. Many more options are available, read the documentation in order to get a complete overview of mapael abilities.
 
-Mapael supports Internet Explorer 9+. For older versions support, you can use jQuery 1.11.3 and Raphael.js 2.1.2 as dependencies.
+Mapael supports all modern browsers and Internet Explorer 9+. For older versions of IE, you can load jQuery 1.11.x and Raphael.js 2.1.2 as dependencies, most of the jQuery Mapael features should work fine.
 
 ![Dataviz example](http://www.vincentbroute.fr/mapael/world-example.png)
 [See this example !](http://www.vincentbroute.fr/mapael/usecases/world)
