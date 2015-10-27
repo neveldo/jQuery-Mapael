@@ -711,8 +711,8 @@
 						} 
 					}
 					$tooltip.css({
-						"left" : Math.min($container.offset().left + $container.width() - $tooltip.outerWidth() - 5, e.pageX + 10) - $(window).scrollLeft(),
-						"top" : Math.min($container.offset().top + $container.height() - $tooltip.outerHeight() - 5, e.pageY + 20) - $(window).scrollTop()
+						"left" : Math.min($container.width() - $tooltip.outerWidth() - 5, e.pageX - $container.offset().left + 10),
+						"top" : Math.min($container.height() - $tooltip.outerHeight() - 5, e.pageY - $container.offset().top + 20)
 					});
 				}
 				, 120
@@ -722,8 +722,8 @@
 			$tooltip.css("display", "none");
 		}).on("mousemove", function(e) {
 			$tooltip.css({
-				"left" : Math.min($container.offset().left + $container.width() - $tooltip.outerWidth() - 5, e.pageX + 10) - $(window).scrollLeft(),
-				"top" : Math.min($container.offset().top + $container.height() - $tooltip.outerHeight() - 5 , e.pageY + 20)- $(window).scrollTop()
+				"left" : Math.min($container.width() - $tooltip.outerWidth() - 5, e.pageX - $container.offset().left + 10),
+				"top" : Math.min($container.height() - $tooltip.outerHeight() - 5, e.pageY - $container.offset().top + 20)
 			});
 		});
 	};
