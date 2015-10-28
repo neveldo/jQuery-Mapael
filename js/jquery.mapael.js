@@ -1190,7 +1190,10 @@
 	$.fn.mapael.elemHover = function (paper, mapElem, textElem) {
 		mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
 		textElem && textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
-		paper.safari();
+		// workaround for older version of Raphael
+		if (typeof paper.safari === "function") { 
+			paper.safari();
+		}
 	};
 	
 	/**
@@ -1202,7 +1205,10 @@
 	$.fn.mapael.elemOut = function (paper, mapElem, textElem) {
 		mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
 		textElem && textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
-		paper.safari();
+		// workaround for older version of Raphael
+		if (typeof paper.safari === "function") { 
+			paper.safari();
+		}
 	};
 	
 	/**
