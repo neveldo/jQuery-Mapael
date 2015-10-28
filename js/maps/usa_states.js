@@ -1,13 +1,27 @@
 /**
 *
 * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
-* Requires jQuery and raphael.js
+* Requires jQuery and Mapael
 *
 * Map of USA by state
 * 
 * @source http://the55.net/_11/sketch/us_map
 */
-(function($) {
+(function (factory) {
+    if (typeof exports === 'object') {
+        // CommonJS
+        module.exports = factory(require('jquery'), require('mapael'));
+    } else if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery', 'mapael'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery, jQuery.fn.mapael);
+    }
+}(function ($, Mapael) {
+
+	"use strict";
+	
 	$.extend(true, $.fn.mapael, 
 		{
 			maps :{
@@ -30,7 +44,7 @@
 						return([x,y]);
 					},
 					getCoords : function (lat, lon) {
-						var coords = {};
+						var coords = {}, xOffset, yOffset, scaleX, scaleY;
 						if(lat > 51) { // alaska
 
 							// these are guesses
@@ -126,4 +140,7 @@
 			}
 		}
 	);
-})(jQuery);
+
+	return $.fn.mapael;
+
+}));
