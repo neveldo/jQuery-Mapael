@@ -237,13 +237,7 @@
 					, elemOptions = {};
 				
 				// Reset hidden map elements (when user click on legend elements)
-				$.each(legends, function(index, el) {
-					el.forEach && el.forEach(function(el) {
-						if(typeof el.hidden != "undefined" && el.hidden == true) {
-							$(el.node).trigger("click");
-						}
-					});
-				});
+				$self.trigger("hideAllElems", true);
 				
 				if (typeof opt != "undefined") {
 					(opt.resetAreas) && (options.areas = {});
@@ -382,6 +376,22 @@
 				
 				if(typeof opt != "undefined")
 					opt.afterUpdate && opt.afterUpdate($self, paper, areas, plots, options);
+			});
+            
+			/**
+			* Hide/Show all elements on the current map
+			* Similar to clicking on every legend elements one by one
+			* @param hide Set to true to hide (default), false to show all elements
+			*/
+			$self.on("hideAllElems", function(e, hide) {
+				// if hide is not set, we hide it be default
+				hide = (typeof hide === "undefined") ? true : hide;
+				$("[data-type='elem']").each(function() {
+					if (($(this).attr('data-hidden') === "0" && hide === true) || 
+						($(this).attr('data-hidden') === "1" && hide === false)) {
+						$(this).trigger('click', false);
+					}
+				});
 			});
 			
 			// Handle resizing of the map
