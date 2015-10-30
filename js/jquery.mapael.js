@@ -386,7 +386,7 @@
 			$self.on("hideAllElems", function(e, hide) {
 				// if hide is not set, we hide it be default
 				hide = (typeof hide === "undefined") ? true : hide;
-				$("[data-type='elem']").each(function() {
+				$("[data-type='elem']", $(this)).each(function() {
 					if (($(this).attr('data-hidden') === "0" && hide === true) || 
 						($(this).attr('data-hidden') === "1" && hide === false)) {
 						$(this).trigger('click', false);
