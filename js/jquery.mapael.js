@@ -237,7 +237,7 @@
 					, elemOptions = {};
 				
 				// Reset hidden map elements (when user click on legend elements)
-				$self.trigger("hideAllElems", true);
+				$self.trigger("hideAllElems", false);
 				
 				if (typeof opt != "undefined") {
 					(opt.resetAreas) && (options.areas = {});
