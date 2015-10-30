@@ -586,7 +586,7 @@
 			bbox = elem.mapElem.getBBox();
 
 			if (elemOptions.size || (elemOptions.width && elemOptions.height)) {
-				if (elemOptions.type == "image" || elemOptions.type == "svg") {
+				if (elemOptions.type == "image" || elemOptions.type == "svg") {
 					plotOffsetX = (elemOptions.width - bbox.width) / 2;
 					plotOffsetY = (elemOptions.height - bbox.height) / 2;
 				} else {
@@ -941,7 +941,7 @@
 				if (title) {
 					current_yCenter += title.getBBox().height;
 				}
-				if(legendType == "plot" && (typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle")) {
+				if(legendType == "plot" && (typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle")) {
 					current_yCenter += scale * sliceAttrs[i].r;	
 				} else {
 					current_yCenter += scale * sliceAttrs[i].height/2;
