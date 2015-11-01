@@ -1098,7 +1098,7 @@
 				if ((typeof sliceOptions.sliceValue != "undefined" && elemValue == sliceOptions.sliceValue)
 					|| ((typeof sliceOptions.sliceValue == "undefined")
 						&& (typeof sliceOptions.min == "undefined" || elemValue >= sliceOptions.min)
-						&& (typeof sliceOptions.max == "undefined" || elemValue < sliceOptions.max))
+						&& (typeof sliceOptions.max == "undefined" || elemValue <= sliceOptions.max))
 				) {
 					(function(id) {
 						if (hidden == 0) {
@@ -1297,7 +1297,7 @@
 			if ((typeof legend.slices[i].sliceValue != "undefined" && value == legend.slices[i].sliceValue)
 				|| ((typeof legend.slices[i].sliceValue == "undefined")
 					&& (typeof legend.slices[i].min == "undefined" || value >= legend.slices[i].min)
-					&& (typeof legend.slices[i].max == "undefined" || value < legend.slices[i].max))
+					&& (typeof legend.slices[i].max == "undefined" || value <= legend.slices[i].max))
 			) {
 				return legend.slices[i];
 			}
