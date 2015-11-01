@@ -885,9 +885,6 @@
 			, yCenter = 0
 			, sliceAttrs = []
 			, length = 0;
-		
-			if (!legendOptions.slices || !legendOptions.display)
-				return;
 				
 			$legend = $("." + legendOptions.cssClass, $container).empty();
 			paper = new Raphael($legend.get(0));
@@ -1147,14 +1144,16 @@
 	* @param scale scale ratio of the map
 	*/
 	Mapael.createLegends = function ($container, options, legendType, elems, scale) {
-		var legends = [];
+		var legendsOptions = options.legend[legendType], legends = [];
+
+		if (!$.isArray(options.legend[legendType])) {
+			legendsOptions = [options.legend[legendType]];
+		}
 		
-		if ($.isArray(options.legend[legendType])) {
-			for (var j = 0; j < options.legend[legendType].length; ++j) {
-				legends.push(Mapael.drawLegend(options.legend[legendType][j], $container, options, legendType, elems, scale, j));
+		for (var j = 0; j < legendsOptions.length; ++j) {
+			if (legendsOptions[j].display == true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
+				legends.push(Mapael.drawLegend(legendsOptions[j], $container, options, legendType, elems, scale, j));
 			}
-		} else {
-			legends.push(Mapael.drawLegend(options.legend[legendType], $container, options, legendType, elems, scale));
 		}
 		return legends;
 	};
