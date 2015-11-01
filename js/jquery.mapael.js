@@ -381,7 +381,7 @@
 				}
 				
 				// Update legends
-				$.merge(legends, Mapael.createLegends($self, options, "area", areas, 1));
+				legends = Mapael.createLegends($self, options, "area", areas, 1);
 				if (options.map.width) {
 					$.merge(legends, Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width)));
     			} else {
