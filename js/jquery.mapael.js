@@ -381,6 +381,14 @@
 					Mapael.updateElem(elemOptions, links[id], $tooltip, animDuration);
 				}
 				
+				// Update legends
+				legends = Mapael.createLegends($self, options, "area", areas, 1);
+				if (options.map.width) {
+					$.merge(legends, Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width)));
+    			} else {
+					$.merge(legends, Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width)));
+				}
+				
 				if(typeof opt != "undefined")
 					opt.afterUpdate && opt.afterUpdate($self, paper, areas, plots, options);
 			});
