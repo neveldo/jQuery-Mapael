@@ -321,6 +321,7 @@
 				if (typeof opt != "undefined" && typeof opt.newLinks == "object") {
 					var newLinks = Mapael.drawLinksCollection(paper, options, opt.newLinks, mapConf.getCoords, $tooltip);
 					$.extend(links, newLinks);
+					$.extend(options.links, opt.newLinks);
 					if (animDuration > 0) {
 						for (id in newLinks) {
 							newLinks[id].mapElem.attr({opacity : 0});
