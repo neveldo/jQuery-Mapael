@@ -212,7 +212,7 @@
 			}
 			
 			// Create the legends for areas
-			$.merge(legends, Mapael.createLegends($self, options, "area", areas, 1));
+			legends = Mapael.createLegends($self, options, "area", areas, 1);
 				
 			/**
 			*
