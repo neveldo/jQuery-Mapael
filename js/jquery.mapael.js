@@ -229,15 +229,32 @@
 			*  opt.afterUpdate Hook that allows to add custom processing on the map
 			*  opt.newLinks new links to add to the map
 			*  opt.deletedLinks links to remove from the map
+			*  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
 			*/
 			$self.on("update", function(e, updatedOptions, newPlots, deletedPlots, opt) {
 				var i = 0
 					, id = 0
 					, animDuration = 0
-					, elemOptions = {};
+					, elemOptions = {},
+					showlegendElems = true;
 				
-				// Reset hidden map elements (when user click on legend elements)
-				$self.trigger("hideAllElems", false);
+				// Set showlegendElems variable
+				// If not defined, or badly defined, revert to TRUE
+				if (typeof opt != "undefined" && typeof opt.setLegendElemsState === "string") {
+					showlegendElems = (opt.setLegendElemsState === "hide") ? false : true;
+				}
+				
+				// Hide/Show all elements based on showlegendElems
+				//      Toggle (i.e. click) only if:
+				//          - slice legend is shown AND we want to hide
+				//          - slice legend is hidden AND we want to show
+				$("[data-type='elem']", $(this)).each(function() {
+					if (($(this).attr('data-hidden') === "0" && showlegendElems === false) || 
+					    ($(this).attr('data-hidden') === "1" && showlegendElems === true)) {
+						// Toggle state of element by clicking
+						$(this).trigger('click', false);
+					}
+				});
 				
 				if (typeof opt != "undefined") {
 					(opt.resetAreas) && (options.areas = {});
@@ -376,22 +393,6 @@
 				
 				if(typeof opt != "undefined")
 					opt.afterUpdate && opt.afterUpdate($self, paper, areas, plots, options);
-			});
-            
-			/**
-			* Hide/Show all elements on the current map
-			* Similar to clicking on every legend elements one by one
-			* @param hide Set to true to hide (default), false to show all elements
-			*/
-			$self.on("hideAllElems", function(e, hide) {
-				// if hide is not set, we hide it be default
-				hide = (typeof hide === "undefined") ? true : hide;
-				$("[data-type='elem']", $(this)).each(function() {
-					if (($(this).attr('data-hidden') === "0" && hide === true) || 
-						($(this).attr('data-hidden') === "1" && hide === false)) {
-						$(this).trigger('click', false);
-					}
-				});
 			});
 			
 			// Handle resizing of the map
