@@ -50,7 +50,6 @@
 				, areas = {}
 				, plots = {}
 				, links = {}
-				, legends = []
 				, id = 0
 				, zoomCenterX = 0
 				, zoomCenterY = 0
@@ -212,7 +211,7 @@
 			}
 			
 			// Create the legends for areas
-			legends = Mapael.createLegends($self, options, "area", areas, 1);
+			Mapael.createLegends($self, options, "area", areas, 1);
 				
 			/**
 			*
@@ -393,11 +392,11 @@
 				}
 				
 				// Update legends
-				legends = Mapael.createLegends($self, options, "area", areas, 1);
+				Mapael.createLegends($self, options, "area", areas, 1);
 				if (options.map.width) {
-					$.merge(legends, Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width)));
+					Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
     			} else {
-					$.merge(legends, Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width)));
+					Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width));
 				}
 				
 				if(typeof opt != "undefined")
@@ -409,7 +408,7 @@
 				paper.setSize(options.map.width, mapConf.height * (options.map.width / mapConf.width));
 				
 				// Create the legends for plots taking into account the scale of the map
-				$.merge(legends, Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width)));
+				Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
 			} else {
 				$(window).on("resize", function() {
 					clearTimeout(resizeTO);
@@ -418,7 +417,7 @@
 				
 				// Create the legends for plots taking into account the scale of the map
 				var createPlotLegend = function() {
-					$.merge(legends, Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width)));
+					Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width));
 					
 					$container.unbind("resizeEnd", createPlotLegend);
 				};
