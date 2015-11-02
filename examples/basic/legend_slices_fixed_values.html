@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Map with a legend where slices are specified with a fixed value instead of min and max values</title>
+    <style type="text/css">
+        body {
+            color: #5d5d5d;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .map {
+            position: relative;
+        }
+
+        .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #343434;
+        }
+    </style>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"
+            charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="../../js/maps/france_departments.js" charset="utf-8"></script>
+    <script src="../../js/maps/world_countries.js" charset="utf-8"></script>
+    <script src="../../js/maps/usa_states.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $(".mapcontainer").mapael({
+                map: {
+                    name: "usa_states"
+                },
+                legend: {
+                    plot: {
+                        title: "American cities",
+                        slices: [{
+                            size: 30,
+                            attrs: {
+                                fill: "#26c800"
+                            },
+                            label: "Value 1",
+                            sliceValue: "Value 1"
+                        }, {
+                            size: 30,
+                            attrs: {
+                                fill: "#0088c8"
+                            },
+                            label: "Value 2",
+                            sliceValue: "Value 2"
+                        }, {
+                            size: 30,
+                            attrs: {
+                                fill: "#e9e100"
+                            },
+                            label: "Value 3",
+                            sliceValue: "Value 3"
+                        }]
+                    }
+                },
+                plots: {
+                    'ny': {
+                        latitude: 40.717079,
+                        longitude: -74.00116,
+                        tooltip: {content: "New York"},
+                        value: "Value 3"
+                    },
+                    'an': {
+                        latitude: 61.2108398,
+                        longitude: -149.9019557,
+                        tooltip: {content: "Anchorage"},
+                        value: "Value 3"
+                    },
+                    'sf': {
+                        latitude: 37.792032,
+                        longitude: -122.394613,
+                        tooltip: {content: "San Francisco"},
+                        value: "Value 1"
+                    },
+                    'pa': {
+                        latitude: 19.493204,
+                        longitude: -154.8199569,
+                        tooltip: {content: "Pahoa"},
+                        value: "Value 2"
+                    },
+                    'la': {
+                        latitude: 34.025052,
+                        longitude: -118.192006,
+                        tooltip: {content: "Los Angeles"},
+                        value: "Value 3"
+                    },
+                    'dallas': {
+                        latitude: 32.784881,
+                        longitude: -96.808244,
+                        tooltip: {content: "Dallas"},
+                        value: "Value 2"
+                    },
+                    'miami': {
+                        latitude: 25.789125,
+                        longitude: -80.205674,
+                        tooltip: {content: "Miami"},
+                        value: "Value 3"
+                    },
+                    'washington': {
+                        latitude: 38.905761,
+                        longitude: -77.020746,
+                        tooltip: {content: "Washington"},
+                        value: "Value 2"
+                    },
+                    'seattle': {
+                        latitude: 47.599571,
+                        longitude: -122.319426,
+                        tooltip: {content: "Seattle"},
+                        value: "Value 1"
+                    }
+                }
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Map with a legend where slices are specified with a fixed value instead of min and max values</h1>
+
+    <div class="mapcontainer">
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+        <div class="plotLegend">
+            <span>Alternative content for the legend</span>
+        </div>
+    </div>
+
+    <p><b>All example for jQuery Mapael are available <a href="http://www.vincentbroute.fr/mapael/">here</a>.</b></p>
+
+</div>
+
+
+</body>
+</html>

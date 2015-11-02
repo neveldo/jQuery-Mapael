@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Use 'afterInit' option to extend the Raphael paper</title>
+	<style type="text/css">
+		body {
+			color:#5d5d5d;
+			font-family:Helvetica,Arial,sans-serif;
+		}
+
+		h1 {
+			font-size:30px;
+			margin:auto;
+			margin-top:50px;
+		}
+
+		.container {
+			max-width:800px;
+			margin:auto;
+		}
+	</style>
+
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js" charset="utf-8" ></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js" charset="utf-8" ></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" charset="utf-8" ></script>
+	<script src="../../js/jquery.mapael.js" charset="utf-8" ></script>
+	<script src="../../js/maps/france_departments.js" charset="utf-8" ></script>
+	<script src="../../js/maps/world_countries.js" charset="utf-8" ></script>
+	<script src="../../js/maps/usa_states.js" charset="utf-8" ></script>
+
+	<script type="text/javascript">
+        $(function(){
+
+            $(".mapcontainer").mapael({
+
+                map : {
+                    name : "france_departments",
+                    defaultArea : {
+                        attrs : {
+                            fill : "#1b1b1b",
+                            stroke : "#000000"
+                        }
+                    },
+                    afterInit : function($self, paper, areas, plots, options) {
+                        // You are free to call all Raphael.js functions on paper object
+                        paper.ellipse(100, 200, 100, 60).attr({stroke:"#0067bf", fill:"#63a2d7",opacity:0.4});
+                        paper.ellipse(300, 150, 80, 100).attr({stroke:"#4aa23c", fill:"#74d763",opacity:0.4});
+                        paper.path("m 198.57144,240 c 0,0 23.57142,163.57143 143.57142,136.42857").attr({stroke:"#4aa23c", "stroke-width":4});
+                    }
+                },
+                plots : {
+                    'p1' : {
+                        size:30,
+                        x:198,
+                        y:240,
+                        attrs: {
+                            fill:"#4aa23c"
+                        }
+                    },
+                    'p2' : {
+                        size:30,
+                        x:340,
+                        y:380,
+                        attrs: {
+                            fill:"#4aa23c"
+                        }
+                    }
+                }
+            });
+        });
+	</script>
+
+</head>
+
+<body>
+	<div class="container">
+
+        <h1>Use 'afterInit' option to extend the Raphael paper</h1>
+        <div class="mapcontainer">
+            <div class="map">
+                <span>Alternative content for the map</span>
+            </div>
+        </div>
+		<p><b>All example for jQuery Mapael are available <a href="http://www.vincentbroute.fr/mapael/">here</a>.</b></p>
+		
+	</div>
+	
+
+
+</body>
+</html>
