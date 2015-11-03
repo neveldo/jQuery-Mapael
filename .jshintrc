@@ -1,7 +1,6 @@
 {
     "jquery": true,
     "unused": true,
-    "strict": false,
     "nonbsp": true,
 
     "laxcomma": true,
