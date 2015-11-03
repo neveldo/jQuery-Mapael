@@ -29,14 +29,14 @@
         // Extend legend default options with user options
         options = $.extend(true, {}, Mapael.defaultOptions, options);
         
-        for (var type in options.legend) {
+        $.each(options.legend, function(type) {
             if ($.isArray(options.legend[type])) {
                 for (var i = 0; i < options.legend[type].length; ++i)
                     options.legend[type][i] = $.extend(true, {}, Mapael.legendDefaultOptions[type], options.legend[type][i]);
             } else {
                 options.legend[type] = $.extend(true, {}, Mapael.legendDefaultOptions[type], options.legend[type]);
             }
-        }
+        });
         
         return this.each(function() {
         
@@ -59,35 +59,35 @@
             paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
             
             // Draw map areas
-            for (id in mapConf.elems) {
+            $.each(mapConf.elems, function(id) {
                 elemOptions = Mapael.getElemOptions(
                     options.map.defaultArea
                     , (options.areas[id] ? options.areas[id] : {})
                     , options.legend.area
                 );
                 areas[id] = {"mapElem" : paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
-            }
+            });
 
             // Hook that allows to add custom processing on the map
             options.map.beforeInit && options.map.beforeInit($self, paper, options);
             
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
-            for (id in mapConf.elems) {
+            $.each(mapConf.elems, function(id) {
                 elemOptions = Mapael.getElemOptions(
                     options.map.defaultArea
                     , (options.areas[id] ? options.areas[id] : {})
                     , options.legend.area
                 );
                 Mapael.initElem(paper, areas[id], elemOptions, $tooltip, id);
-            }
+            });
 
             // Draw links
             links = Mapael.drawLinksCollection(paper, options, options.links, mapConf.getCoords, $tooltip);
 
             // Draw plots
-            for (id in options.plots) {
+            $.each(options.plots, function(id) {
                 plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
-            }
+            });
 
             /**
             * Zoom on the map at a specific level focused on specific coordinates
@@ -310,7 +310,7 @@
                 
                 // New plots
                 if (typeof newPlots == "object") {
-                    for (id in newPlots) {
+                    $.each(newPlots, function(id) {
                         if (typeof plots[id] == "undefined") {
                             options.plots[id] = newPlots[id];
                             plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
@@ -324,7 +324,7 @@
                                 }
                             }
                         }
-                    }
+                    });
                 }
 
                 // New links
@@ -333,7 +333,7 @@
                     $.extend(links, newLinks);
                     $.extend(options.links, opt.newLinks);
                     if (animDuration > 0) {
-                        for (id in newLinks) {
+                        $.each(newLinks, function(id) {
                             newLinks[id].mapElem.attr({opacity : 0});
                             newLinks[id].mapElem.animate({"opacity": (typeof newLinks[id].mapElem.originalAttrs.opacity != "undefined") ? newLinks[id].mapElem.originalAttrs.opacity : 1}, animDuration);
 
@@ -341,12 +341,12 @@
                                 newLinks[id].textElem.attr({opacity : 0});
                                 newLinks[id].textElem.animate({"opacity": (typeof newLinks[id].textElem.originalAttrs.opacity != "undefined") ? newLinks[id].textElem.originalAttrs.opacity : 1}, animDuration);
                             }
-                        }
+                        });
                     }
                 }
 
                 // Update areas attributes and tooltips
-                for (id in areas) {
+                $.each(areas, function(id) {
                     elemOptions = Mapael.getElemOptions(
                         options.map.defaultArea
                         , (options.areas[id] ? options.areas[id] : {})
@@ -354,10 +354,10 @@
                     );
                     
                     Mapael.updateElem(elemOptions, areas[id], $tooltip, animDuration);
-                }
+                });
                 
                 // Update plots attributes and tooltips
-                for (id in plots) {
+                $.each(plots, function(id) {
                     elemOptions = Mapael.getElemOptions(
                         options.map.defaultPlot
                         , (options.plots[id] ? options.plots[id] : {})
@@ -378,10 +378,10 @@
                     }
                     
                     Mapael.updateElem(elemOptions, plots[id], $tooltip, animDuration);
-                }
+                });
 
                 // Update links attributes and tooltips
-                for (id in links) {
+                $.each(links, function(id) {
                     elemOptions = Mapael.getElemOptions(
                         options.map.defaultLink
                         , (options.links[id] ? options.links[id] : {})
@@ -389,7 +389,7 @@
                     );
                     
                     Mapael.updateElem(elemOptions, links[id], $tooltip, animDuration);
-                }
+                });
                 
                 // Update legends
                 Mapael.createLegends($self, options, "area", areas, 1);
@@ -510,7 +510,7 @@
             , coordsP2 ={}
             , links = {};
 
-        for (var id in linksCollection) {
+        $.each(linksCollection, function(id) {
             elemOptions = Mapael.getElemOptions(options.map.defaultLink, linksCollection[id], {});
             
             if (typeof linksCollection[id].between[0] == 'string') {
@@ -539,7 +539,7 @@
                 coordsP2.y = p2.y;
             }
             links[id] = Mapael.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions, $tooltip);
-        }
+        });
         return links;
     };
     
@@ -787,12 +787,12 @@
     * @param textElem the optional text within the map element
     */
     Mapael.setEventHandlers = function(id, elemOptions, mapElem, textElem) {
-        for(var event in elemOptions.eventHandlers) {
+        $.each(elemOptions.eventHandlers, function(event) {
             (function(event) {
                 $(mapElem.node).on(event, function(e) {!Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions)});
                 textElem && $(textElem.node).on(event, function(e) {!Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions)});
             })(event);
-        }
+        });
     };
     
     Mapael.panning = false;
@@ -1104,7 +1104,7 @@
                 label.animate({"opacity":1}, legendOptions.hideElemsOnClick.animDuration);
             }
             
-            for (var id in elems) {
+            $.each(elems, function(id) {
                 if ($.isArray(elems[id].value)) {
                     elemValue = elems[id].value[legendIndex];
                 } else {
@@ -1130,7 +1130,7 @@
                         }
                     })(id);
                 }
-            }
+            });
 
             $(elem.node).attr(hiddenNewAttr);
             $(label.node).attr(hiddenNewAttr);
