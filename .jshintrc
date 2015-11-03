@@ -1,0 +1,18 @@
+{
+    "jquery": true,
+    "unused": true,
+    "strict": false,
+    "nonbsp": true,
+
+    "laxcomma": true,
+    "laxbreak": true,
+    "expr": true,
+
+    "globals": {
+        "define": true,
+        "require": true,
+        "module": true,
+        "exports": true,
+        "Raphael": true
+    }
+}
