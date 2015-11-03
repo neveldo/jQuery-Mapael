@@ -773,10 +773,12 @@
                 }
                 , 120
             );
-        }).on("mouseout", function(e) {
+        }).on("mouseout", function() {
             clearTimeout(tooltipTO);
             $tooltip.css("display", "none");
-        }).on("mousemove", function(e) {updateTooltipPosition(e.pageX, e.pageY);});
+        }).on("mousemove", function(e) {
+            updateTooltipPosition(e.pageX, e.pageY);
+        });
     };
     
     /**
@@ -822,7 +824,7 @@
         $zoomOut.on("click", function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") - 1});});
         
         // Panning
-        $("body").on("mouseup" + (options.touch ? " touchend" : ""), function(e) {
+        $("body").on("mouseup" + (options.touch ? " touchend" : ""), function() {
             mousedown = false;
             setTimeout(function () {Mapael.panning = false;}, 50);
         });
