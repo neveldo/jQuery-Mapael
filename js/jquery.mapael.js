@@ -235,35 +235,13 @@
                     , id = 0
                     , animDuration = 0
                     , elemOptions = {}
-                    , showlegendElems = true
-                    , updateLegend = false;
-                    
-                // Set updateLegend
-                // This is use to determine if legend option needs to be redrawn because of new values
-                if (typeof updatedOptions != "undefined" && typeof updatedOptions.legend === "object") {
-                    updateLegend = true;
-                }
+                    , showlegendElems = true;
                 
                 // Set showlegendElems variable
-                // If  not defined, or 
-                //     badly defined, or
-                //     legend is being updated
-                //  => keep default (true)
-                if (updateLegend === false && typeof opt != "undefined" && typeof opt.setLegendElemsState === "string") {
+                // Keep default (true) if opt.setLegendElemsState not defined, or badly defined
+                if (typeof opt != "undefined" && typeof opt.setLegendElemsState === "string") {
                     showlegendElems = (opt.setLegendElemsState === "hide") ? false : true;
                 }
-                
-                // Hide/Show all elements based on showlegendElems
-                //      Toggle (i.e. click) only if:
-                //          - slice legend is shown AND we want to hide
-                //          - slice legend is hidden AND we want to show
-                $("[data-type='elem']", $(this)).each(function() {
-                    if (($(this).attr('data-hidden') === "0" && showlegendElems === false) || 
-                        ($(this).attr('data-hidden') === "1" && showlegendElems === true)) {
-                        // Toggle state of element by clicking
-                        $(this).trigger('click', false);
-                    }
-                });
                 
                 if (typeof opt != "undefined") {
                     (opt.resetAreas) && (options.areas = {});
@@ -402,7 +380,7 @@
                 }
                 
                 // Update legends
-                if (updateLegend) {
+                if (typeof updatedOptions != "undefined" && typeof updatedOptions.legend === "object") {
                     Mapael.createLegends($self, options, "area", areas, 1);
                     if (options.map.width) {
                         Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
@@ -410,6 +388,18 @@
                         Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width));
                     }
                 }
+                
+                // Hide/Show all elements based on showlegendElems
+                //      Toggle (i.e. click) only if:
+                //          - slice legend is shown AND we want to hide
+                //          - slice legend is hidden AND we want to show
+                $("[data-type='elem']", $(this)).each(function() {
+                    if (($(this).attr('data-hidden') === "0" && showlegendElems === false) || 
+                        ($(this).attr('data-hidden') === "1" && showlegendElems === true)) {
+                        // Toggle state of element by clicking
+                        $(this).trigger('click', false);
+                    }
+                });
                 
                 if(typeof opt != "undefined")
                     opt.afterUpdate && opt.afterUpdate($self, paper, areas, plots, options);
