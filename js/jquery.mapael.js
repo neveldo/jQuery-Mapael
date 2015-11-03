@@ -234,12 +234,22 @@
                 var i = 0
                     , id = 0
                     , animDuration = 0
-                    , elemOptions = {},
-                    showlegendElems = true;
+                    , elemOptions = {}
+                    , showlegendElems = true
+                    , updateLegend = false;
+                    
+                // Set updateLegend
+                // This is use to determine if legend option needs to be redrawn because of new values
+                if (typeof updatedOptions != "undefined" && typeof updatedOptions.legend === "object") {
+                    updateLegend = true;
+                }
                 
                 // Set showlegendElems variable
-                // If not defined, or badly defined, revert to TRUE
-                if (typeof opt != "undefined" && typeof opt.setLegendElemsState === "string") {
+                // If  not defined, or 
+                //     badly defined, or
+                //     legend is being updated
+                //  => keep default (true)
+                if (updateLegend === false && typeof opt != "undefined" && typeof opt.setLegendElemsState === "string") {
                     showlegendElems = (opt.setLegendElemsState === "hide") ? false : true;
                 }
                 
@@ -392,11 +402,13 @@
                 }
                 
                 // Update legends
-                Mapael.createLegends($self, options, "area", areas, 1);
-                if (options.map.width) {
-                    Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
-                } else {
-                    Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width));
+                if (updateLegend) {
+                    Mapael.createLegends($self, options, "area", areas, 1);
+                    if (options.map.width) {
+                        Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
+                    } else {
+                        Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width));
+                    }
                 }
                 
                 if(typeof opt != "undefined")
