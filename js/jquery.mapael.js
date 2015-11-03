@@ -789,8 +789,12 @@
     Mapael.setEventHandlers = function(id, elemOptions, mapElem, textElem) {
         for(var event in elemOptions.eventHandlers) {
             (function(event) {
-                $(mapElem.node).on(event, function(e) {!Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions)});
-                textElem && $(textElem.node).on(event, function(e) {!Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions)});
+                $(mapElem.node).on(event, function(e) {
+                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                });
+                textElem && $(textElem.node).on(event, function(e) {
+                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                });
             })(event);
         }
     };
