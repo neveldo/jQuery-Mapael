@@ -1353,11 +1353,13 @@
             , dw = w - cw
             , ch = paper._viewBox ? paper._viewBox[3] : paper.height
             , dh = h - ch
-            , easingFunction = easingFunction || "linear"
             , interval = 25
             , steps = duration / interval
             , current_step = 0
-            , easingFormula = Raphael.easing_formulas[easingFunction];
+            , easingFormula;
+
+        easingFunction = easingFunction || "linear";
+        easingFormula = Raphael.easing_formulas[easingFunction];
 
         clearInterval(Mapael.animationIntervalID);
      
