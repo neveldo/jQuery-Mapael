@@ -791,8 +791,12 @@
     Mapael.setEventHandlers = function(id, elemOptions, mapElem, textElem) {
         $.each(elemOptions.eventHandlers, function(event) {
             (function(event) {
-                $(mapElem.node).on(event, function(e) {!Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions)});
-                textElem && $(textElem.node).on(event, function(e) {!Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions)});
+                $(mapElem.node).on(event, function(e) {
+                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                });
+                textElem && $(textElem.node).on(event, function(e) {
+                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                });
             })(event);
         });
     };
