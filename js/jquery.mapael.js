@@ -1096,9 +1096,9 @@
         var hideMapElems = function(e, hideOtherElems) {
             var elemValue = 0
                 , hidden = $(label.node).attr('data-hidden')
-                , hiddenNewAttr = (hidden == 0) ? {"data-hidden": 1} : {"data-hidden": 0};
+                , hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
 
-            if (hidden == 0) {
+            if (hidden === '0') {
                 label.animate({"opacity":0.5}, legendOptions.hideElemsOnClick.animDuration);
             } else {
                 label.animate({"opacity":1}, legendOptions.hideElemsOnClick.animDuration);
@@ -1117,7 +1117,7 @@
                         && (typeof sliceOptions.max == "undefined" || elemValue <= sliceOptions.max))
                 ) {
                     (function(id) {
-                        if (hidden == 0) {
+                        if (hidden === '0') {
                             elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].mapElem.hide();});
                             elems[id].textElem && elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].textElem.hide();});
                         } else {
