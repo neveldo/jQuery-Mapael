@@ -1,14 +1,16 @@
 /**
-*
-* Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
-* Requires jQuery, raphael.js and jquery.mousewheel
-*
-* Version: 1.1.0
-*
-* Copyright (c) 2015 Vincent Brouté (http://www.vincentbroute.fr/mapael)
-* Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
-*
-*/
+ *
+ * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
+ * Requires jQuery, raphael.js and jquery.mousewheel
+ *
+ * Version: 1.1.0
+ *
+ * Copyright (c) 2015 Vincent Brouté (http://www.vincentbroute.fr/mapael)
+ * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
+ *
+ * Thanks to Indigo744
+ *
+ */
 (function (factory) {
     if (typeof exports === 'object') {
         // CommonJS
