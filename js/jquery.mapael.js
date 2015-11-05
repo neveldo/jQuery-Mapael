@@ -1127,7 +1127,7 @@
                         && (typeof sliceOptions.max == "undefined" || elemValue <= sliceOptions.max))
                 ) {
                     (function(id) {
-                            if (hidden === '0') {
+                        if (hidden === '0') {
                             elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
                                 (legendOptions.hideElemsOnClick.opacity === 0) && elems[id].mapElem.hide();
                             });
