@@ -1,4 +1,4 @@
-/**
+/*!
  *
  * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
  * Requires jQuery, raphael.js and jquery.mousewheel
@@ -91,16 +91,16 @@
                 plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
             });
 
-            /**
-            * Zoom on the map at a specific level focused on specific coordinates
-            * If no coordinates are specified, the zoom will be focused on the center of the map
-            * options :
-            *    "level" : level of the zoom between 0 and maxLevel
-            *    "x" or "latitude" : x coordinate or latitude of the point to focus on
-            *    "y" or "longitude" : y coordinate or longitude of the point to focus on
-            *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
-            *    "animDuration" : zoom duration
-            */
+            /*
+             * Zoom on the map at a specific level focused on specific coordinates
+             * If no coordinates are specified, the zoom will be focused on the center of the map
+             * options :
+             *    "level" : level of the zoom between 0 and maxLevel
+             *    "x" or "latitude" : x coordinate or latitude of the point to focus on
+             *    "y" or "longitude" : y coordinate or longitude of the point to focus on
+             *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
+             *    "animDuration" : zoom duration
+             */
             $self.on("zoom", function(e, zoomOptions) {
                 var newLevel = Math.min(Math.max(zoomOptions.level, 0), options.map.zoom.maxLevel)
                     , panX = 0
@@ -152,9 +152,9 @@
                 $self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
             });
             
-            /**
-            * Update the zoom level of the map on mousewheel
-            */
+            /*
+             * Update the zoom level of the map on mousewheel
+             */
             options.map.zoom.enabled && options.map.zoom.mousewheel && $self.on("mousewheel", function(e) {
                 var offset = $container.offset(),
                     initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : (Mapael.maps[options.map.name].width / $container.width())
@@ -168,9 +168,9 @@
                 return false;
             });
 
-            /**
-            * Update the zoom level of the map on touch pinch
-            */
+            /*
+             * Update the zoom level of the map on touch pinch
+             */
             options.map.zoom.enabled && options.map.zoom.touch && $self.on("touchstart", function(e) {
                 if (e.originalEvent.touches.length === 2) {
                     zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
@@ -215,23 +215,23 @@
             // Create the legends for areas
             Mapael.createLegends($self, options, "area", areas, 1);
                 
-            /**
-            *
-            * Update the current map
-            * Refresh attributes and tooltips for areas and plots
-            * @param updatedOptions options to update for plots and areas
-            * @param newPlots new plots to add to the map
-            * @param deletedPlotsplots to delete from the map
-            * @param opt option for the refresh :
-            *  opt.animDuration animation duration in ms (default = 0)
-            *  opt.resetAreas true to reset previous areas options
-            *  opt.resetPlots true to reset previous plots options
-            *  opt.resetLinks true to reset previous links options
-            *  opt.afterUpdate Hook that allows to add custom processing on the map
-            *  opt.newLinks new links to add to the map
-            *  opt.deletedLinks links to remove from the map
-            *  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
-            */
+            /*
+             *
+             * Update the current map
+             * Refresh attributes and tooltips for areas and plots
+             * @param updatedOptions options to update for plots and areas
+             * @param newPlots new plots to add to the map
+             * @param deletedPlotsplots to delete from the map
+             * @param opt option for the refresh :
+             *  opt.animDuration animation duration in ms (default = 0)
+             *  opt.resetAreas true to reset previous areas options
+             *  opt.resetPlots true to reset previous plots options
+             *  opt.resetLinks true to reset previous links options
+             *  opt.afterUpdate Hook that allows to add custom processing on the map
+             *  opt.newLinks new links to add to the map
+             *  opt.deletedLinks links to remove from the map
+             *  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
+             */
             $self.on("update", function(e, updatedOptions, newPlots, deletedPlots, opt) {
                 var i = 0
                     , id = 0
@@ -441,17 +441,17 @@
         });
     };
 
-    /**
-    * Version number of jQuery Mapael. See http://semver.org/ for more information.
-    *  @type string
-    */
+    /*
+     * Version number of jQuery Mapael. See http://semver.org/ for more information.
+     *  @type string
+     */
     Mapael.version = '1.1.0';
 
     Mapael.zoomTO = 0;
     
-    /**
-    * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
-    */
+    /*
+     * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
+     */
     Mapael.initElem = function(paper, elem, options, $tooltip, id) {
         var bbox = {}, textPosition = {};
         if (typeof options.value != "undefined")
@@ -503,9 +503,9 @@
         $(elem.mapElem.node).attr("data-id", id);
     };
     
-    /**
-    * Draw all links between plots on the paper
-    */
+    /*
+     * Draw all links between plots on the paper
+     */
     Mapael.drawLinksCollection = function(paper, options, linksCollection, getCoords, $tooltip) {
         var p1 = {}
             , p2 = {}
@@ -547,9 +547,9 @@
         return links;
     };
     
-    /**
-    * Draw a curved link between two couples of coordinates a(xa,ya) and b(xb, yb) on the paper
-    */
+    /*
+     * Draw a curved link between two couples of coordinates a(xa,ya) and b(xb, yb) on the paper
+     */
     Mapael.drawLink = function(id, paper, xa, ya, xb, yb, elemOptions, $tooltip) {
         var elem = {}
         
@@ -593,9 +593,9 @@
         return elem;
     };
 
-    /**
-    * Update the element "elem" on the map with the new elemOptions options
-    */
+    /*
+     * Update the element "elem" on the map with the new elemOptions options
+     */
     Mapael.updateElem = function(elemOptions, elem, $tooltip, animDuration) {
         var bbox, textPosition, plotOffsetX, plotOffsetY;
         if (typeof elemOptions.value != "undefined")
@@ -675,9 +675,9 @@
         }
     };
     
-    /**
-    * Draw the plot
-    */
+    /*
+     * Draw the plot
+     */
     Mapael.drawPlot = function(id, options, mapConf, paper, $tooltip) {
         var plot = {}
             , coords = {}
@@ -722,9 +722,9 @@
         return plot;
     };
     
-    /**
-    * Set target link on elem
-    */
+    /*
+     * Set target link on elem
+     */
     Mapael.setHref = function(elem) {
         elem.attr({cursor : "pointer"});
         $(elem.node).bind("click", function() {
@@ -733,12 +733,12 @@
         });
     };
     
-    /**
-    * Set a tooltip for the areas and plots
-    * @param elem area or plot element
-    * @param $tooltip the tooltip container
-    * @param content the content to set in the tooltip
-    */
+    /*
+     * Set a tooltip for the areas and plots
+     * @param elem area or plot element
+     * @param $tooltip the tooltip container
+     * @param content the content to set in the tooltip
+     */
     Mapael.setTooltip = function(elem, $tooltip) {
         var tooltipTO = 0
             , $container = $tooltip.parent()
@@ -785,13 +785,13 @@
         });
     };
     
-    /**
-    * Set user defined handlers for events on areas and plots
-    * @param id the id of the element
-    * @param elemOptions the element parameters
-    * @param mapElem the map element to set callback on
-    * @param textElem the optional text within the map element
-    */
+    /*
+     * Set user defined handlers for events on areas and plots
+     * @param id the id of the element
+     * @param elemOptions the element parameters
+     * @param mapElem the map element to set callback on
+     * @param textElem the optional text within the map element
+     */
     Mapael.setEventHandlers = function(id, elemOptions, mapElem, textElem) {
         $.each(elemOptions.eventHandlers, function(event) {
             (function(event) {
@@ -808,14 +808,14 @@
     Mapael.panning = false;
     Mapael.panningTO = 0;
     
-    /**
-    * Init zoom and panning for the map
-    * @param $container
-    * @param paper
-    * @param mapWidth
-    * @param mapHeight
+    /*
+     * Init zoom and panning for the map
+     * @param $container
+     * @param paper
+     * @param mapWidth
+     * @param mapHeight
     * @param options
-    */
+     */
     Mapael.initZoom = function($container, paper, mapWidth, mapHeight, options) {
         var $parentContainer = $container.parent()
             , $zoomIn = $("<div>").addClass(options.zoomInCssClass).html("+")
@@ -889,15 +889,15 @@
         });
     };
     
-    /**
-    * Draw a legend for areas and / or plots
-    * @param legendOptions options for the legend to draw
-    * @param $container the map container
-    * @param options map options object
-    * @param legendType the type of the legend : "area" or "plot"
-    * @param elems collection of plots or areas on the maps
-    * @param legendIndex index of the legend in the conf array
-    */
+    /*
+     * Draw a legend for areas and / or plots
+     * @param legendOptions options for the legend to draw
+     * @param $container the map container
+     * @param options map options object
+     * @param legendType the type of the legend : "area" or "plot"
+     * @param elems collection of plots or areas on the maps
+     * @param legendIndex index of the legend in the conf array
+     */
     Mapael.drawLegend = function (legendOptions, $container, options, legendType, elems, scale, legendIndex) {
         var $legend = {}
             , paper = {}
@@ -1092,16 +1092,16 @@
             return paper;
     };
     
-    /**
-    * Allow to hide elements of the map when the user clicks on a related legend item
-    * @param $container the map container
-    * @param legendOptions options for the legend to draw
-    * @param sliceOptions options of the slice
-    * @param label label of the legend item
-    * @param elem element of the legend item
-    * @param elems collection of plots or areas displayed on the map
-    * @param legendIndex index of the legend in the conf array
-    */
+    /*
+     * Allow to hide elements of the map when the user clicks on a related legend item
+     * @param $container the map container
+     * @param legendOptions options for the legend to draw
+     * @param sliceOptions options of the slice
+     * @param label label of the legend item
+     * @param elem element of the legend item
+     * @param elems collection of plots or areas displayed on the map
+     * @param legendIndex index of the legend in the conf array
+     */
     Mapael.handleClickOnLegendElem = function($container, legendOptions, sliceOptions, label, elem, elems, legendIndex) {
         var hideMapElems = function(e, hideOtherElems) {
             var elemValue = 0
@@ -1167,14 +1167,14 @@
         }
     };
     
-    /**
-    * Create all legends for a specified type (area or plot)
-    * @param $container the map container
-    * @param options map options
-    * @param legendType the type of the legend : "area" or "plot"
-    * @param elems collection of plots or areas displayed on the map
-    * @param scale scale ratio of the map
-    */
+    /*
+     * Create all legends for a specified type (area or plot)
+     * @param $container the map container
+     * @param options map options
+     * @param legendType the type of the legend : "area" or "plot"
+     * @param elems collection of plots or areas displayed on the map
+     * @param scale scale ratio of the map
+     */
     Mapael.createLegends = function ($container, options, legendType, elems, scale) {
         var legendsOptions = options.legend[legendType], legends = [];
 
@@ -1190,12 +1190,12 @@
         return legends;
     };
     
-    /**
+    /*
     * Set the attributes on hover and the attributes to restore for a map element
-    * @param elem the map element
-    * @param originalAttrs the original attributes to restore on mouseout event
-    * @param attrsHover the attributes to set on mouseover event
-    */
+     * @param elem the map element
+     * @param originalAttrs the original attributes to restore on mouseout event
+     * @param attrsHover the attributes to set on mouseover event
+     */
     Mapael.setHoverOptions = function (elem, originalAttrs, attrsHover) {
         // Disable transform option on hover for VML (IE<9) because of several bugs
         if (Raphael.type != "SVG") delete attrsHover.transform;
@@ -1205,12 +1205,12 @@
         else elem.originalAttrs = originalAttrs;
     };
     
-    /**
-    * Set the hover behavior (mouseover & mouseout) for plots and areas
-    * @param paper Raphael paper object
-    * @param mapElem the map element
-    * @param textElem the optional text element (within the map element)
-    */
+    /*
+     * Set the hover behavior (mouseover & mouseout) for plots and areas
+     * @param paper Raphael paper object
+     * @param mapElem the map element
+     * @param textElem the optional text element (within the map element)
+     */
     Mapael.setHover = function (paper, mapElem, textElem) {
         var $mapElem = {}
             , $textElem = {}
@@ -1229,12 +1229,12 @@
         }
     };
     
-    /**
-    * Set he behaviour for "mouseover" event
-    * @param paper paper Raphael paper object
-    * @param mapElem mapElem the map element
-    * @param textElem the optional text element (within the map element)
-    */
+    /*
+     * Set he behaviour for "mouseover" event
+     * @param paper paper Raphael paper object
+     * @param mapElem mapElem the map element
+     * @param textElem the optional text element (within the map element)
+     */
     Mapael.elemHover = function (paper, mapElem, textElem) {
         mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
         textElem && textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
@@ -1244,12 +1244,12 @@
         }
     };
     
-    /**
-    * Set he behaviour for "mouseout" event
-    * @param paper Raphael paper object
-    * @param mapElem the map element
-    * @param textElem the optional text element (within the map element)
-    */
+    /*
+     * Set he behaviour for "mouseout" event
+     * @param paper Raphael paper object
+     * @param mapElem the map element
+     * @param textElem the optional text element (within the map element)
+     */
     Mapael.elemOut = function (paper, mapElem, textElem) {
         mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
         textElem && textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
@@ -1259,12 +1259,12 @@
         }
     };
     
-    /**
-    * Get element options by merging default options, element options and legend options
-    * @param defaultOptions
-    * @param elemOptions
-    * @param legendOptions
-    */
+    /*
+     * Get element options by merging default options, element options and legend options
+     * @param defaultOptions
+     * @param elemOptions
+     * @param legendOptions
+     */
     Mapael.getElemOptions = function(defaultOptions, elemOptions, legendOptions) {
         var options = $.extend(true, {}, defaultOptions, elemOptions);
         if (typeof options.value != "undefined") {
@@ -1279,11 +1279,11 @@
         return options;
     };
     
-    /**
-    * Get the coordinates of the text relative to a bbox and a position
-    * @param bbox the boundary box of the element
-    * @param textPosition the wanted text position (inner, right, left, top or bottom)
-    */
+    /*
+     * Get the coordinates of the text relative to a bbox and a position
+     * @param bbox the boundary box of the element
+     * @param textPosition the wanted text position (inner, right, left, top or bottom)
+     */
     Mapael.getTextPosition = function(bbox, textPosition, margin) {
         var textX = 0
             , textY = 0
@@ -1318,12 +1318,12 @@
         return {"x" : textX, "y" : textY, "textAnchor" : textAnchor};
     };
     
-    /**
-    * Get the legend conf matching with the value
-    * @param value the value to match with a slice in the legend
-    * @param legend the legend params object
-    * @return the legend slice matching with the value
-    */
+    /*
+     * Get the legend conf matching with the value
+     * @param value the value to match with a slice in the legend
+     * @param legend the legend params object
+     * @return the legend slice matching with the value
+     */
     Mapael.getLegendSlice = function (value, legend) {
         for(var i = 0, length = legend.slices.length; i < length; ++i) {
             if ((typeof legend.slices[i].sliceValue != "undefined" && value == legend.slices[i].sliceValue)
@@ -1339,19 +1339,19 @@
 
     Mapael.animationIntervalID = null;
 
-    /**
-     * Animated view box changes
-     * As from http://code.voidblossom.com/animating-viewbox-easing-formulas/,
-     * (from https://github.com/theshaun works on mapael)
-     * @param paper paper Raphael paper object
-     * @param x coordinate of the point to focus on
-     * @param y coordinate of the point to focus on
-     * @param w map defined width
-     * @param h map defined height
-     * @param duration defined length of time for animation
-     * @param easying_function defined Raphael supported easing_formula to use
-     * @param callback method when animated action is complete
-     */
+    /*
+      * Animated view box changes
+      * As from http://code.voidblossom.com/animating-viewbox-easing-formulas/,
+      * (from https://github.com/theshaun works on mapael)
+      * @param paper paper Raphael paper object
+      * @param x coordinate of the point to focus on
+      * @param y coordinate of the point to focus on
+      * @param w map defined width
+      * @param h map defined height
+      * @param duration defined length of time for animation
+      * @param easying_function defined Raphael supported easing_formula to use
+      * @param callback method when animated action is complete
+      */
     Mapael.animateViewBox = function animateViewBox($container, paper, x, y, w, h, duration, easingFunction ) {
         var cx = paper._viewBox ? paper._viewBox[0] : 0
             , dx = x - cx

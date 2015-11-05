@@ -1,14 +1,14 @@
-/**
-*
-* Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
-* Requires jQuery and Mapael
-*
-* Map of metropolitan France by department
-* Equirectangular projection
-
-* @author Vincent Brouté
-* @source http://fr.m.wikipedia.org/wiki/Fichier:France_location_map-Departements.svg
-*/
+/*!
+ *
+ * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
+ * Requires jQuery and Mapael
+ *
+ * Map of metropolitan France by department
+ * Equirectangular projection
+ *
+ * @author Vincent BroutÃ©
+ * @source http://fr.m.wikipedia.org/wiki/Fichier:France_location_map-Departements.svg
+ */
 (function (factory) {
     if (typeof exports === 'object') {
         // CommonJS
