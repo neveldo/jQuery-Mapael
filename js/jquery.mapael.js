@@ -124,10 +124,10 @@
                 if (typeof zoomOptions.y == "undefined")
                     zoomOptions.y = (paper._viewBox[1] + paper._viewBox[3] / 2);
 
-                if (newLevel == 0) {
+                if (newLevel === 0) {
                     panX = 0;
                     panY = 0;
-                } else if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter == true) {
+                } else if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter === true) {
                     offsetX = $self.data("panX") + ((zoomOptions.x - $self.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
                     offsetY = $self.data("panY") + ((zoomOptions.y - $self.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
                 
@@ -866,7 +866,7 @@
                 }
             }
 
-            if (mousedown && currentLevel != 0) {
+            if (mousedown && currentLevel !== 0) {
                 var offsetX = (previousX - pageX) / (1 + (currentLevel * options.step)) * (mapWidth / paper.width)
                     , offsetY = (previousY - pageY) / (1 + (currentLevel * options.step)) * (mapHeight / paper.height)
                     , panX = Math.min(Math.max(0, paper._viewBox[0] + offsetX), (mapWidth - paper._viewBox[2]))
@@ -982,7 +982,7 @@
             
             // Draw legend elements (circle, square or image in vertical or horizontal mode)
             for(i = 0, length = legendOptions.slices.length; i < length; ++i) {
-                if (typeof legendOptions.slices[i].display == "undefined" || legendOptions.slices[i].display == true) {
+                if (typeof legendOptions.slices[i].display == "undefined" || legendOptions.slices[i].display === true) {
                     if(legendType == "area") {
                         if (legendOptions.mode == "horizontal") {
                             x = width + legendOptions.marginLeft;
@@ -1127,11 +1127,15 @@
                         && (typeof sliceOptions.max == "undefined" || elemValue <= sliceOptions.max))
                 ) {
                     (function(id) {
-                        if (hidden === '0') {
-                            elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].mapElem.hide();});
-                            elems[id].textElem && elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {(legendOptions.hideElemsOnClick.opacity == 0) && elems[id].textElem.hide();});
+                            if (hidden === '0') {
+                            elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
+                                (legendOptions.hideElemsOnClick.opacity === 0) && elems[id].mapElem.hide();
+                            });
+                            elems[id].textElem && elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
+                                (legendOptions.hideElemsOnClick.opacity === 0) && elems[id].textElem.hide();
+                            });
                         } else {
-                            if (legendOptions.hideElemsOnClick.opacity == 0) {
+                            if (legendOptions.hideElemsOnClick.opacity === 0) {
                                 elems[id].mapElem.show();
                                 elems[id].textElem && elems[id].textElem.show();
                             }
@@ -1179,7 +1183,7 @@
         }
         
         for (var j = 0; j < legendsOptions.length; ++j) {
-            if (legendsOptions[j].display == true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
+            if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
                 legends.push(Mapael.drawLegend(legendsOptions[j], $container, options, legendType, elems, scale, j));
             }
         }
