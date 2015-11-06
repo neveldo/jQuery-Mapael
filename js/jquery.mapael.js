@@ -52,7 +52,6 @@
                 , areas = {}
                 , plots = {}
                 , links = {}
-                , id = 0
                 , zoomCenterX = 0
                 , zoomCenterY = 0
                 , previousPinchDist = 0;
@@ -234,7 +233,6 @@
              */
             $self.on("update", function(e, updatedOptions, newPlots, deletedPlots, opt) {
                 var i = 0
-                    , id = 0
                     , animDuration = 0
                     , elemOptions = {}
                     , showlegendElems = true;
