@@ -934,7 +934,7 @@
                     
                 sliceAttrs[i] = $.extend(
                     {}
-                    , (legendType == "plot") ? options.map["defaultPlot"].attrs : options.map["defaultArea"].attrs
+                    , (legendType == "plot") ? options.map.defaultPlot.attrs : options.map.defaultArea.attrs
                     , legendOptions.slices[i].attrs
                     , legendOptions.slices[i].legendSpecificAttrs
                 );
