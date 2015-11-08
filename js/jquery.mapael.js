@@ -238,34 +238,34 @@
                     , animDuration = 0
                     , elemOptions = {}
                     , showlegendElems = true
-                    // This function remove a plot using animation (or not, depending on animDuration)
+                    // This function remove an element using animation (or not, depending on animDuration)
                     // Used for deletedPlots and deletedLinks
-                    , fnRemovePlot = function(plot) {
+                    , fnRemoveElement = function(elem) {
                         if (animDuration > 0) {
-                            plot.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
-                                plot.mapElem.remove();
+                            elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
+                                elem.mapElem.remove();
                             });
-                            if (plot.textElem) {
-                                plot.textElem.animate({"opacity":0}, animDuration, "linear", function() {
-                                    plot.textElem.remove();
+                            if (elem.textElem) {
+                                elem.textElem.animate({"opacity":0}, animDuration, "linear", function() {
+                                    elem.textElem.remove();
                                 });
                             }
                         } else {
-                            plot.mapElem.remove();
-                            if (plot.textElem) {
-                                plot.textElem.remove();
+                            elem.mapElem.remove();
+                            if (elem.textElem) {
+                                elem.textElem.remove();
                             }
                         }
                     }
-                    // This function show a plot or link using animation
+                    // This function show an element using animation
                     // Used for newPlots and newLinks
-                    , fnShowPlot = function(plot) {
-                        plot.mapElem.attr({opacity : 0});
-                        plot.mapElem.animate({"opacity": (typeof plot.mapElem.originalAttrs.opacity != "undefined") ? plot.mapElem.originalAttrs.opacity : 1}, animDuration);
+                    , fnShowElement = function(elem) {
+                        elem.mapElem.attr({opacity : 0});
+                        elem.mapElem.animate({"opacity": (typeof elem.mapElem.originalAttrs.opacity != "undefined") ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
 
-                        if (plot.textElem) {
-                            plot.textElem.attr({opacity : 0});
-                            plot.textElem.animate({"opacity": (typeof plot.textElem.originalAttrs.opacity != "undefined") ? plot.textElem.originalAttrs.opacity : 1}, animDuration);
+                        if (elem.textElem) {
+                            elem.textElem.attr({opacity : 0});
+                            elem.textElem.animate({"opacity": (typeof elem.textElem.originalAttrs.opacity != "undefined") ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
                         }
                     };
                 
