@@ -160,6 +160,6 @@
         }
     );
 
-    return $.fn.mapael;
+    return Mapael;
 
 }));

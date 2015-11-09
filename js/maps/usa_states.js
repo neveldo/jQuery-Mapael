@@ -22,7 +22,7 @@
 
     "use strict";
     
-    $.extend(true, $.fn.mapael, 
+    $.extend(true, Mapael,
         {
             maps :{
                 usa_states : {
@@ -143,6 +143,6 @@
         }
     );
 
-    return $.fn.mapael;
+    return Mapael;
 
 }));

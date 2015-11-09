@@ -23,7 +23,7 @@
 
     "use strict";
     
-    $.extend(true, $.fn.mapael, 
+    $.extend(true, Mapael,
         {
             maps :  {
                 world_countries : {
@@ -224,6 +224,6 @@
         }
     );
 
-    return $.fn.mapael;
+    return Mapael;
 
 }));
