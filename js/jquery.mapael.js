@@ -788,11 +788,13 @@
         $.each(elemOptions.eventHandlers, function(event) {
             (function(event) {
                 $(mapElem.node).on(event, function(e) {
-                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                    if (!Mapael.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
                 });
-                textElem && $(textElem.node).on(event, function(e) {
-                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
-                });
+                if (textElem) {
+                    $(textElem.node).on(event, function(e) {
+                        if (!Mapael.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                    });
+                }
             })(event);
         });
     };
@@ -1123,9 +1125,11 @@
                             elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
                                 if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
                             });
-                            elems[id].textElem && elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
-                                (legendOptions.hideElemsOnClick.opacity === 0) && elems[id].textElem.hide();
-                            });
+                            if (elems[id].textElem) {
+                                elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
+                                    if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
+                                });
+                            }
                         } else {
                             if (legendOptions.hideElemsOnClick.opacity === 0) {
                                 elems[id].mapElem.show();
@@ -1231,9 +1235,7 @@
         mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
         if (textElem) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
         // workaround for older version of Raphael
-        if (typeof paper.safari === "function") { 
-            paper.safari();
-        }
+        if (paper.safari) paper.safari();
     };
     
     /*
@@ -1246,9 +1248,7 @@
         mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
         if (textElem) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
         // workaround for older version of Raphael
-        if (typeof paper.safari === "function") { 
-            paper.safari();
-        }
+        if (paper.safari) paper.safari();
     };
     
     /*
