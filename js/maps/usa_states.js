@@ -44,14 +44,20 @@
                         return([x,y]);
                     },
                     getCoords : function (lat, lon) {
-                        var coords = {}, xOffset, yOffset, scaleX, scaleY;
+                        var coords = {},
+                            xOffset,
+                            yOffset,
+                            scaleX,
+                            scaleY,
+                            phi1,
+                            phi2,
+                            midLng,
+                            scale;
                         if(lat > 51) { // alaska
-
-                            // these are guesses
-                            var phi1= 15; // standard parallels
-                            var phi2= 105;
-                            var midLng = -134;
-                            var scale = 530;
+                            phi1= 15;
+                            phi2= 105;
+                            midLng = -134;
+                            scale = 530;
                             coords = this.latLngToGrid(lat, lon, phi1, phi2, midLng, scale);
                             xOffset = 190;
                             yOffset = 543;
@@ -59,14 +65,10 @@
                             scaleY= -1;
 
                         } else if (lon < -140) { // hawaii
-                            // Lat: 18°?55' N to 28°?27' N, Lng:154°?48' W to 178°?22' W
-                            // (225, 504) to (356, 588) on map
-
-                            // these are guesses
-                            var phi1= 0; // standard parallels
-                            var phi2= 26;
-                            var midLng = -166;
-                            var scale = 1280;
+                            phi1= 0;
+                            phi2= 26;
+                            midLng = -166;
+                            scale = 1280;
                             coords = this.latLngToGrid(lat, lon, phi1, phi2, midLng, scale);
                             xOffset = 115;
                             yOffset = 723;
