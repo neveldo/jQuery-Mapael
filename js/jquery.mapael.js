@@ -235,7 +235,37 @@
                 var i = 0
                     , animDuration = 0
                     , elemOptions = {}
-                    , showlegendElems = true;
+                    , showlegendElems = true
+                    // This function remove an element using animation (or not, depending on animDuration)
+                    // Used for deletedPlots and deletedLinks
+                    , fnRemoveElement = function(elem) {
+                        if (animDuration > 0) {
+                            elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
+                                elem.mapElem.remove();
+                            });
+                            if (elem.textElem) {
+                                elem.textElem.animate({"opacity":0}, animDuration, "linear", function() {
+                                    elem.textElem.remove();
+                                });
+                            }
+                        } else {
+                            elem.mapElem.remove();
+                            if (elem.textElem) {
+                                elem.textElem.remove();
+                            }
+                        }
+                    }
+                    // This function show an element using animation
+                    // Used for newPlots and newLinks
+                    , fnShowElement = function(elem) {
+                        elem.mapElem.attr({opacity : 0});
+                        elem.mapElem.animate({"opacity": (typeof elem.mapElem.originalAttrs.opacity != "undefined") ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
+
+                        if (elem.textElem) {
+                            elem.textElem.attr({opacity : 0});
+                            elem.textElem.animate({"opacity": (typeof elem.textElem.originalAttrs.opacity != "undefined") ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
+                        }
+                    };
                 
                 // Set showlegendElems variable
                 // Keep default (true) if opt.setLegendElemsState not defined, or badly defined
@@ -256,19 +286,7 @@
                 if (typeof deletedPlots == "object") {
                     for (;i < deletedPlots.length; i++) {
                         if (typeof plots[deletedPlots[i]] != "undefined") {
-                            if (animDuration > 0) {
-                                (function(plot) {
-                                    plot.mapElem.animate({"opacity":0}, animDuration, "linear", function() {plot.mapElem.remove();});
-                                    if (plot.textElem) {
-                                        plot.textElem.animate({"opacity":0}, animDuration, "linear", function() {plot.textElem.remove();});
-                                    }
-                                })(plots[deletedPlots[i]]);
-                            } else {
-                                plots[deletedPlots[i]].mapElem.remove();
-                                if (plots[deletedPlots[i]].textElem) {
-                                    plots[deletedPlots[i]].textElem.remove();
-                                }
-                            }
+                            fnRemovePlot(plots[deletedPlots[i]]);
                             delete plots[deletedPlots[i]];
                         }
                     }
@@ -278,19 +296,7 @@
                 if (typeof opt != "undefined" && typeof opt.deletedLinks == "object") {
                     for (i = 0;i < opt.deletedLinks.length; i++) {
                         if (typeof links[opt.deletedLinks[i]] != "undefined") {
-                            if (animDuration > 0) {
-                                (function(plot) {
-                                    plot.mapElem.animate({"opacity":0}, animDuration, "linear", function() {plot.mapElem.remove();});
-                                    if (plot.textElem) {
-                                        plot.textElem.animate({"opacity":0}, animDuration, "linear", function() {plot.textElem.remove();});
-                                    }
-                                })(links[opt.deletedLinks[i]]);
-                            } else {
-                                links[opt.deletedLinks[i]].mapElem.remove();
-                                if (links[opt.deletedLinks[i]].textElem) {
-                                    links[opt.deletedLinks[i]].textElem.remove();
-                                }
-                            }
+                            fnRemovePlot(links[opt.deletedLinks[i]]);
                             delete links[opt.deletedLinks[i]];
                         }
                     }
@@ -303,13 +309,7 @@
                             options.plots[id] = newPlots[id];
                             plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
                             if (animDuration > 0) {
-                                plots[id].mapElem.attr({opacity : 0});
-                                plots[id].mapElem.animate({"opacity": (typeof plots[id].mapElem.originalAttrs.opacity != "undefined") ? plots[id].mapElem.originalAttrs.opacity : 1}, animDuration);
-                                
-                                if (plots[id].textElem) {
-                                    plots[id].textElem.attr({opacity : 0});
-                                    plots[id].textElem.animate({"opacity": (typeof plots[id].textElem.originalAttrs.opacity != "undefined") ? plots[id].textElem.originalAttrs.opacity : 1}, animDuration);
-                                }
+                                fnShowPlot(plots[id]);
                             }
                         }
                     });
@@ -322,13 +322,7 @@
                     $.extend(options.links, opt.newLinks);
                     if (animDuration > 0) {
                         $.each(newLinks, function(id) {
-                            newLinks[id].mapElem.attr({opacity : 0});
-                            newLinks[id].mapElem.animate({"opacity": (typeof newLinks[id].mapElem.originalAttrs.opacity != "undefined") ? newLinks[id].mapElem.originalAttrs.opacity : 1}, animDuration);
-
-                            if (newLinks[id].textElem) {
-                                newLinks[id].textElem.attr({opacity : 0});
-                                newLinks[id].textElem.animate({"opacity": (typeof newLinks[id].textElem.originalAttrs.opacity != "undefined") ? newLinks[id].textElem.originalAttrs.opacity : 1}, animDuration);
-                            }
+                            fnShowPlot(newLinks[id]);
                         });
                     }
                 }
