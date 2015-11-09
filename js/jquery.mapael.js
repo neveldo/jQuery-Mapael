@@ -288,7 +288,7 @@
                 if (typeof deletedPlots == "object") {
                     for (;i < deletedPlots.length; i++) {
                         if (typeof plots[deletedPlots[i]] != "undefined") {
-                            fnRemovePlot(plots[deletedPlots[i]]);
+                            fnRemoveElement(plots[deletedPlots[i]]);
                             delete plots[deletedPlots[i]];
                         }
                     }
@@ -298,7 +298,7 @@
                 if (typeof opt != "undefined" && typeof opt.deletedLinks == "object") {
                     for (i = 0;i < opt.deletedLinks.length; i++) {
                         if (typeof links[opt.deletedLinks[i]] != "undefined") {
-                            fnRemovePlot(links[opt.deletedLinks[i]]);
+                            fnRemoveElement(links[opt.deletedLinks[i]]);
                             delete links[opt.deletedLinks[i]];
                         }
                     }
@@ -311,7 +311,7 @@
                             options.plots[id] = newPlots[id];
                             plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
                             if (animDuration > 0) {
-                                fnShowPlot(plots[id]);
+                                fnShowElement(plots[id]);
                             }
                         }
                     });
@@ -324,7 +324,7 @@
                     $.extend(options.links, opt.newLinks);
                     if (animDuration > 0) {
                         $.each(newLinks, function(id) {
-                            fnShowPlot(newLinks[id]);
+                            fnShowElement(newLinks[id]);
                         });
                     }
                 }
