@@ -5,7 +5,6 @@
 
     "laxcomma": true,
     "laxbreak": true,
-    "expr": true,
 
     "globals": {
         "define": true,
