@@ -56,7 +56,7 @@
                 , zoomCenterY = 0
                 , previousPinchDist = 0;
             
-            options.map.tooltip.css && $tooltip.css(options.map.tooltip.css);
+            if (options.map.tooltip.css) $tooltip.css(options.map.tooltip.css);
             paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
             
             // Draw map areas
@@ -70,7 +70,7 @@
             });
 
             // Hook that allows to add custom processing on the map
-            options.map.beforeInit && options.map.beforeInit($self, paper, options);
+            if (options.map.beforeInit) options.map.beforeInit($self, paper, options);
             
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(mapConf.elems, function(id) {
@@ -274,10 +274,10 @@
                 }
                 
                 if (typeof opt != "undefined") {
-                    (opt.resetAreas) && (options.areas = {});
-                    (opt.resetPlots) && (options.plots = {});
-                    (opt.resetLinks) && (options.links = {});
-                    (opt.animDuration) && (animDuration = opt.animDuration);
+                    if (opt.resetAreas) options.areas = {};
+                    if (opt.resetPlots) options.plots = {};
+                    if (opt.resetLinks) options.links = {};
+                    if (opt.animDuration) animDuration = opt.animDuration;
                 }
                 
                 $.extend(true, options, updatedOptions);
@@ -395,8 +395,8 @@
                     }
                 });
                 
-                if(typeof opt != "undefined")
-                    opt.afterUpdate && opt.afterUpdate($self, paper, areas, plots, options);
+                if (typeof opt != "undefined" && opt.afterUpdate) 
+                    opt.afterUpdate($self, paper, areas, plots, options);
             });
             
             // Handle resizing of the map
@@ -427,7 +427,7 @@
             }
             
             // Hook that allows to add custom processing on the map
-            options.map.afterInit && options.map.afterInit($self, paper, areas, plots, options);
+            if (options.map.afterInit) options.map.afterInit($self, paper, areas, plots, options);
             
             $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         });
@@ -460,11 +460,11 @@
             options.text.attrs["text-anchor"] = textPosition.textAnchor;
             elem.textElem = paper.text(textPosition.x, textPosition.y, options.text.content).attr(options.text.attrs);
             Mapael.setHoverOptions(elem.textElem, options.text.attrs, options.text.attrsHover);
-            options.eventHandlers && Mapael.setEventHandlers(id, options, elem.mapElem, elem.textElem);
+            if (options.eventHandlers) Mapael.setEventHandlers(id, options, elem.mapElem, elem.textElem);
             Mapael.setHover(paper, elem.mapElem, elem.textElem);
             $(elem.textElem.node).attr("data-id", id);
         } else {
-            options.eventHandlers && Mapael.setEventHandlers(id, options, elem.mapElem);
+            if (options.eventHandlers) Mapael.setEventHandlers(id, options, elem.mapElem);
             Mapael.setHover(paper, elem.mapElem);
         }
         
@@ -646,17 +646,17 @@
         if (elemOptions.tooltip) {
             if (typeof elem.mapElem.tooltip == "undefined") {
                 Mapael.setTooltip(elem.mapElem, $tooltip);
-                (elem.textElem) && Mapael.setTooltip(elem.textElem, $tooltip);
+                if (elem.textElem) Mapael.setTooltip(elem.textElem, $tooltip);
             }
             elem.mapElem.tooltip = elemOptions.tooltip;
-            (elem.textElem) && (elem.textElem.tooltip = elemOptions.tooltip);
+            if (elem.textElem) elem.textElem.tooltip = elemOptions.tooltip;
         }
         
         // Update the link
         if (typeof elemOptions.href != "undefined") {
             if (typeof elem.mapElem.href == "undefined") {
                 Mapael.setHref(elem.mapElem);
-                (elem.textElem) && Mapael.setHref(elem.textElem);
+                if (elem.textElem) Mapael.setHref(elem.textElem);
             }
             elem.mapElem.href = elemOptions.href;
             elem.mapElem.target = elemOptions.target;
@@ -788,11 +788,13 @@
         $.each(elemOptions.eventHandlers, function(event) {
             (function(event) {
                 $(mapElem.node).on(event, function(e) {
-                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                    if (!Mapael.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
                 });
-                textElem && $(textElem.node).on(event, function(e) {
-                    !Mapael.panning && elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
-                });
+                if (textElem) {
+                    $(textElem.node).on(event, function(e) {
+                        if (!Mapael.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                    });
+                }
             })(event);
         });
     };
@@ -1121,18 +1123,20 @@
                     (function(id) {
                         if (hidden === '0') {
                             elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
-                                (legendOptions.hideElemsOnClick.opacity === 0) && elems[id].mapElem.hide();
+                                if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
                             });
-                            elems[id].textElem && elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
-                                (legendOptions.hideElemsOnClick.opacity === 0) && elems[id].textElem.hide();
-                            });
+                            if (elems[id].textElem) {
+                                elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
+                                    if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
+                                });
+                            }
                         } else {
                             if (legendOptions.hideElemsOnClick.opacity === 0) {
                                 elems[id].mapElem.show();
-                                elems[id].textElem && elems[id].textElem.show();
+                                if (elems[id].textElem) elems[id].textElem.show();
                             }
                             elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
-                            elems[id].textElem && elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
+                            if (elems[id].textElem) elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
                         }
                     })(id);
                 }
@@ -1229,11 +1233,9 @@
      */
     Mapael.elemHover = function (paper, mapElem, textElem) {
         mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
-        textElem && textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
+        if (textElem) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
         // workaround for older version of Raphael
-        if (typeof paper.safari === "function") { 
-            paper.safari();
-        }
+        if (paper.safari) paper.safari();
     };
     
     /*
@@ -1244,11 +1246,9 @@
      */
     Mapael.elemOut = function (paper, mapElem, textElem) {
         mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
-        textElem && textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
+        if (textElem) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
         // workaround for older version of Raphael
-        if (typeof paper.safari === "function") { 
-            paper.safari();
-        }
+        if (paper.safari) paper.safari();
     };
     
     /*
