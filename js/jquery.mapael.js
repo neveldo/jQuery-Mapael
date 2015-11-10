@@ -151,57 +151,61 @@
                 $self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
             });
             
-            /*
-             * Update the zoom level of the map on mousewheel
-             */
-            options.map.zoom.enabled && options.map.zoom.mousewheel && $self.on("mousewheel", function(e) {
-                var offset = $container.offset(),
-                    initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : (Mapael.maps[options.map.name].width / $container.width())
-                    , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                    , zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step)
-                    , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $self.data("panX")
-                    , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $self.data("panY");
+            if (options.map.zoom.enabled) {
+	        /*
+	        * Update the zoom level of the map on mousewheel
+	        */
+                if (options.map.zoom.mousewheel) {
+                    $self.on("mousewheel", function(e) {
+                        var offset = $container.offset(),
+                            initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : (Mapael.maps[options.map.name].width / $container.width())
+                            , zoomLevel = (e.deltaY > 0) ? 1 : -1
+                            , zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step)
+                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $self.data("panX")
+                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $self.data("panY");
 
-                $self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
-                    
-                return false;
-            });
-
-            /*
-             * Update the zoom level of the map on touch pinch
-             */
-            options.map.zoom.enabled && options.map.zoom.touch && $self.on("touchstart", function(e) {
-                if (e.originalEvent.touches.length === 2) {
-                    zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
-                    zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
-                    previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
-                }
-            });
-
-            options.map.zoom.enabled && options.map.zoom.touch && $self.on("touchmove", function(e) {
-                var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
-
-                if (e.originalEvent.touches.length === 2) {
-                    pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
-
-                    if (Math.abs(pinchDist - previousPinchDist) > 15) {
-                        offset = $container.offset();
-                        initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : ($.fn.mapael.maps[options.map.name].width / $container.width());
-                        zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step);
-                        x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $self.data("panX");
-                        y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $self.data("panY");
-
-                        zoomLevel = (pinchDist - previousPinchDist) / Math.abs(pinchDist - previousPinchDist);
                         $self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
-                        previousPinchDist = pinchDist;
-                    }
-                    return false;
+                            
+                        return false;
+                    });
                 }
-            });
+                
+                /*
+                 * Update the zoom level of the map on touch pinch
+                 */
+                if (options.map.zoom.touch) {
+                    $self.on("touchstart", function(e) {
+                        if (e.originalEvent.touches.length === 2) {
+                            zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
+                            zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
+                            previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+                        }
+                    });
+		    
+                    $self.on("touchmove", function(e) {
+                        var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
 
-            // Enable zoom
-            if (options.map.zoom.enabled)
+                        if (e.originalEvent.touches.length === 2) {
+                            pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+
+                            if (Math.abs(pinchDist - previousPinchDist) > 15) {
+                                offset = $container.offset();
+                                initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : ($.fn.mapael.maps[options.map.name].width / $container.width());
+                                zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step);
+                                x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $self.data("panX");
+                                y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $self.data("panY");
+
+                                zoomLevel = (pinchDist - previousPinchDist) / Math.abs(pinchDist - previousPinchDist);
+                                $self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                                previousPinchDist = pinchDist;
+                            }
+                            return false;
+                        }
+                    });
+		}
+                // Enable zoom
                 Mapael.initZoom($container, paper, mapConf.width, mapConf.height, options.map.zoom);
+            }
             
             // Set initial zoom
             if (typeof options.map.zoom.init != "undefined") {
