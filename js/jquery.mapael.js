@@ -154,7 +154,7 @@
             /*
              * Update the zoom level of the map on mousewheel
              */
-            options.map.zoom.enabled && options.map.zoom.mousewheel && $self.on("mousewheel", function(e) {
+            options.map.zoom.enabled && options.map.zoom.mousewheel && $container.on("mousewheel", function(e) {
                 var offset = $container.offset(),
                     initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : (Mapael.maps[options.map.name].width / $container.width())
                     , zoomLevel = (e.deltaY > 0) ? 1 : -1
@@ -170,7 +170,7 @@
             /*
              * Update the zoom level of the map on touch pinch
              */
-            options.map.zoom.enabled && options.map.zoom.touch && $self.on("touchstart", function(e) {
+            options.map.zoom.enabled && options.map.zoom.touch && $container.on("touchstart", function(e) {
                 if (e.originalEvent.touches.length === 2) {
                     zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
                     zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
@@ -178,7 +178,7 @@
                 }
             });
 
-            options.map.zoom.enabled && options.map.zoom.touch && $self.on("touchmove", function(e) {
+            options.map.zoom.enabled && options.map.zoom.touch && $container.on("touchmove", function(e) {
                 var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
 
                 if (e.originalEvent.touches.length === 2) {
