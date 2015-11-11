@@ -294,7 +294,7 @@
                 } else if (deletedPlots === "all") {
                     $.each(plots, function(id, elem) {
                         fnRemoveElement(elem);
-                    }
+                    });
                     // Empty plots array
                     plots.length = 0;
                 }
@@ -311,7 +311,7 @@
                 } else if (typeof opt != "undefined" && opt.deletedLinks === "all") {
                     $.each(links, function(id, elem) {
                         fnRemoveElement(elem);
-                    }
+                    });
                     // Empty links array
                     links.length = 0;
                 }
