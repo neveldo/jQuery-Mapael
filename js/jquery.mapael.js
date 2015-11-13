@@ -1113,6 +1113,12 @@
             }
             
             $.each(elems, function(id) {
+                // Retreive stored data of element
+                //      'hidden-by' contains the list of legendIndex that is hiding this element 
+                var hiddenBy = elems[id].mapElem.data('hidden-by');
+                // Set to empty object if undefined
+                if (typeof hiddenBy == "undefined") hiddenBy = {};
+                
                 if ($.isArray(elems[id].value)) {
                     elemValue = elems[id].value[legendIndex];
                 } else {
@@ -1125,7 +1131,8 @@
                         && (typeof sliceOptions.max == "undefined" || elemValue <= sliceOptions.max))
                 ) {
                     (function(id) {
-                        if (hidden === '0') {
+                        if (hidden === '0') { // we want to hide this element
+                            hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
                             elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
                                 if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
                             });
@@ -1134,14 +1141,21 @@
                                     if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
                                 });
                             }
-                        } else {
-                            if (legendOptions.hideElemsOnClick.opacity === 0) {
-                                elems[id].mapElem.show();
-                                if (elems[id].textElem) elems[id].textElem.show();
+                        } else { // We want to show this element
+                            delete hiddenBy[legendIndex]; // Remove this legendIndex from object
+                            // Check if another legendIndex is defined
+                            // We will show this element only if no legend is no longer hiding it
+                            if ($.isEmptyObject(hiddenBy)) {
+                                if (legendOptions.hideElemsOnClick.opacity === 0) {
+                                    elems[id].mapElem.show();
+                                    if (elems[id].textElem) elems[id].textElem.show();
+                                }
+                                elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
+                                if (elems[id].textElem) elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
                             }
-                            elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
-                            if (elems[id].textElem) elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
                         }
+                        // Update elem data with new values
+                        elems[id].mapElem.data('hidden-by', hiddenBy);
                     })(id);
                 }
             });
