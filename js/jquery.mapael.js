@@ -295,8 +295,8 @@
                     $.each(plots, function(id, elem) {
                         fnRemoveElement(elem);
                     });
-                    // Empty plots array
-                    plots.length = 0;
+                    // Empty plots object
+                    plots = {};
                 }
 
                 // Delete links by name if deletedLinks is array
@@ -312,8 +312,8 @@
                     $.each(links, function(id, elem) {
                         fnRemoveElement(elem);
                     });
-                    // Empty links array
-                    links.length = 0;
+                    // Empty links object
+                    links = {};
                 }
                 
                 // New plots
