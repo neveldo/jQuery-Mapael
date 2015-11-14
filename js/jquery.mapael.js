@@ -943,6 +943,10 @@
             for(i = 0, length = legendOptions.slices.length; i < length; ++i) {
                 var current_yCenter = 0;
                 
+                // Check if size is defined. If not, take defaultPlot size
+                if (typeof legendOptions.slices[i].size == "undefined") 
+                    legendOptions.slices[i].size = options.map.defaultPlot.size;
+                
                 if (typeof legendOptions.slices[i].legendSpecificAttrs == "undefined")
                     legendOptions.slices[i].legendSpecificAttrs = {};
                     
