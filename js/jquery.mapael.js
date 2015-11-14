@@ -224,7 +224,7 @@
              * Refresh attributes and tooltips for areas and plots
              * @param updatedOptions options to update for plots and areas
              * @param newPlots new plots to add to the map
-             * @param deletedPlotsplots to delete from the map
+             * @param deletedPlots plots to delete from the map (array, or "all" to remove all plots)
              * @param opt option for the refresh :
              *  opt.animDuration animation duration in ms (default = 0)
              *  opt.resetAreas true to reset previous areas options
@@ -232,7 +232,7 @@
              *  opt.resetLinks true to reset previous links options
              *  opt.afterUpdate Hook that allows to add custom processing on the map
              *  opt.newLinks new links to add to the map
-             *  opt.deletedLinks links to remove from the map
+             *  opt.deletedLinks links to remove from the map (array, or "all" to remove all links)
              *  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
              */
             $self.on("update", function(e, updatedOptions, newPlots, deletedPlots, opt) {
@@ -286,7 +286,7 @@
                 
                 $.extend(true, options, updatedOptions);
 
-                // Delete plots
+                // Delete plots by name if deletedPlots is array
                 if (typeof deletedPlots == "object") {
                     for (;i < deletedPlots.length; i++) {
                         if (typeof plots[deletedPlots[i]] != "undefined") {
@@ -294,9 +294,16 @@
                             delete plots[deletedPlots[i]];
                         }
                     }
+                // Delete ALL plots if deletedPlots is set to "all"
+                } else if (deletedPlots === "all") {
+                    $.each(plots, function(id, elem) {
+                        fnRemoveElement(elem);
+                    });
+                    // Empty plots object
+                    plots = {};
                 }
 
-                // Delete links
+                // Delete links by name if deletedLinks is array
                 if (typeof opt != "undefined" && typeof opt.deletedLinks == "object") {
                     for (i = 0;i < opt.deletedLinks.length; i++) {
                         if (typeof links[opt.deletedLinks[i]] != "undefined") {
@@ -304,6 +311,13 @@
                             delete links[opt.deletedLinks[i]];
                         }
                     }
+                // Delete ALL links if deletedLinks is set to "all"
+                } else if (typeof opt != "undefined" && opt.deletedLinks === "all") {
+                    $.each(links, function(id, elem) {
+                        fnRemoveElement(elem);
+                    });
+                    // Empty links object
+                    links = {};
                 }
                 
                 // New plots
