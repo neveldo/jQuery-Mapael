@@ -239,7 +239,6 @@
                 var i = 0
                     , animDuration = 0
                     , elemOptions = {}
-                    , showlegendElems = true
                     // This function remove an element using animation (or not, depending on animDuration)
                     // Used for deletedPlots and deletedLinks
                     , fnRemoveElement = function(elem) {
@@ -270,12 +269,6 @@
                             elem.textElem.animate({"opacity": (typeof elem.textElem.originalAttrs.opacity != "undefined") ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
                         }
                     };
-                
-                // Set showlegendElems variable
-                // Keep default (true) if opt.setLegendElemsState not defined, or badly defined
-                if (typeof opt != "undefined" && typeof opt.setLegendElemsState === "string") {
-                    showlegendElems = (opt.setLegendElemsState === "hide") ? false : true;
-                }
                 
                 if (typeof opt != "undefined") {
                     if (opt.resetAreas) options.areas = {};
@@ -405,13 +398,36 @@
                 //      Toggle (i.e. click) only if:
                 //          - slice legend is shown AND we want to hide
                 //          - slice legend is hidden AND we want to show
-                $("[data-type='elem']", $(this)).each(function() {
-                    if (($(this).attr('data-hidden') === "0" && showlegendElems === false) || 
-                        ($(this).attr('data-hidden') === "1" && showlegendElems === true)) {
-                        // Toggle state of element by clicking
-                        $(this).trigger('click', [false, animDuration]);
-                    }
-                });
+                if (typeof opt != "undefined" && typeof opt.setLegendElemsState === "object") {
+                    // setLegendElemsState is an object listing the legend we want to hide/show
+                    var $container = $(this); // save this before each for use in callback
+                    $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
+                        // Search for the legend
+                        var $legend = $container.find("." + legendCSSClass)[0];
+                        if (typeof $legend !== "undefined") {
+                            // Select all elem inside this legend
+                            $("[data-type='elem']", $legend).each(function() {
+                                if (($(this).attr('data-hidden') === "0" && action === "hide") || 
+                                    ($(this).attr('data-hidden') === "1" && action === "show")) {
+                                    // Toggle state of element by clicking
+                                    $(this).trigger('click', [false, animDuration]);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    // setLegendElemsState is a string, or is undefined
+                    // Default : "show"
+                    var action = (typeof opt != "undefined" && opt.setLegendElemsState === "hide") ? "hide" : "show";
+                    
+                    $("[data-type='elem']", $(this)).each(function() {
+                        if (($(this).attr('data-hidden') === "0" && action === "hide") || 
+                            ($(this).attr('data-hidden') === "1" && action === "show")) {
+                            // Toggle state of element by clicking
+                            $(this).trigger('click', [false, animDuration]);
+                        }
+                    });
+                }
                 
                 if (typeof opt != "undefined" && opt.afterUpdate) 
                     opt.afterUpdate($self, paper, areas, plots, options);
