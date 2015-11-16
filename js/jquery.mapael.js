@@ -409,7 +409,7 @@
                     if (($(this).attr('data-hidden') === "0" && showlegendElems === false) || 
                         ($(this).attr('data-hidden') === "1" && showlegendElems === true)) {
                         // Toggle state of element by clicking
-                        $(this).trigger('click', false);
+                        $(this).trigger('click', [false, animDuration]);
                     }
                 });
                 
@@ -1119,15 +1119,18 @@
      * @param legendIndex index of the legend in the conf array
      */
     Mapael.handleClickOnLegendElem = function($container, legendOptions, sliceOptions, label, elem, elems, legendIndex) {
-        var hideMapElems = function(e, hideOtherElems) {
+        var hideMapElems = function(e, hideOtherElems, animDuration) {
             var elemValue = 0
                 , hidden = $(label.node).attr('data-hidden')
                 , hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
 
+            // Check animDuration: if not set, this is a regular click, use the value specified in options
+            if (typeof animDuration === "undefined") animDuration = legendOptions.hideElemsOnClick.animDuration;
+            
             if (hidden === '0') {
-                label.animate({"opacity":0.5}, legendOptions.hideElemsOnClick.animDuration);
+                label.animate({"opacity":0.5}, animDuration);
             } else {
-                label.animate({"opacity":1}, legendOptions.hideElemsOnClick.animDuration);
+                label.animate({"opacity":1}, animDuration);
             }
             
             $.each(elems, function(id) {
@@ -1151,11 +1154,11 @@
                     (function(id) {
                         if (hidden === '0') { // we want to hide this element
                             hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
-                            elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
+                            elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function() {
                                 if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
                             });
                             if (elems[id].textElem) {
-                                elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, legendOptions.hideElemsOnClick.animDuration, "linear", function() {
+                                elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function() {
                                     if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
                                 });
                             }
@@ -1168,8 +1171,8 @@
                                     elems[id].mapElem.show();
                                     if (elems[id].textElem) elems[id].textElem.show();
                                 }
-                                elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
-                                if (elems[id].textElem) elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, legendOptions.hideElemsOnClick.animDuration);
+                                elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, animDuration);
+                                if (elems[id].textElem) elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, animDuration);
                             }
                         }
                         // Update elem data with new values
