@@ -22,7 +22,7 @@
         // Browser globals
         factory(jQuery, Raphael, jQuery.fn.mousewheel);
     }
-}(function ($, Raphael, mousewheel) {
+}(function ($, Raphael, mousewheel) { // jshint ignore:line
 
     "use strict";
 
