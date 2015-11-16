@@ -777,7 +777,9 @@
                     $tooltip.attr("class", cssClass);
                     if (typeof elem.tooltip != "undefined") {
                         if (typeof elem.tooltip.content != "undefined") {
-                            $tooltip.html(elem.tooltip.content).css("display", "block");
+                            // if tooltip.content is function, call it. Otherwise, assign it directly.
+                            var content = (typeof elem.tooltip.content === "function")? elem.tooltip.content(elem) : elem.tooltip.content;
+                            $tooltip.html(content).css("display", "block");
                         }
                         if (typeof elem.tooltip.cssClass != "undefined") {
                             $tooltip.addClass(elem.tooltip.cssClass);
