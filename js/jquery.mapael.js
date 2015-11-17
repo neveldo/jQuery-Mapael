@@ -400,17 +400,16 @@
                 //          - slice legend is hidden AND we want to show
                 if (typeof opt != "undefined" && typeof opt.setLegendElemsState === "object") {
                     // setLegendElemsState is an object listing the legend we want to hide/show
-                    var $container = $(this); // save this before each for use in callback
                     $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
                         // Search for the legend
-                        var $legend = $container.find("." + legendCSSClass)[0];
+                        var $legend = $self.find("." + legendCSSClass)[0];
                         if (typeof $legend !== "undefined") {
                             // Select all elem inside this legend
-                            $("[data-type='elem']", $legend).each(function() {
-                                if (($(this).attr('data-hidden') === "0" && action === "hide") || 
-                                    ($(this).attr('data-hidden') === "1" && action === "show")) {
+                            $("[data-type='elem']", $legend).each(function(id, elem) {
+                                if (($(elem).attr('data-hidden') === "0" && action === "hide") || 
+                                    ($(elem).attr('data-hidden') === "1" && action === "show")) {
                                     // Toggle state of element by clicking
-                                    $(this).trigger('click', [false, animDuration]);
+                                    $(elem).trigger('click', [false, animDuration]);
                                 }
                             });
                         }
@@ -420,11 +419,11 @@
                     // Default : "show"
                     var action = (typeof opt != "undefined" && opt.setLegendElemsState === "hide") ? "hide" : "show";
                     
-                    $("[data-type='elem']", $(this)).each(function() {
-                        if (($(this).attr('data-hidden') === "0" && action === "hide") || 
-                            ($(this).attr('data-hidden') === "1" && action === "show")) {
+                    $("[data-type='elem']", $self).each(function(id, elem) {
+                        if (($(elem).attr('data-hidden') === "0" && action === "hide") || 
+                            ($(elem).attr('data-hidden') === "1" && action === "show")) {
                             // Toggle state of element by clicking
-                            $(this).trigger('click', [false, animDuration]);
+                            $(elem).trigger('click', [false, animDuration]);
                         }
                     });
                 }
