@@ -133,37 +133,34 @@
             $('#refresh').on('click', function () {
 
                 // Update some plots and areas attributes ...
-                var updatedOptions = {
-                            'areas': {},
-                            'plots': {},
-                            'links': {
-                                'parislyon': {
-                                    attrs: {
-                                        'stroke-width': 8
-                                        , 'stroke': 'red'
-                                    }
-                                }
-                            },
-
-                        }
-                        , opt = {
-                            animDuration: 1000,
-                            'deletedLinks': ['parisrennes'],
-                            'newLinks': {
-                                'renneslyon': {
-                                    factor: -0.5
-                                    , between: ['rennes', 'lyon']
-                                    , attrs: {
-                                        "stroke-width": 2
-                                    }
+                var opt = {
+                    mapOptions: {
+                        'areas': {},
+                        'plots': {},
+                        'links': {
+                            'parislyon': {
+                                attrs: {
+                                    'stroke-width': 8
+                                    , 'stroke': 'red'
                                 }
                             }
-                        };
+                        },
 
-                // and delete some others ...
-                var deletedPlots = ["paris", "lyon"];
+                    }, 
+                    animDuration: 1000,
+                    'deleteLinkKeys': ['parisrennes'],
+                    'newLinks': {
+                        'renneslyon': {
+                            factor: -0.5
+                            , between: ['rennes', 'lyon']
+                            , attrs: {
+                                "stroke-width": 2
+                            }
+                        }
+                    }
+                };
 
-                $(".mapcontainer").trigger('update', [updatedOptions, {}, [], opt]);
+                $(".mapcontainer").trigger('update', [opt]);
             });
         });
     </script>

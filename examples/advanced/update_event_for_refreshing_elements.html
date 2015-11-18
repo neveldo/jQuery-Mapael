@@ -192,7 +192,12 @@
                 // and delete some others ...
                 var deletedPlots = ["paris", "lyon"];
 
-                $(".mapcontainer").trigger('update', [updatedOptions, newPlots, deletedPlots, {animDuration: 1000}]);
+                $(".mapcontainer").trigger('update', [{
+                    mapOptions: updatedOptions, 
+                    newPlots: newPlots, 
+                    deletePlotKeys: deletedPlots,
+                    animDuration: 1000
+                }]);
             });
         });
     </script>

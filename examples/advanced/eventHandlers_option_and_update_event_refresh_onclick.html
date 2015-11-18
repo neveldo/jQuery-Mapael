@@ -119,7 +119,7 @@
                                         }
                                     };
                                 }
-                                $(".mapcontainer").trigger('update', [newData]);
+                                $(".mapcontainer").trigger('update', [{mapOptions: newData}]);
                             }
                         }
                     }
@@ -156,7 +156,7 @@
                                         }
                                     };
                                 }
-                                $(".mapcontainer").trigger('update', [newData, false, false, 0]);
+                                $(".mapcontainer").trigger('update', [{mapOptions: newData}]);
                             }
                         }
                     }
