@@ -234,7 +234,9 @@
              *  opt.afterUpdate Hook that allows to add custom processing on the map
              */
             $self.on("update", function(e, opt) {
-                if (typeof opt === "object") {
+                // Abort if opt is undefined
+                if (typeof opt !== "object")  return;
+                
                     var i = 0
                         , animDuration = (opt.animDuration) ? opt.animDuration : 0
                         , elemOptions = {}
@@ -426,7 +428,7 @@
                     }
 
                     if (opt.afterUpdate) opt.afterUpdate($self, paper, areas, plots, options);
-                }
+                
             });
             
             // Handle resizing of the map
