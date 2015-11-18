@@ -243,6 +243,8 @@
                     // This function remove an element using animation (or not, depending on animDuration)
                     // Used for deletedPlots and deletedLinks
                     , fnRemoveElement = function(elem) {
+                    	// Unset all event handlers
+                    	Mapael.unsetHover(elem.mapElem, elem.textElem);
                         if (animDuration > 0) {
                             elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
                                 elem.mapElem.remove();
@@ -1266,6 +1268,15 @@
         }
     };
     
+    /*
+     * Remove the hover behavior for plots and areas
+     * @param mapElem the map element
+     * @param textElem the optional text element (within the map element)
+     */
+    Mapael.unsetHover = function (mapElem, textElem) {
+        $(mapElem.node).off();
+        if (textElem) $(textElem.node).off();
+    };
     /*
      * Set he behaviour for "mouseover" event
      * @param paper paper Raphael paper object
