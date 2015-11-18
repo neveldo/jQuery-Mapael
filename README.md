@@ -12,7 +12,7 @@ For example, with Mapael, you can display a map of the world with clickable coun
 
 Mapael supports all modern browsers and Internet Explorer 9+. For older versions of IE, you can load jQuery 1.11.x and Raphael.js 2.1.2 as dependencies, most of the jQuery Mapael features should work fine.
 
-![Dataviz example](http://www.vincentbroute.fr/mapael/world-example.png)
+![Dataviz example](http://www.vincentbroute.fr/mapael/assets/img/world-example.png)
 [See this example !](http://www.vincentbroute.fr/mapael/usecases/world)
 
 ## Key features
