@@ -1,6 +1,6 @@
 # jQuery Mapael - Dynamic vector maps
 
-The complete documentation is available on [Mapael website](http://www.vincentbroute.fr/mapael).
+The complete documentation is available on [Mapael website](http://www.vincentbroute.fr/mapael) (repository:  ['neveldo/mapael-documentation'](https://github.com/neveldo/mapael-documentation)).
 
 Additional maps are stored in the repository ['neveldo/mapael-maps'](https://github.com/neveldo/mapael-maps).
 
@@ -74,7 +74,7 @@ Here is the simplest example that shows how to display an empty map of the world
 
 ## License
 
-Copyright (C) 2013-2015 [Vincent Brouté](http://www.vincentbroute.fr)
+Copyright (C) 2013-2015 [Vincent BroutÃ©](http://www.vincentbroute.fr)
 
 jQuery Mapael is licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
