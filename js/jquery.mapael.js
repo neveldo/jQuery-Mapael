@@ -43,6 +43,13 @@
         });
         
         return this.each(function() {
+            
+            // Avoid multiple instanciation
+            if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
+            
+            // Save instanciation on element
+            // This allow external access to Mapael using $(".mapcontainer").data("mapael")
+            $.data(this, pluginName, Mapael);
         
             var $self = $(this)
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none")
@@ -58,7 +65,7 @@
                 , zoomCenterY = 0
                 , previousPinchDist = 0;
                 
-	    // add plugin class name on element
+            // add plugin class name on element
             $self.addClass(pluginName);
             
             if (options.map.tooltip.css) $tooltip.css(options.map.tooltip.css);
