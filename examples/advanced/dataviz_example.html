@@ -15428,7 +15428,10 @@
             // Knob initialisation (for selecting a year)
             $(".knob").knob({
                 release: function (value) {
-                    $(".world").trigger('update', [data[value], {}, {}, {animDuration: 300}]);
+                    $(".world").trigger('update', [{
+                        mapOptions: data[value],
+                        animDuration: 300
+                    }]);
                 }
             });
 

@@ -222,28 +222,29 @@
              *
              * Update the current map
              * Refresh attributes and tooltips for areas and plots
-             * @param updatedOptions options to update for plots and areas
-             * @param newPlots new plots to add to the map
-             * @param deletedPlots plots to delete from the map (array, or "all" to remove all plots)
              * @param opt option for the refresh :
-             *  opt.animDuration animation duration in ms (default = 0)
-             *  opt.resetAreas true to reset previous areas options
-             *  opt.resetPlots true to reset previous plots options
-             *  opt.resetLinks true to reset previous links options
-             *  opt.afterUpdate Hook that allows to add custom processing on the map
+             *  opt.mapOptions: options to update for plots and areas
+             *  opt.replaceOptions: whether mapsOptions should entirely replace current map options, or just extend it
+             *  opt.opt.newPlots new plots to add to the map
              *  opt.newLinks new links to add to the map
-             *  opt.deletedLinks links to remove from the map (array, or "all" to remove all links)
+             *  opt.deletePlotKeys plots to delete from the map (array, or "all" to remove all plots)
+             *  opt.deleteLinkKeys links to remove from the map (array, or "all" to remove all links)
              *  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
+             *  opt.animDuration animation duration in ms (default = 0)
+             *  opt.afterUpdate Hook that allows to add custom processing on the map
              */
-            $self.on("update", function(e, updatedOptions, newPlots, deletedPlots, opt) {
+            $self.on("update", function(e, opt) {
+                // Abort if opt is undefined
+                if (typeof opt !== "object")  return;
+            
                 var i = 0
-                    , animDuration = 0
+                    , animDuration = (opt.animDuration) ? opt.animDuration : 0
                     , elemOptions = {}
                     // This function remove an element using animation (or not, depending on animDuration)
-                    // Used for deletedPlots and deletedLinks
+                    // Used for deletePlotKeys and deleteLinkKeys
                     , fnRemoveElement = function(elem) {
-                    	// Unset all event handlers
-                    	Mapael.unsetHover(elem.mapElem, elem.textElem);
+                        // Unset all event handlers
+                        Mapael.unsetHover(elem.mapElem, elem.textElem);
                         if (animDuration > 0) {
                             elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
                                 elem.mapElem.remove();
@@ -271,26 +272,22 @@
                             elem.textElem.animate({"opacity": (typeof elem.textElem.originalAttrs.opacity != "undefined") ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
                         }
                     };
-                
-                if (typeof opt != "undefined") {
-                    if (opt.resetAreas) options.areas = {};
-                    if (opt.resetPlots) options.plots = {};
-                    if (opt.resetLinks) options.links = {};
-                    if (opt.animDuration) animDuration = opt.animDuration;
-                }
-                
-                $.extend(true, options, updatedOptions);
 
-                // Delete plots by name if deletedPlots is array
-                if (typeof deletedPlots == "object") {
-                    for (;i < deletedPlots.length; i++) {
-                        if (typeof plots[deletedPlots[i]] != "undefined") {
-                            fnRemoveElement(plots[deletedPlots[i]]);
-                            delete plots[deletedPlots[i]];
+                if (typeof opt.mapOptions === "object") {
+                    if (opt.replaceOptions === true) options = opt.mapOptions;
+                    else $.extend(true, options, opt.mapOptions);
+                }
+
+                // Delete plots by name if deletePlotKeys is array
+                if (typeof opt.deletePlotKeys === "object") {
+                    for (;i < opt.deletePlotKeys.length; i++) {
+                        if (typeof plots[opt.deletePlotKeys[i]] != "undefined") {
+                            fnRemoveElement(plots[opt.deletePlotKeys[i]]);
+                            delete plots[opt.deletePlotKeys[i]];
                         }
                     }
-                // Delete ALL plots if deletedPlots is set to "all"
-                } else if (deletedPlots === "all") {
+                // Delete ALL plots if deletePlotKeys is set to "all"
+                } else if (opt.deletePlotKeys === "all") {
                     $.each(plots, function(id, elem) {
                         fnRemoveElement(elem);
                     });
@@ -298,28 +295,28 @@
                     plots = {};
                 }
 
-                // Delete links by name if deletedLinks is array
-                if (typeof opt != "undefined" && typeof opt.deletedLinks == "object") {
-                    for (i = 0;i < opt.deletedLinks.length; i++) {
-                        if (typeof links[opt.deletedLinks[i]] != "undefined") {
-                            fnRemoveElement(links[opt.deletedLinks[i]]);
-                            delete links[opt.deletedLinks[i]];
+                // Delete links by name if deleteLinkKeys is array
+                if (typeof opt.deleteLinkKeys === "object") {
+                    for (i = 0;i < opt.deleteLinkKeys.length; i++) {
+                        if (typeof links[opt.deleteLinkKeys[i]] != "undefined") {
+                            fnRemoveElement(links[opt.deleteLinkKeys[i]]);
+                            delete links[opt.deleteLinkKeys[i]];
                         }
                     }
-                // Delete ALL links if deletedLinks is set to "all"
-                } else if (typeof opt != "undefined" && opt.deletedLinks === "all") {
+                // Delete ALL links if deleteLinkKeys is set to "all"
+                } else if (opt.deleteLinkKeys === "all") {
                     $.each(links, function(id, elem) {
                         fnRemoveElement(elem);
                     });
                     // Empty links object
                     links = {};
                 }
-                
+
                 // New plots
-                if (typeof newPlots == "object") {
-                    $.each(newPlots, function(id) {
+                if (typeof opt.newPlots === "object") {
+                    $.each(opt.newPlots, function(id) {
                         if (typeof plots[id] == "undefined") {
-                            options.plots[id] = newPlots[id];
+                            options.plots[id] = opt.newPlots[id];
                             plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
                             if (animDuration > 0) {
                                 fnShowElement(plots[id]);
@@ -329,7 +326,7 @@
                 }
 
                 // New links
-                if (typeof opt != "undefined" && typeof opt.newLinks == "object") {
+                if (typeof opt.newLinks === "object") {
                     var newLinks = Mapael.drawLinksCollection(paper, options, opt.newLinks, mapConf.getCoords, $tooltip);
                     $.extend(links, newLinks);
                     $.extend(options.links, opt.newLinks);
@@ -347,10 +344,10 @@
                         , (options.areas[id] ? options.areas[id] : {})
                         , options.legend.area
                     );
-                    
+
                     Mapael.updateElem(elemOptions, areas[id], $tooltip, animDuration);
                 });
-                
+
                 // Update plots attributes and tooltips
                 $.each(plots, function(id) {
                     elemOptions = Mapael.getElemOptions(
@@ -371,7 +368,7 @@
                     } else { // Default : circle
                         elemOptions.attrs.r = elemOptions.size / 2;
                     }
-                    
+
                     Mapael.updateElem(elemOptions, plots[id], $tooltip, animDuration);
                 });
 
@@ -382,12 +379,12 @@
                         , (options.links[id] ? options.links[id] : {})
                         , {}
                     );
-                    
+
                     Mapael.updateElem(elemOptions, links[id], $tooltip, animDuration);
                 });
-                
+
                 // Update legends
-                if (typeof updatedOptions != "undefined" && typeof updatedOptions.legend === "object") {
+                if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
                     Mapael.createLegends($self, options, "area", areas, 1);
                     if (options.map.width) {
                         Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
@@ -395,12 +392,12 @@
                         Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width));
                     }
                 }
-                
+
                 // Hide/Show all elements based on showlegendElems
                 //      Toggle (i.e. click) only if:
                 //          - slice legend is shown AND we want to hide
                 //          - slice legend is hidden AND we want to show
-                if (typeof opt != "undefined" && typeof opt.setLegendElemsState === "object") {
+                if (typeof opt.setLegendElemsState === "object") {
                     // setLegendElemsState is an object listing the legend we want to hide/show
                     $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
                         // Search for the legend
@@ -419,8 +416,8 @@
                 } else {
                     // setLegendElemsState is a string, or is undefined
                     // Default : "show"
-                    var action = (typeof opt != "undefined" && opt.setLegendElemsState === "hide") ? "hide" : "show";
-                    
+                    var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
+
                     $("[data-type='elem']", $self).each(function(id, elem) {
                         if (($(elem).attr('data-hidden') === "0" && action === "hide") || 
                             ($(elem).attr('data-hidden') === "1" && action === "show")) {
@@ -429,9 +426,9 @@
                         }
                     });
                 }
-                
-                if (typeof opt != "undefined" && opt.afterUpdate) 
-                    opt.afterUpdate($self, paper, areas, plots, options);
+
+                if (opt.afterUpdate) opt.afterUpdate($self, paper, areas, plots, options);
+            
             });
             
             // Handle resizing of the map
