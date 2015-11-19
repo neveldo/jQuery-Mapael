@@ -27,10 +27,10 @@
     "use strict";
 
     var Mapael = function(options) {
-    
+
         // Extend legend default options with user options
         options = $.extend(true, {}, Mapael.defaultOptions, options);
-        
+
         $.each(options.legend, function(type) {
             if ($.isArray(options.legend[type])) {
                 for (var i = 0; i < options.legend[type].length; ++i)
@@ -39,9 +39,9 @@
                 options.legend[type] = $.extend(true, {}, Mapael.legendDefaultOptions[type], options.legend[type]);
             }
         });
-        
+
         return this.each(function() {
-        
+
             var $self = $(this)
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none")
                 , $container = $("." + options.map.cssClass, this).empty().append($tooltip)
@@ -55,10 +55,10 @@
                 , zoomCenterX = 0
                 , zoomCenterY = 0
                 , previousPinchDist = 0;
-            
+
             if (options.map.tooltip.css) $tooltip.css(options.map.tooltip.css);
             paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
-            
+
             // Draw map areas
             $.each(mapConf.elems, function(id) {
                 elemOptions = Mapael.getElemOptions(
@@ -71,7 +71,7 @@
 
             // Hook that allows to add custom processing on the map
             if (options.map.beforeInit) options.map.beforeInit($self, paper, options);
-            
+
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(mapConf.elems, function(id) {
                 elemOptions = Mapael.getElemOptions(
@@ -110,13 +110,13 @@
                     , offsetX = 0
                     , offsetY = 0
                     , coords = {};
-                
+
                 if (typeof zoomOptions.latitude != "undefined" && typeof zoomOptions.longitude != "undefined") {
                     coords = mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
                     zoomOptions.x = coords.x;
                     zoomOptions.y = coords.y;
                 }
-                
+
                 if (typeof zoomOptions.x == "undefined")
                     zoomOptions.x = paper._viewBox[0] + paper._viewBox[2] / 2;
 
@@ -129,7 +129,7 @@
                 } else if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter === true) {
                     offsetX = $self.data("panX") + ((zoomOptions.x - $self.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
                     offsetY = $self.data("panY") + ((zoomOptions.y - $self.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                
+
                     panX = Math.min(Math.max(0, offsetX), (mapConf.width - (mapConf.width / zoomLevel)));
                     panY = Math.min(Math.max(0, offsetY), (mapConf.height - (mapConf.height / zoomLevel)));
                 } else {
@@ -165,11 +165,11 @@
                             , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $self.data("panY");
 
                         $self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
-                            
+
                         return false;
                     });
                 }
-                
+
                 /*
                  * Update the zoom level of the map on touch pinch
                  */
@@ -206,7 +206,7 @@
                 // Enable zoom
                 Mapael.initZoom($container, paper, mapConf.width, mapConf.height, options.map.zoom);
             }
-            
+
             // Set initial zoom
             if (typeof options.map.zoom.init != "undefined") {
                 if (typeof options.map.zoom.init.animDuration == "undefined") {
@@ -214,10 +214,10 @@
                 }
                 $self.trigger("zoom", options.map.zoom.init);
             }
-            
+
             // Create the legends for areas
             Mapael.createLegends($self, options, "area", areas, 1);
-                
+
             /*
              *
              * Update the current map
@@ -405,7 +405,7 @@
                         if (typeof $legend !== "undefined") {
                             // Select all elem inside this legend
                             $("[data-type='elem']", $legend).each(function(id, elem) {
-                                if (($(elem).attr('data-hidden') === "0" && action === "hide") || 
+                                if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                                     ($(elem).attr('data-hidden') === "1" && action === "show")) {
                                     // Toggle state of element by clicking
                                     $(elem).trigger('click', [false, animDuration]);
@@ -419,22 +419,20 @@
                     var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
 
                     $("[data-type='elem']", $self).each(function(id, elem) {
-                        if (($(elem).attr('data-hidden') === "0" && action === "hide") || 
+                        if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                             ($(elem).attr('data-hidden') === "1" && action === "show")) {
                             // Toggle state of element by clicking
                             $(elem).trigger('click', [false, animDuration]);
                         }
                     });
                 }
-
                 if (opt.afterUpdate) opt.afterUpdate($self, paper, areas, plots, options);
-            
             });
-            
+
             // Handle resizing of the map
             if (options.map.width) {
                 paper.setSize(options.map.width, mapConf.height * (options.map.width / mapConf.width));
-                
+
                 // Create the legends for plots taking into account the scale of the map
                 Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
             } else {
@@ -442,14 +440,14 @@
                     clearTimeout(resizeTO);
                     resizeTO = setTimeout(function(){$container.trigger("resizeEnd");}, 150);
                 });
-                
+
                 // Create the legends for plots taking into account the scale of the map
                 var createPlotLegend = function() {
                     Mapael.createLegends($self, options, "plot", plots, ($container.width() / mapConf.width));
-                    
+
                     $container.unbind("resizeEnd", createPlotLegend);
                 };
-                
+
                 $container.on("resizeEnd", function() {
                     var containerWidth = $container.width();
                     if (paper.width != containerWidth) {
@@ -457,10 +455,10 @@
                     }
                 }).on("resizeEnd", createPlotLegend).trigger("resizeEnd");
             }
-            
+
             // Hook that allows to add custom processing on the map
             if (options.map.afterInit) options.map.afterInit($self, paper, areas, plots, options);
-            
+
             $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         });
     };
@@ -472,7 +470,7 @@
     Mapael.version = '1.1.0';
 
     Mapael.zoomTO = 0;
-    
+
     /*
      * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
      */
@@ -480,10 +478,10 @@
         var bbox = {}, textPosition = {};
         if (typeof options.value != "undefined")
             elem.value = options.value;
-        
+
         // Init attrsHover
         Mapael.setHoverOptions(elem.mapElem, options.attrs, options.attrsHover);
-        
+
         // Init the label related to the element
         if (options.text && typeof options.text.content != "undefined") {
             // Set a text label in the area
@@ -499,34 +497,34 @@
             if (options.eventHandlers) Mapael.setEventHandlers(id, options, elem.mapElem);
             Mapael.setHover(paper, elem.mapElem);
         }
-        
+
         // Init the tooltip
         if (options.tooltip) {
             elem.mapElem.tooltip = options.tooltip;
             Mapael.setTooltip(elem.mapElem, $tooltip);
-            
+
             if (options.text && typeof options.text.content != "undefined") {
                 elem.textElem.tooltip = options.tooltip;
                 Mapael.setTooltip(elem.textElem, $tooltip);
             }
         }
-        
+
         // Init the link
         if (options.href) {
             elem.mapElem.href = options.href;
             elem.mapElem.target = options.target;
             Mapael.setHref(elem.mapElem);
-            
+
             if (options.text && typeof options.text.content != "undefined") {
                 elem.textElem.href = options.href;
                 elem.textElem.target = options.target;
                 Mapael.setHref(elem.textElem);
             }
         }
-        
+
         $(elem.mapElem.node).attr("data-id", id);
     };
-    
+
     /*
      * Draw all links between plots on the paper
      */
@@ -540,7 +538,7 @@
 
         $.each(linksCollection, function(id) {
             elemOptions = Mapael.getElemOptions(options.map.defaultLink, linksCollection[id], {});
-            
+
             if (typeof linksCollection[id].between[0] == 'string') {
                 p1 = options.plots[linksCollection[id].between[0]];
             } else {
@@ -570,22 +568,22 @@
         });
         return links;
     };
-    
+
     /*
      * Draw a curved link between two couples of coordinates a(xa,ya) and b(xb, yb) on the paper
      */
     Mapael.drawLink = function(id, paper, xa, ya, xb, yb, elemOptions, $tooltip) {
         var elem = {}
-        
+
             // Compute the "curveto" SVG point, d(x,y)
             // c(xc, yc) is the center of (xa,ya) and (xb, yb)
             , xc = (xa + xb) / 2
              , yc = (ya + yb) / 2
-                
+
              // Equation for (cd) : y = acd * x + bcd (d is the cure point)
              , acd = - 1 / ((yb - ya) / (xb - xa))
              , bcd = yc - acd * xc
-        
+
              // dist(c,d) = dist(a,b) (=abDist)
              , abDist = Math.sqrt((xb-xa)*(xb-xa) + (yb-ya)*(yb-ya))
 
@@ -601,7 +599,7 @@
              , delta = b*b - 4*a*c
              , x = 0
              , y = 0;
-        
+
         // There are two solutions, we choose one or the other depending on the sign of the factor
         if (elemOptions.factor > 0) {
              x = (-b + Math.sqrt(delta)) / (2*a);
@@ -613,7 +611,7 @@
 
         elem.mapElem = paper.path("m "+xa+","+ya+" C "+x+","+y+" "+xb+","+yb+" "+xb+","+yb+"").attr(elemOptions.attrs);
         Mapael.initElem(paper, elem, elemOptions, $tooltip, id);
-        
+
         return elem;
     };
 
@@ -654,14 +652,14 @@
                 } else
                     elem.textElem.attr({x : textPosition.x, y : textPosition.y, "text-anchor" : textPosition.textAnchor});
             }
-            
+
             Mapael.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
             if (animDuration > 0)
                 elem.textElem.animate(elemOptions.text.attrs, animDuration);
             else
                 elem.textElem.attr(elemOptions.text.attrs);
         }
-        
+
         // Update elements attrs and attrsHover
         Mapael.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
         if (animDuration > 0)
@@ -683,7 +681,7 @@
             elem.mapElem.tooltip = elemOptions.tooltip;
             if (elem.textElem) elem.textElem.tooltip = elemOptions.tooltip;
         }
-        
+
         // Update the link
         if (typeof elemOptions.href != "undefined") {
             if (typeof elem.mapElem.href == "undefined") {
@@ -698,7 +696,7 @@
             }
         }
     };
-    
+
     /*
      * Draw the plot
      */
@@ -710,12 +708,12 @@
                 , (options.plots[id] ? options.plots[id] : {})
                 , options.legend.plot
             );
-        
+
         if (typeof elemOptions.x != "undefined" && typeof elemOptions.y != "undefined")
             coords = {x : elemOptions.x, y : elemOptions.y};
         else
             coords = mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
-        
+
         if (elemOptions.type == "square") {
             plot = {"mapElem" : paper.rect(
                 coords.x - (elemOptions.size / 2)
@@ -741,11 +739,11 @@
         } else { // Default = circle
             plot = {"mapElem" : paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
         }
-        
+
         Mapael.initElem(paper, plot, elemOptions, $tooltip, id);
         return plot;
     };
-    
+
     /*
      * Set target link on elem
      */
@@ -756,7 +754,7 @@
                 window.open(elem.href, elem.target);
         });
     };
-    
+
     /*
      * Set a tooltip for the areas and plots
      * @param elem area or plot element
@@ -784,7 +782,7 @@
 
                 $tooltip.css(tooltipPosition);
             };
-    
+
         $(elem.node).on("mouseover", function(e) {
             tooltipTO = setTimeout(
                 function() {
@@ -797,7 +795,7 @@
                         }
                         if (typeof elem.tooltip.cssClass != "undefined") {
                             $tooltip.addClass(elem.tooltip.cssClass);
-                        } 
+                        }
                     }
                     updateTooltipPosition(e.pageX, e.pageY);
                 }
@@ -810,7 +808,7 @@
             updateTooltipPosition(e.pageX, e.pageY);
         });
     };
-    
+
     /*
      * Set user defined handlers for events on areas and plots
      * @param id the id of the element
@@ -832,10 +830,10 @@
             })(event);
         });
     };
-    
+
     Mapael.panning = false;
     Mapael.panningTO = 0;
-    
+
     /*
      * Init zoom and panning for the map
      * @param $container
@@ -851,20 +849,20 @@
             , mousedown = false
             , previousX = 0
             , previousY = 0;
-        
+
         // Zoom
         $parentContainer.data("zoomLevel", 0).data({"panX" : 0, "panY" : 0});
         $container.append($zoomIn).append($zoomOut);
-        
+
         $zoomIn.on("click", function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") + 1});});
         $zoomOut.on("click", function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") - 1});});
-        
+
         // Panning
         $("body").on("mouseup" + (options.touch ? " touchend" : ""), function() {
             mousedown = false;
             setTimeout(function () {Mapael.panning = false;}, 50);
         });
-        
+
         $container.on("mousedown" + (options.touch ? " touchstart" : ""), function(e) {
             if (typeof e.pageX !== 'undefined') {
                 mousedown = true;
@@ -898,11 +896,11 @@
                 var offsetX = (previousX - pageX) / (1 + (currentLevel * options.step)) * (mapWidth / paper.width)
                     , offsetY = (previousY - pageY) / (1 + (currentLevel * options.step)) * (mapHeight / paper.height)
                     , panX = Math.min(Math.max(0, paper._viewBox[0] + offsetX), (mapWidth - paper._viewBox[2]))
-                    , panY = Math.min(Math.max(0, paper._viewBox[1] + offsetY), (mapHeight - paper._viewBox[3]));                    
-                
+                    , panY = Math.min(Math.max(0, paper._viewBox[1] + offsetY), (mapHeight - paper._viewBox[3]));
+
                 if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
                     $parentContainer.data({"panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
-                    
+
                     paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
 
                     clearTimeout(Mapael.panningTO);
@@ -916,7 +914,7 @@
             }
         });
     };
-    
+
     /*
      * Draw a legend for areas and / or plots
      * @param legendOptions options for the legend to draw
@@ -941,38 +939,38 @@
             , yCenter = 0
             , sliceAttrs = []
             , length = 0;
-                
+
             $legend = $("." + legendOptions.cssClass, $container).empty();
             paper = new Raphael($legend.get(0));
             height = width = 0;
-            
+
             // Set the title of the legend
             if(legendOptions.title && legendOptions.title !== "") {
                 title = paper.text(legendOptions.marginLeftTitle, 0, legendOptions.title).attr(legendOptions.titleAttrs);
                 title.attr({y : 0.5 * title.getBBox().height});
-                    
+
                 width = legendOptions.marginLeftTitle + title.getBBox().width;
                 height += legendOptions.marginBottomTitle + title.getBBox().height;
             }
-            
+
             // Calculate attrs (and width, height and r (radius)) for legend elements, and yCenter for horizontal legends
             for(i = 0, length = legendOptions.slices.length; i < length; ++i) {
                 var current_yCenter = 0;
-                
+
                 // Check if size is defined. If not, take defaultPlot size
-                if (typeof legendOptions.slices[i].size == "undefined") 
+                if (typeof legendOptions.slices[i].size == "undefined")
                     legendOptions.slices[i].size = options.map.defaultPlot.size;
-                
+
                 if (typeof legendOptions.slices[i].legendSpecificAttrs == "undefined")
                     legendOptions.slices[i].legendSpecificAttrs = {};
-                    
+
                 sliceAttrs[i] = $.extend(
                     {}
                     , (legendType == "plot") ? options.map.defaultPlot.attrs : options.map.defaultArea.attrs
                     , legendOptions.slices[i].attrs
                     , legendOptions.slices[i].legendSpecificAttrs
                 );
-            
+
                 if (legendType == "area") {
                     if (typeof sliceAttrs[i].width == "undefined")
                         sliceAttrs[i].width = 30;
@@ -992,7 +990,7 @@
                     if (typeof sliceAttrs[i].r == "undefined")
                         sliceAttrs[i].r = legendOptions.slices[i].size / 2;
                 }
-                
+
                 // Compute yCenter for this legend slice
                 current_yCenter = legendOptions.marginBottomTitle;
                 // Add title height if it exists
@@ -1000,18 +998,18 @@
                     current_yCenter += title.getBBox().height;
                 }
                 if(legendType == "plot" && (typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle")) {
-                    current_yCenter += scale * sliceAttrs[i].r;    
+                    current_yCenter += scale * sliceAttrs[i].r;
                 } else {
                     current_yCenter += scale * sliceAttrs[i].height/2;
                 }
                 // Update yCenter if current larger
                 yCenter = Math.max(yCenter, current_yCenter);
             }
-                
+
             if (legendOptions.mode == "horizontal") {
                 width = legendOptions.marginLeft;
             }
-            
+
             // Draw legend elements (circle, square or image in vertical or horizontal mode)
             for(i = 0, length = legendOptions.slices.length; i < length; ++i) {
                 if (typeof legendOptions.slices[i].display == "undefined" || legendOptions.slices[i].display === true) {
@@ -1023,9 +1021,9 @@
                             x = legendOptions.marginLeft;
                             y = height;
                         }
-                        
+
                         elem = paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
-                    } else if(legendOptions.slices[i].type == "square") {                    
+                    } else if(legendOptions.slices[i].type == "square") {
                         if (legendOptions.mode == "horizontal") {
                             x = width + legendOptions.marginLeft;
                             y = yCenter - (0.5 * scale * sliceAttrs[i].height);
@@ -1033,10 +1031,10 @@
                             x = legendOptions.marginLeft;
                             y = height;
                         }
-                        
+
                         elem = paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
-                            
-                    } else if(legendOptions.slices[i].type == "image" || legendOptions.slices[i].type == "svg") {                    
+
+                    } else if(legendOptions.slices[i].type == "image" || legendOptions.slices[i].type == "svg") {
                         if (legendOptions.mode == "horizontal") {
                             x = width + legendOptions.marginLeft;
                             y = yCenter - (0.5 * scale * sliceAttrs[i].height);
@@ -1062,7 +1060,7 @@
                         }
                         elem = paper.circle(x, y, scale * (sliceAttrs[i].r));
                     }
-                    
+
                     // Set attrs to the element drawn above
                     delete sliceAttrs[i].width;
                     delete sliceAttrs[i].height;
@@ -1078,9 +1076,9 @@
                         x = legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel;
                         y = height + (elemBBox.height / 2);
                     }
-                    
+
                     label = paper.text(x, y, legendOptions.slices[i].label).attr(legendOptions.labelAttrs);
-                    
+
                     // Update the width and height for the paper
                     if (legendOptions.mode == "horizontal") {
                         var current_height = legendOptions.marginBottom + elemBBox.height;
@@ -1097,16 +1095,16 @@
                         width = Math.max(width, legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width);
                         height += legendOptions.marginBottom + elemBBox.height;
                     }
-                    
+
                     $(elem.node).attr({"data-type": "elem", "data-index": i, "data-hidden": 0});
                     $(label.node).attr({"data-type": "label", "data-index": i, "data-hidden": 0});
-                    
+
                     // Hide map elements when the user clicks on a legend item
                     if (legendOptions.hideElemsOnClick.enabled) {
                         // Hide/show elements when user clicks on a legend element
                         label.attr({cursor:"pointer"});
                         elem.attr({cursor:"pointer"});
-                        
+
                         Mapael.setHoverOptions(elem, sliceAttrs[i], sliceAttrs[i]);
                         Mapael.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
                         Mapael.setHover(paper, elem, label);
@@ -1114,16 +1112,16 @@
                     }
                 }
             }
-        
+
             // VMLWidth option allows you to set static width for the legend
             // only for VML render because text.getBBox() returns wrong values on IE6/7
             if (Raphael.type != "SVG" && legendOptions.VMLWidth)
                 width = legendOptions.VMLWidth;
-            
+
             paper.setSize(width, height);
             return paper;
     };
-    
+
     /*
      * Allow to hide elements of the map when the user clicks on a related legend item
      * @param $container the map container
@@ -1142,26 +1140,26 @@
 
             // Check animDuration: if not set, this is a regular click, use the value specified in options
             if (typeof animDuration === "undefined") animDuration = legendOptions.hideElemsOnClick.animDuration;
-            
+
             if (hidden === '0') {
                 label.animate({"opacity":0.5}, animDuration);
             } else {
                 label.animate({"opacity":1}, animDuration);
             }
-            
+
             $.each(elems, function(id) {
                 // Retreive stored data of element
-                //      'hidden-by' contains the list of legendIndex that is hiding this element 
+                //      'hidden-by' contains the list of legendIndex that is hiding this element
                 var hiddenBy = elems[id].mapElem.data('hidden-by');
                 // Set to empty object if undefined
                 if (typeof hiddenBy == "undefined") hiddenBy = {};
-                
+
                 if ($.isArray(elems[id].value)) {
                     elemValue = elems[id].value[legendIndex];
                 } else {
                     elemValue = elems[id].value;
                 }
-                
+
                 if ((typeof sliceOptions.sliceValue != "undefined" && elemValue == sliceOptions.sliceValue)
                     || ((typeof sliceOptions.sliceValue == "undefined")
                         && (typeof sliceOptions.min == "undefined" || elemValue >= sliceOptions.min)
@@ -1200,7 +1198,7 @@
             $(elem.node).attr(hiddenNewAttr);
             $(label.node).attr(hiddenNewAttr);
 
-            if ((typeof hideOtherElems === "undefined" || hideOtherElems === true) 
+            if ((typeof hideOtherElems === "undefined" || hideOtherElems === true)
                 && typeof legendOptions.exclusive !== "undefined" && legendOptions.exclusive === true
             ) {
                 $("[data-type='elem'][data-hidden=0]", $container).each(function() {
@@ -1217,7 +1215,7 @@
             $(elem.node).trigger('click', false);
         }
     };
-    
+
     /*
      * Create all legends for a specified type (area or plot)
      * @param $container the map container
@@ -1232,7 +1230,7 @@
         if (!$.isArray(options.legend[legendType])) {
             legendsOptions = [options.legend[legendType]];
         }
-        
+
         for (var j = 0; j < legendsOptions.length; ++j) {
             if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
                 legends.push(Mapael.drawLegend(legendsOptions[j], $container, options, legendType, elems, scale, j));
@@ -1240,7 +1238,7 @@
         }
         return legends;
     };
-    
+
     /*
     * Set the attributes on hover and the attributes to restore for a map element
      * @param elem the map element
@@ -1251,11 +1249,11 @@
         // Disable transform option on hover for VML (IE<9) because of several bugs
         if (Raphael.type != "SVG") delete attrsHover.transform;
         elem.attrsHover = attrsHover;
-        
+
         if (elem.attrsHover.transform) elem.originalAttrs = $.extend({transform : "s1"}, originalAttrs);
         else elem.originalAttrs = originalAttrs;
     };
-    
+
     /*
      * Set the hover behavior (mouseover & mouseout) for plots and areas
      * @param paper Raphael paper object
@@ -1268,18 +1266,18 @@
             , hoverTO = 0
             , overBehaviour = function() {hoverTO = setTimeout(function () {Mapael.elemHover(paper, mapElem, textElem);}, 120);}
             , outBehaviour = function () {clearTimeout(hoverTO);Mapael.elemOut(paper, mapElem, textElem);};
-            
+
         $mapElem = $(mapElem.node);
         $mapElem.on("mouseover", overBehaviour);
         $mapElem.on("mouseout", outBehaviour);
-        
+
         if (textElem) {
             $textElem = $(textElem.node);
             $textElem.on("mouseover", overBehaviour);
             $(textElem.node).on("mouseout", outBehaviour);
         }
     };
-    
+
     /*
      * Remove the hover behavior for plots and areas
      * @param mapElem the map element
@@ -1301,7 +1299,7 @@
         // workaround for older version of Raphael
         if (paper.safari) paper.safari();
     };
-    
+
     /*
      * Set he behaviour for "mouseout" event
      * @param paper Raphael paper object
@@ -1314,7 +1312,7 @@
         // workaround for older version of Raphael
         if (paper.safari) paper.safari();
     };
-    
+
     /*
      * Get element options by merging default options, element options and legend options
      * @param defaultOptions
@@ -1334,7 +1332,7 @@
         }
         return options;
     };
-    
+
     /*
      * Get the coordinates of the text relative to a bbox and a position
      * @param bbox the boundary box of the element
@@ -1344,7 +1342,7 @@
         var textX = 0
             , textY = 0
             , textAnchor = "";
-            
+
         switch (textPosition) {
             case "bottom" :
                 textX = (bbox.x + bbox.x2) / 2;
@@ -1373,7 +1371,7 @@
         }
         return {"x" : textX, "y" : textY, "textAnchor" : textAnchor};
     };
-    
+
     /*
      * Get the legend conf matching with the value
      * @param value the value to match with a slice in the legend
@@ -1426,7 +1424,7 @@
         easingFormula = Raphael.easing_formulas[easingFunction];
 
         clearInterval(Mapael.animationIntervalID);
-     
+
         Mapael.animationIntervalID = setInterval(function() {
                 var ratio = current_step / steps;
                 paper.setViewBox(cx + dx * easingFormula(ratio),
@@ -1442,7 +1440,7 @@
             , interval
         );
     };
-    
+
     // Default map options
     Mapael.defaultOptions = {
         map : {
@@ -1545,7 +1543,7 @@
         , plots : {}
         , links : {}
     };
-    
+
     Mapael.legendDefaultOptions = {
         area : {
             cssClass : "areaLegend"
