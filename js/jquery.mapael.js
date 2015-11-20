@@ -42,7 +42,7 @@
 
         return this.each(function() {
 
-            var $self = $(this) // the current element (also called $container sometimes)
+            var $container = $(this) // the current element 
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
                 , $map = $("." + options.map.cssClass, this).empty().append($tooltip) // the map container
                 , mapConf = $.fn.mapael.maps[options.map.name]
@@ -70,7 +70,7 @@
             });
 
             // Hook that allows to add custom processing on the map
-            if (options.map.beforeInit) options.map.beforeInit($self, paper, options);
+            if (options.map.beforeInit) options.map.beforeInit($container, paper, options);
 
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(mapConf.elems, function(id) {
@@ -100,11 +100,11 @@
              *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
              *    "animDuration" : zoom duration
              */
-            $self.on("zoom", function(e, zoomOptions) {
+            $container.on("zoom", function(e, zoomOptions) {
                 var newLevel = Math.min(Math.max(zoomOptions.level, 0), options.map.zoom.maxLevel)
                     , panX = 0
                     , panY = 0
-                    , previousZoomLevel = (1 + $self.data("zoomLevel") * options.map.zoom.step)
+                    , previousZoomLevel = (1 + $container.data("zoomLevel") * options.map.zoom.step)
                     , zoomLevel = (1 + newLevel * options.map.zoom.step)
                     , animDuration = (typeof zoomOptions.animDuration != 'undefined') ? zoomOptions.animDuration : options.map.zoom.animDuration
                     , offsetX = 0
@@ -127,8 +127,8 @@
                     panX = 0;
                     panY = 0;
                 } else if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter === true) {
-                    offsetX = $self.data("panX") + ((zoomOptions.x - $self.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                    offsetY = $self.data("panY") + ((zoomOptions.y - $self.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    offsetX = $container.data("panX") + ((zoomOptions.x - $container.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    offsetY = $container.data("panY") + ((zoomOptions.y - $container.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
 
                     panX = Math.min(Math.max(0, offsetX), (mapConf.width - (mapConf.width / zoomLevel)));
                     panY = Math.min(Math.max(0, offsetY), (mapConf.height - (mapConf.height / zoomLevel)));
@@ -138,7 +138,7 @@
                 }
 
                 // Update zoom level of the map
-                if (zoomLevel == previousZoomLevel && panX == $self.data('panX') && panY == $self.data('panY')) return;
+                if (zoomLevel == previousZoomLevel && panX == $container.data('panX') && panY == $container.data('panY')) return;
 
                 if (animDuration > 0) {
                     Mapael.animateViewBox($map, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, options.map.zoom.animEasing);
@@ -148,7 +148,7 @@
                     Mapael.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
                 }
 
-                $self.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
+                $container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
             });
 
             if (options.map.zoom.enabled) {
@@ -160,11 +160,11 @@
                         var offset = $map.offset(),
                             initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : (Mapael.maps[options.map.name].width / $map.width())
                             , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                            , zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step)
-                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $self.data("panX")
-                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $self.data("panY");
+                            , zoomFactor = 1 / (1 + ($container.data("zoomLevel")) * options.map.zoom.step)
+                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $container.data("panX")
+                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $container.data("panY");
 
-                        $self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                        $container.trigger("zoom", {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
 
                         return false;
                     });
@@ -191,12 +191,12 @@
                             if (Math.abs(pinchDist - previousPinchDist) > 15) {
                                 offset = $map.offset();
                                 initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : ($.fn.mapael.maps[options.map.name].width / $map.width());
-                                zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step);
-                                x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $self.data("panX");
-                                y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $self.data("panY");
+                                zoomFactor = 1 / (1 + ($container.data("zoomLevel")) * options.map.zoom.step);
+                                x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $container.data("panX");
+                                y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $container.data("panY");
 
                                 zoomLevel = (pinchDist - previousPinchDist) / Math.abs(pinchDist - previousPinchDist);
-                                $self.trigger("zoom", {"fixedCenter" : true, "level" : $self.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                                $container.trigger("zoom", {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
                                 previousPinchDist = pinchDist;
                             }
                             return false;
@@ -212,11 +212,11 @@
                 if (typeof options.map.zoom.init.animDuration == "undefined") {
                     options.map.zoom.init.animDuration = 0;
                 }
-                $self.trigger("zoom", options.map.zoom.init);
+                $container.trigger("zoom", options.map.zoom.init);
             }
 
             // Create the legends for areas
-            Mapael.createLegends($self, options, "area", areas, 1);
+            Mapael.createLegends($container, options, "area", areas, 1);
 
             /*
              *
@@ -233,7 +233,7 @@
              *  opt.animDuration animation duration in ms (default = 0)
              *  opt.afterUpdate Hook that allows to add custom processing on the map
              */
-            $self.on("update", function(e, opt) {
+            $container.on("update", function(e, opt) {
                 // Abort if opt is undefined
                 if (typeof opt !== "object")  return;
             
@@ -385,11 +385,11 @@
 
                 // Update legends
                 if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
-                    Mapael.createLegends($self, options, "area", areas, 1);
+                    Mapael.createLegends($container, options, "area", areas, 1);
                     if (options.map.width) {
-                        Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
+                        Mapael.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
                     } else {
-                        Mapael.createLegends($self, options, "plot", plots, ($map.width() / mapConf.width));
+                        Mapael.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
                     }
                 }
 
@@ -401,7 +401,7 @@
                     // setLegendElemsState is an object listing the legend we want to hide/show
                     $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
                         // Search for the legend
-                        var $legend = $self.find("." + legendCSSClass)[0];
+                        var $legend = $container.find("." + legendCSSClass)[0];
                         if (typeof $legend !== "undefined") {
                             // Select all elem inside this legend
                             $("[data-type='elem']", $legend).each(function(id, elem) {
@@ -418,7 +418,7 @@
                     // Default : "show"
                     var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
 
-                    $("[data-type='elem']", $self).each(function(id, elem) {
+                    $("[data-type='elem']", $container).each(function(id, elem) {
                         if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                             ($(elem).attr('data-hidden') === "1" && action === "show")) {
                             // Toggle state of element by clicking
@@ -426,7 +426,7 @@
                         }
                     });
                 }
-                if (opt.afterUpdate) opt.afterUpdate($self, paper, areas, plots, options);
+                if (opt.afterUpdate) opt.afterUpdate($container, paper, areas, plots, options);
             });
 
             // Handle resizing of the map
@@ -434,7 +434,7 @@
                 paper.setSize(options.map.width, mapConf.height * (options.map.width / mapConf.width));
 
                 // Create the legends for plots taking into account the scale of the map
-                Mapael.createLegends($self, options, "plot", plots, (options.map.width / mapConf.width));
+                Mapael.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
             } else {
                 $(window).on("resize", function() {
                     clearTimeout(resizeTO);
@@ -443,7 +443,7 @@
 
                 // Create the legends for plots taking into account the scale of the map
                 var createPlotLegend = function() {
-                    Mapael.createLegends($self, options, "plot", plots, ($map.width() / mapConf.width));
+                    Mapael.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
 
                     $map.unbind("resizeEnd", createPlotLegend);
                 };
@@ -457,7 +457,7 @@
             }
 
             // Hook that allows to add custom processing on the map
-            if (options.map.afterInit) options.map.afterInit($self, paper, areas, plots, options);
+            if (options.map.afterInit) options.map.afterInit($container, paper, areas, plots, options);
 
             $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         });
