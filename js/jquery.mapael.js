@@ -170,7 +170,7 @@
                 if (options.map.zoom.mousewheel) {
                     $map.on("mousewheel", function(e) {
                         var offset = $map.offset(),
-                            initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : (Mapael.maps[options.map.name].width / $map.width())
+                            initFactor = (options.map.width) ? (mapConf.width / options.map.width) : (mapConf.width / $map.width())
                             , zoomLevel = (e.deltaY > 0) ? 1 : -1
                             , zoomFactor = 1 / (1 + ($container.data("zoomLevel")) * options.map.zoom.step)
                             , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $container.data("panX")
@@ -202,7 +202,7 @@
 
                             if (Math.abs(pinchDist - previousPinchDist) > 15) {
                                 offset = $map.offset();
-                                initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : ($.fn[pluginName].maps[options.map.name].width / $map.width());
+                                initFactor = (options.map.width) ? (mapConf.width / options.map.width) : ($.fn[pluginName].maps[options.map.name].width / $map.width());
                                 zoomFactor = 1 / (1 + ($container.data("zoomLevel")) * options.map.zoom.step);
                                 x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $container.data("panX");
                                 y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $container.data("panY");
