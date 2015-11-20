@@ -20,11 +20,15 @@
             margin: auto;
         }
 
-        .map {
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+
+        .mapael .map {
             position: relative;
         }
 
-        .mapTooltip {
+        .mapael .mapTooltip {
             position: fixed;
             background-color: #fff;
             moz-opacity: 0.70;
@@ -38,7 +42,8 @@
             color: #343434;
         }
 
-        .zoomIn, .zoomOut {
+        .mapael .zoomIn,
+        .mapael .zoomOut {
             background-color: #fff;
             border: 1px solid #ccc;
             color: #000;
@@ -60,7 +65,7 @@
             user-select: none;
         }
 
-        .zoomOut {
+        .mapael .zoomOut {
             top: 30px;
         }
     </style>

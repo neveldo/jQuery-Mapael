@@ -5,32 +5,6 @@
     <title>Dataviz example with jQuery Mapael</title>
     <meta charset="utf-8"/>
     <style type="text/css">
-        .mapTooltip {
-            position: absolute;
-            background-color: #fff;
-            moz-opacity: 0.80;
-            opacity: 0.80;
-            filter: alpha(opacity=80);
-            border-radius: 4px;
-            padding: 10px;
-            z-index: 1000;
-            max-width: 200px;
-            display: none;
-            color: #232323;
-        }
-
-        .cityFrance {
-            background-color: #343434;
-            border-radius: 10px;
-            width: 400px;
-        }
-
-        .mapLegend {
-        }
-
-        .map {
-            position: relative;
-        }
 
         h1 {
             font-size: 30px;
@@ -73,7 +47,25 @@
             margin-left: 5px;
         }
 
-        .map {
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+        
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.80;
+            opacity: 0.80;
+            filter: alpha(opacity=80);
+            border-radius: 4px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #232323;
+        }
+        
+        .mapael .map {
             margin-right: 228px;
             overflow: hidden;
             position: relative;
@@ -81,7 +73,8 @@
             border-radius: 5px;
         }
 
-        .zoomIn, .zoomOut {
+        .mapael .zoomIn,
+        .mapael .zoomOut {
             background-color: #dbdbdb;
             border: 1px solid #cfcfcf;
             color: #161616;
@@ -103,7 +96,7 @@
             user-select: none;
         }
 
-        .zoomOut {
+        .mapael .zoomOut {
             top: 35px;
         }
     </style>
