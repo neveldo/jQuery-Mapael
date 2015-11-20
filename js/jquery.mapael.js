@@ -25,6 +25,8 @@
 }(function ($, Raphael, mousewheel) { // jshint ignore:line
 
     "use strict";
+    
+    var pluginName = "mapael";
 
     var Mapael = function(options) {
 
@@ -42,10 +44,17 @@
 
         return this.each(function() {
 
+            // Avoid multiple instanciation
+            if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
+            
+            // Save instanciation on element
+            // This allow external access to Mapael using $(".mapcontainer").data("mapael")
+            $.data(this, pluginName, Mapael);
+
             var $self = $(this)
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none")
                 , $container = $("." + options.map.cssClass, this).empty().append($tooltip)
-                , mapConf = $.fn.mapael.maps[options.map.name]
+                , mapConf = $.fn[pluginName].maps[options.map.name]
                 , paper = new Raphael($container[0], mapConf.width, mapConf.height)
                 , elemOptions = {}
                 , resizeTO = 0
@@ -55,6 +64,9 @@
                 , zoomCenterX = 0
                 , zoomCenterY = 0
                 , previousPinchDist = 0;
+
+            // add plugin class name on element
+            $self.addClass(pluginName);
 
             if (options.map.tooltip.css) $tooltip.css(options.map.tooltip.css);
             paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
@@ -190,7 +202,7 @@
 
                             if (Math.abs(pinchDist - previousPinchDist) > 15) {
                                 offset = $container.offset();
-                                initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : ($.fn.mapael.maps[options.map.name].width / $container.width());
+                                initFactor = (options.map.width) ? (Mapael.maps[options.map.name].width / options.map.width) : ($.fn[pluginName].maps[options.map.name].width / $container.width());
                                 zoomFactor = 1 / (1 + ($self.data("zoomLevel")) * options.map.zoom.step);
                                 x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $self.data("panX");
                                 y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $self.data("panY");
@@ -1607,8 +1619,6 @@
     };
 
     // jQuery access
-    $.fn.mapael = Mapael;
-
-    return $.fn.mapael;
+    $.fn[pluginName] = Mapael;
 
 }));
