@@ -28,11 +28,17 @@
     
     var pluginName = "mapael";
 
+    /*
+     * Mapael constructor
+     * Called directly on DOM element to apply the plugin
+     * @param options the user options
+     */
     var Mapael = function(options) {
 
-        // Extend legend default options with user options
+        // Extend default options with user options
         options = $.extend(true, {}, Mapael.defaultOptions, options);
 
+        // Extend each legend default options with user options
         $.each(options.legend, function(type) {
             if ($.isArray(options.legend[type])) {
                 for (var i = 0; i < options.legend[type].length; ++i)
@@ -42,6 +48,7 @@
             }
         });
 
+        // Init the plugin on each DOM element
         return this.each(function() {
 
             // Avoid multiple instanciation
@@ -51,8 +58,8 @@
             // This allow external access to Mapael using $(".mapcontainer").data("mapael")
             $.data(this, pluginName, Mapael);
 
+            // Initialize
             Mapael.init(this, options);
-
         });
     };
 
@@ -73,6 +80,12 @@
     /* Animate view box Interval handler (used to set and clear) */
     Mapael.animationIntervalID = null;
 
+    /*
+     * Initialize the plugin
+     * Called by the constructor
+     * @param container the DOM element on which to apply the plugin
+     * @param options the complete options to use
+     */
     Mapael.init = function(container, options) {
         var $container = $(container) // the current element
             , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
