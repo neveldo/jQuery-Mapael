@@ -212,14 +212,20 @@
 
             // Avoid multiple instanciation
             if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
-            
+
             // Save instanciation on element
             // This allow external access to Mapael using $(".mapcontainer").data("mapael")
             $.data(this, pluginName, Mapael);
 
-            var $container = $(this) // the current element
+            Mapael.init(this, options);
+
+        });
+    };
+
+    Mapael.init = function(container, options) {
+            var $container = $(container) // the current element
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
-                , $map = $("." + options.map.cssClass, this).empty().append($tooltip) // the map container
+                , $map = $("." + options.map.cssClass, container).empty().append($tooltip) // the map container
                 , mapConf = $.fn[pluginName].maps[options.map.name]
                 , paper = new Raphael($map[0], mapConf.width, mapConf.height)
                 , elemOptions = {}
@@ -638,7 +644,7 @@
             if (options.map.afterInit) options.map.afterInit($container, paper, areas, plots, options);
 
             $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
-        });
+
     };
 
     /*
