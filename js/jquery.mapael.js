@@ -202,7 +202,7 @@
 
                             if (Math.abs(pinchDist - previousPinchDist) > 15) {
                                 offset = $map.offset();
-                                initFactor = (options.map.width) ? (mapConf.width / options.map.width) : ($.fn[pluginName].maps[options.map.name].width / $map.width());
+                                initFactor = (options.map.width) ? (mapConf.width / options.map.width) : (mapConf.width / $map.width());
                                 zoomFactor = 1 / (1 + ($container.data("zoomLevel")) * options.map.zoom.step);
                                 x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $container.data("panX");
                                 y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $container.data("panY");
