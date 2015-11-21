@@ -286,7 +286,7 @@
                     };
 
                 if (typeof opt.mapOptions === "object") {
-                    if (opt.replaceOptions === true) options = opt.mapOptions;
+                    if (opt.replaceOptions === true) options = $.extend(true, {}, Mapael.defaultOptions, opt.mapOptions);
                     else $.extend(true, options, opt.mapOptions);
                 }
 
