@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Multiple instances</title>
+    <style type="text/css">
+        body {
+            color: #5d5d5d;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        h2 {
+            font-size: 16px;
+        }
+
+        .mapcontainer,
+        .mapcontainer2,
+        .mapcontainer3{
+            max-width: 300px;
+            margin:20px;
+            float:left;
+        }
+
+        p {
+            clear:both;
+        }
+
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #343434;
+        }
+
+        .mapael .zoomIn,
+        .mapael .zoomOut {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            color: #000;
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+            text-align: center;
+            border-radius: 3px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            font-weight: bold;
+            left: 10px;
+
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }
+
+        .mapael .zoomOut {
+            top: 30px;
+        }
+
+        .mapael .map {
+            background-color: #cddee0;
+            margin: 10px;
+            position: relative;
+        }
+    </style>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="../../js/maps/france_departments.js" charset="utf-8"></script>
+    <script src="../../js/maps/usa_states.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $(".mapcontainer").mapael({
+                map: {
+                    name: "france_departments"
+                    , zoom: {
+                        enabled: true
+                    }
+                    , defaultPlot: {
+                        attrs: {
+                            opacity: 0.6
+                        }
+                        , text: {
+                            attrs: {
+                                fill: "#505444"
+                            }
+                            , attrsHover: {
+                                fill: "#000"
+                            }
+                        }
+                    }
+                    , defaultArea: {
+                        attrs: {
+                            fill: "#f4f4e8"
+                            , stroke: "#ced8d0"
+                        }
+                        , text: {
+                            attrs: {
+                                fill: "#505444"
+                            }
+                            , attrsHover: {
+                                fill: "#000"
+                            }
+                        }
+                    }
+                },
+                areas: {
+                    "department-56": {
+                        text: {content: "56"},
+                        tooltip: {content: "Morbihan (56)"}
+                    },
+                },
+                plots: {
+                    'paris': {
+                        latitude: 48.86,
+                        longitude: 2.3444
+                    },
+                    'lyon': {
+                        type: "circle",
+                        size: 50,
+                        latitude: 45.758888888889,
+                        longitude: 4.8413888888889,
+                        value: 700000,
+                        href: "http://fr.wikipedia.org/wiki/Lyon",
+                        tooltip: {content: "<span style=\"font-weight:bold;\">City :</span> Lyon"},
+                        text: {content: "Lyon"}
+                    },
+                    'rennes': {
+                        type: "square",
+                        size: 20,
+                        latitude: 48.114166666667,
+                        longitude: -1.6808333333333,
+                        tooltip: {content: "<span style=\"font-weight:bold;\">City :</span> Rennes"},
+                        text: {content: "Rennes"},
+                        href: "http://fr.wikipedia.org/wiki/Rennes"
+                    }
+                }
+            });
+
+            $('#refresh').on('click', function () {
+
+                // Update some plots and areas attributes ...
+                var updatedOptions = {'areas': {}, 'plots': {}};
+                updatedOptions.areas["department-56"] = {
+                    tooltip: {
+                        content: "Morbihan (56) (2)"
+                    },
+                    attrs: {
+                        fill: "#0088db"
+                    },
+                    text: {content: "56 (2)"}
+                };
+                updatedOptions.plots["rennes"] = {
+                    tooltip: {
+                        content: "Rennes (2)"
+                    },
+                    attrs: {
+                        fill: "#f38a03"
+                    }
+                    , text: {position: "top"}
+                    , size: 5
+                };
+
+                // add some new plots ...
+                var newPlots = {
+                    "Limoge": {
+                        latitude: 45.834444,
+                        longitude: 1.261667,
+                        text: {content: "Limoge"},
+                        tooltip: {content: "Limoge"}
+                    }
+                    , "Dijon": {
+                        size: 60,
+                        latitude: 47.323056,
+                        longitude: 5.041944,
+                        text: {
+                            content: "Dijon",
+                            position: "left",
+                            margin: 5
+                        }
+                    }
+                }
+
+                // and delete some others ...
+                var deletedPlots = ["paris", "lyon"];
+
+                $(".mapcontainer_refresh").trigger('update', [{
+                    mapOptions: updatedOptions,
+                    newPlots: newPlots,
+                    deletePlotKeys: deletedPlots,
+                    animDuration: 1000
+                }]);
+            });
+
+
+            var $mapcontainer2 = $(".mapcontainer2");
+            $mapcontainer2.mapael({
+                map: {
+                    name: "france_departments"
+                    , zoom: {
+                        enabled: true,
+                        maxLevel: 10
+                    }
+                    , defaultPlot: {
+                        attrs: {
+                            opacity: 0.6
+                        }
+                    }
+                },
+                plots: {
+                    'paris': {
+                        latitude: 48.86,
+                        longitude: 2.3444,
+                        tooltip: {content: "<span style=\"font-weight:bold;\">City :</span> Paris"},
+                        text: {content: "Paris"}
+                    },
+                    'lyon': {
+                        latitude: 45.758888888889,
+                        longitude: 4.8413888888889,
+                        tooltip: {content: "<span style=\"font-weight:bold;\">City :</span> Lyon"},
+                        text: {content: "Lyon"}
+                    }
+                }
+            });
+
+            $('#gotolyon').on('click', function () {
+                $mapcontainer2.trigger('zoom', {level: 10, latitude: 45.758888888889, longitude: 4.8413888888889});
+            });
+
+            $('#gotoparis').on('click', function () {
+                $mapcontainer2.trigger('zoom', {level: 10, latitude: 48.86, longitude: 2.3444});
+            });
+
+            $('#clearzoom').on('click', function () {
+                $mapcontainer2.trigger('zoom', {level: 0});
+            });
+
+
+
+            $(".mapcontainer3").mapael({
+                map: {
+                    name: "usa_states"
+                    , defaultArea: {
+                        attrs: {
+                            fill: "#f4f4e8"
+                            , stroke: "#00a1fe"
+                        }
+                        , attrsHover: {
+                            fill: "#a4e100"
+                        }
+                    }
+                },
+                legend: {
+                    plot: [
+                        {
+                            cssClass: 'population',
+                            mode: 'horizontal',
+                            title: "Population",
+                            marginBottomTitle: 5,
+                            slices: [{
+                                size: 15,
+                                legendSpecificAttrs: {
+                                    fill: '#00a1fe',
+                                    stroke: '#f4f4e8',
+                                    "stroke-width": 2
+                                },
+                                label: "< 10 000",
+                                max: "10000"
+                            }, {
+                                size: 30,
+                                legendSpecificAttrs: {
+                                    fill: '#00a1fe',
+                                    stroke: '#f4f4e8',
+                                    "stroke-width": 2
+                                },
+                                label: "> 10 000 and < 100 000",
+                                min: "10000",
+                                max: "100000"
+                            }, {
+                                size: 50,
+                                legendSpecificAttrs: {
+                                    fill: '#00a1fe',
+                                    stroke: '#f4f4e8',
+                                    "stroke-width": 2
+                                },
+                                label: "> 100 000",
+                                min: "100000"
+                            }]
+                        }
+                        , {
+                            cssClass: 'density',
+                            mode: 'horizontal',
+                            title: "Density",
+                            marginBottomTitle: 5,
+                            slices: [{
+                                label: "< 50",
+                                max: "50",
+                                attrs: {
+                                    fill: "#fef500"
+                                },
+                                legendSpecificAttrs: {
+                                    r: 25
+                                }
+                            }, {
+                                label: "> 50 and < 500",
+                                min: "50",
+                                max: "500",
+                                attrs: {
+                                    fill: "#fe6c00"
+                                },
+                                legendSpecificAttrs: {
+                                    r: 25
+                                }
+                            }, {
+                                label: "> 500",
+                                min: "500",
+                                attrs: {
+                                    fill: "#dc0000"
+                                },
+                                legendSpecificAttrs: {
+                                    r: 25
+                                }
+                            }]
+                        }
+                    ]
+                },
+                plots: {
+                    'ny': {
+                        latitude: 40.717079,
+                        longitude: -74.00116,
+                        tooltip: {content: "New York"},
+                        value: [5000, 20]
+                    },
+                    'an': {
+                        latitude: 61.2108398,
+                        longitude: -149.9019557,
+                        tooltip: {content: "Anchorage"},
+                        value: [50000, 20]
+                    },
+                    'sf': {
+                        latitude: 37.792032,
+                        longitude: -122.394613,
+                        tooltip: {content: "San Francisco"},
+                        value: [150000, 20]
+                    },
+                    'pa': {
+                        latitude: 19.493204,
+                        longitude: -154.8199569,
+                        tooltip: {content: "Pahoa"},
+                        value: [5000, 200]
+                    },
+                    'la': {
+                        latitude: 34.025052,
+                        longitude: -118.192006,
+                        tooltip: {content: "Los Angeles"},
+                        value: [50000, 200]
+                    },
+                    'dallas': {
+                        latitude: 32.784881,
+                        longitude: -96.808244,
+                        tooltip: {content: "Dallas"},
+                        value: [150000, 200]
+                    },
+                    'miami': {
+                        latitude: 25.789125,
+                        longitude: -80.205674,
+                        tooltip: {content: "Miami"},
+                        value: [5000, 2000]
+                    },
+                    'washington': {
+                        latitude: 38.905761,
+                        longitude: -77.020746,
+                        tooltip: {content: "Washington"},
+                        value: [50000, 2000]
+                    },
+                    'seattle': {
+                        latitude: 47.599571,
+                        longitude: -122.319426,
+                        tooltip: {content: "Seattle"},
+                        value: [150000, 2000]
+                    },
+                    'test1': {
+                        latitude: 44.671504,
+                        longitude: -110.957968,
+                        tooltip: {content: "Test 1"},
+                        value: [5000, 2000]
+                    },
+                    'test2': {
+                        latitude: 40.667013,
+                        longitude: -101.465781,
+                        tooltip: {content: "Test 2"},
+                        value: [50000, 200]
+                    },
+                    'test3': {
+                        latitude: 38.362031,
+                        longitude: -86.875938,
+                        tooltip: {content: "Test 3"},
+                        value: [150000, 20]
+                    }
+                }
+            });
+
+        });
+    </script>
+
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Multiple instances</h1>
+
+    <div class="mapcontainer mapcontainer_refresh">
+        <h2>Trigger an 'update' event for refreshing elements</h2>
+        <input type="button" value="Update elements" id="refresh"/>
+
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+    </div>
+
+    <div class="mapcontainer">
+        <h2>Same class, but not updated</h2>
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+    </div>
+
+    <div class="mapcontainer2">
+        <h2>Use 'zoom' event in order to zoom on specific areas of the map</h2>
+        <input type="button" value="Zoom on Paris area" id="gotoparis"/>
+        <input type="button" value="Zoom on Lyon area" id="gotolyon"/>
+        <input type="button" value="Clear zoom" id="clearzoom"/>
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+    </div>
+
+    <div class="mapcontainer3">
+        <h2>Map with multiple plotted cities legends that handle different criteria</h2>
+        <div style="margin:auto;">
+            <div class="population" style="float:left;margin-right:40px;">
+                <span>Alternative content for the legend</span>
+            </div>
+            <div class="density" style="float:left;">
+                <span>Alternative content for the legend2</span>
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+
+    </div>
+
+    <p><b>All example for jQuery Mapael are available <a href="http://www.vincentbroute.fr/mapael/">here</a>.</b></p>
+
+</div>
+
+
+</body>
+</html>
