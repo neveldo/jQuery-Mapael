@@ -222,6 +222,23 @@
         });
     };
 
+    /*
+     * Version number of jQuery Mapael. See http://semver.org/ for more information.
+     *  @type string
+     */
+    Mapael.version = '1.1.0';
+
+    /* zoom TimeOut handler (used to set and clear) */
+    Mapael.zoomTO = 0;
+
+    /* Panning: tell if panning action is in progress */
+    Mapael.panning = false;
+    /* Panning TimeOut handler (used to set and clear) */
+    Mapael.panningTO = 0;
+
+    /* Animate view box Interval handler (used to set and clear) */
+    Mapael.animationIntervalID = null;
+
     Mapael.init = function(container, options) {
             var $container = $(container) // the current element
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
@@ -648,14 +665,6 @@
     };
 
     /*
-     * Version number of jQuery Mapael. See http://semver.org/ for more information.
-     *  @type string
-     */
-    Mapael.version = '1.1.0';
-
-    Mapael.zoomTO = 0;
-
-    /*
      * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
      */
     Mapael.initElem = function(paper, elem, options, $tooltip, id) {
@@ -1014,9 +1023,6 @@
             })(event);
         });
     };
-
-    Mapael.panning = false;
-    Mapael.panningTO = 0;
 
     /*
      * Init zoom and panning for the map
@@ -1575,7 +1581,6 @@
         return {};
     };
 
-    Mapael.animationIntervalID = null;
 
     /*
       * Animated view box changes
