@@ -28,7 +28,6 @@
     
     var pluginName = "mapael";
 
-
     // Default map options
     var defaultOptions = {
         map : {
@@ -452,7 +451,7 @@
                     };
 
                 if (typeof opt.mapOptions === "object") {
-                    if (opt.replaceOptions === true) options = $.extend(true, {}, Mapael.defaultOptions, opt.mapOptions);
+                    if (opt.replaceOptions === true) options = $.extend(true, {}, defaultOptions, opt.mapOptions);
                     else $.extend(true, options, opt.mapOptions);
                 }
 
