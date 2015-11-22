@@ -28,17 +28,183 @@
     
     var pluginName = "mapael";
 
+
+    // Default map options
+    var defaultOptions = {
+        map : {
+            cssClass : "map"
+            , tooltip : {
+                cssClass : "mapTooltip"
+            }
+            , defaultArea : {
+                attrs : {
+                    fill : "#343434"
+                    , stroke : "#5d5d5d"
+                    , "stroke-width" : 1
+                    , "stroke-linejoin" : "round"
+                }
+                , attrsHover : {
+                    fill : "#f38a03"
+                    , animDuration : 300
+                }
+                , text : {
+                    position : "inner"
+                    , margin : 10
+                    , attrs : {
+                        "font-size" : 15
+                        , fill : "#c7c7c7"
+                    }
+                    , attrsHover : {
+                        fill : "#eaeaea"
+                        , "animDuration" : 300
+                    }
+                }
+                , target : "_self"
+            }
+            , defaultPlot : {
+                type : "circle"
+                , size : 15
+                , attrs : {
+                    fill : "#0088db"
+                    , stroke : "#fff"
+                    , "stroke-width" : 0
+                    , "stroke-linejoin" : "round"
+                }
+                , attrsHover : {
+                    "stroke-width" : 3
+                    , animDuration : 300
+                }
+                , text : {
+                    position : "right"
+                    , margin : 10
+                    , attrs : {
+                        "font-size" : 15
+                        , fill : "#c7c7c7"
+                    }
+                    , attrsHover : {
+                        fill : "#eaeaea"
+                        , animDuration : 300
+                    }
+                }
+                , target : "_self"
+            }
+            , defaultLink : {
+                factor : 0.5
+                , attrs : {
+                    stroke : "#0088db"
+                    , "stroke-width" : 2
+                }
+                , attrsHover : {
+                    animDuration : 300
+                }
+                , text : {
+                    position : "inner"
+                    , margin : 10
+                    , attrs : {
+                        "font-size" : 15
+                        , fill : "#c7c7c7"
+                    }
+                    , attrsHover : {
+                        fill : "#eaeaea"
+                        , animDuration : 300
+                    }
+                }
+                , target : "_self"
+            }
+            , zoom : {
+                enabled : false
+                , maxLevel : 10
+                , step : 0.25
+                , zoomInCssClass : "zoomIn"
+                , zoomOutCssClass : "zoomOut"
+                , mousewheel : true
+                , touch : true
+                , animDuration : 200
+                , animEasing : "linear"
+            }
+        }
+        , legend : {
+            area : []
+            , plot : []
+        }
+        , areas : {}
+        , plots : {}
+        , links : {}
+    };
+
+    var legendDefaultOptions = {
+        area : {
+            cssClass : "areaLegend"
+            , display : true
+            , marginLeft : 10
+            , marginLeftTitle : 5
+            , marginBottomTitle: 10
+            , marginLeftLabel : 10
+            , marginBottom : 10
+            , titleAttrs : {
+                "font-size" : 16
+                , fill : "#343434"
+                , "text-anchor" : "start"
+            }
+            , labelAttrs : {
+                "font-size" : 12
+                , fill : "#343434"
+                , "text-anchor" : "start"
+            }
+            , labelAttrsHover : {
+                fill : "#787878"
+                , animDuration : 300
+            }
+            , hideElemsOnClick : {
+                enabled : true
+                , opacity : 0.2
+                , animDuration : 300
+            }
+            , slices : []
+            , mode : "vertical"
+        }
+        , plot : {
+            cssClass : "plotLegend"
+            , display : true
+            , marginLeft : 10
+            , marginLeftTitle : 5
+            , marginBottomTitle: 10
+            , marginLeftLabel : 10
+            , marginBottom : 10
+            , titleAttrs : {
+                "font-size" : 16
+                , fill : "#343434"
+                , "text-anchor" : "start"
+            }
+            , labelAttrs : {
+                "font-size" : 12
+                , fill : "#343434"
+                , "text-anchor" : "start"
+            }
+            , labelAttrsHover : {
+                fill : "#787878"
+                , animDuration : 300
+            }
+            , hideElemsOnClick : {
+                enabled : true
+                , opacity : 0.2
+            }
+            , slices : []
+            , mode : "vertical"
+        }
+    };
+
     var Mapael = function(options) {
 
         // Extend legend default options with user options
-        options = $.extend(true, {}, Mapael.defaultOptions, options);
+        options = $.extend(true, {}, defaultOptions, options);
 
         $.each(options.legend, function(type) {
             if ($.isArray(options.legend[type])) {
                 for (var i = 0; i < options.legend[type].length; ++i)
-                    options.legend[type][i] = $.extend(true, {}, Mapael.legendDefaultOptions[type], options.legend[type][i]);
+                    options.legend[type][i] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type][i]);
             } else {
-                options.legend[type] = $.extend(true, {}, Mapael.legendDefaultOptions[type], options.legend[type]);
+                options.legend[type] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type]);
             }
         });
 
@@ -1452,171 +1618,6 @@
             }
             , interval
         );
-    };
-
-    // Default map options
-    Mapael.defaultOptions = {
-        map : {
-            cssClass : "map"
-            , tooltip : {
-                cssClass : "mapTooltip"
-            }
-            , defaultArea : {
-                attrs : {
-                    fill : "#343434"
-                    , stroke : "#5d5d5d"
-                    , "stroke-width" : 1
-                    , "stroke-linejoin" : "round"
-                }
-                , attrsHover : {
-                    fill : "#f38a03"
-                    , animDuration : 300
-                }
-                , text : {
-                    position : "inner"
-                    , margin : 10
-                    , attrs : {
-                        "font-size" : 15
-                        , fill : "#c7c7c7"
-                    }
-                    , attrsHover : {
-                        fill : "#eaeaea"
-                        , "animDuration" : 300
-                    }
-                }
-                , target : "_self"
-            }
-            , defaultPlot : {
-                type : "circle"
-                , size : 15
-                , attrs : {
-                    fill : "#0088db"
-                    , stroke : "#fff"
-                    , "stroke-width" : 0
-                    , "stroke-linejoin" : "round"
-                }
-                , attrsHover : {
-                    "stroke-width" : 3
-                    , animDuration : 300
-                }
-                , text : {
-                    position : "right"
-                    , margin : 10
-                    , attrs : {
-                        "font-size" : 15
-                        , fill : "#c7c7c7"
-                    }
-                    , attrsHover : {
-                        fill : "#eaeaea"
-                        , animDuration : 300
-                    }
-                }
-                , target : "_self"
-            }
-            , defaultLink : {
-                factor : 0.5
-                , attrs : {
-                    stroke : "#0088db"
-                    , "stroke-width" : 2
-                }
-                , attrsHover : {
-                    animDuration : 300
-                }
-                , text : {
-                    position : "inner"
-                    , margin : 10
-                    , attrs : {
-                        "font-size" : 15
-                        , fill : "#c7c7c7"
-                    }
-                    , attrsHover : {
-                        fill : "#eaeaea"
-                        , animDuration : 300
-                    }
-                }
-                , target : "_self"
-            }
-            , zoom : {
-                enabled : false
-                , maxLevel : 10
-                , step : 0.25
-                , zoomInCssClass : "zoomIn"
-                , zoomOutCssClass : "zoomOut"
-                , mousewheel : true
-                , touch : true
-                , animDuration : 200
-                , animEasing : "linear"
-            }
-        }
-        , legend : {
-            area : []
-            , plot : []
-        }
-        , areas : {}
-        , plots : {}
-        , links : {}
-    };
-
-    Mapael.legendDefaultOptions = {
-        area : {
-            cssClass : "areaLegend"
-            , display : true
-            , marginLeft : 10
-            , marginLeftTitle : 5
-            , marginBottomTitle: 10
-            , marginLeftLabel : 10
-            , marginBottom : 10
-            , titleAttrs : {
-                "font-size" : 16
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrs : {
-                "font-size" : 12
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrsHover : {
-                fill : "#787878"
-                , animDuration : 300
-            }
-            , hideElemsOnClick : {
-                enabled : true
-                , opacity : 0.2
-                , animDuration : 300
-            }
-            , slices : []
-            , mode : "vertical"
-        }
-        , plot : {
-            cssClass : "plotLegend"
-            , display : true
-            , marginLeft : 10
-            , marginLeftTitle : 5
-            , marginBottomTitle: 10
-            , marginLeftLabel : 10
-            , marginBottom : 10
-            , titleAttrs : {
-                "font-size" : 16
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrs : {
-                "font-size" : 12
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrsHover : {
-                fill : "#787878"
-                , animDuration : 300
-            }
-            , hideElemsOnClick : {
-                enabled : true
-                , opacity : 0.2
-            }
-            , slices : []
-            , mode : "vertical"
-        }
     };
 
     // jQuery access
