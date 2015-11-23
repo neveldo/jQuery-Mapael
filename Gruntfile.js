@@ -4,7 +4,7 @@ module.exports = function(grunt) {
             options: {
                 jshintrc: '.jshintrc'
             },
-            all: ['js/jquery.mapael.js', 'js/maps/france_departments.js', 'js/maps/usa_states.js', 'js/maps/world_countries.js']
+            all: ['js/**/*.js', '!js/**/*.min.js']
         },
         uglify: {
             options: {
@@ -14,12 +14,14 @@ module.exports = function(grunt) {
                 report: 'gzip'
             },
             build: {
-                files: {
-                    'js/jquery.mapael.min.js': ['js/jquery.mapael.js'],
-                    'js/maps/france_departments.min.js': ['js/maps/france_departments.js'],
-                    'js/maps/usa_states.min.js': ['js/maps/usa_states.js'],
-                    'js/maps/world_countries.min.js': ['js/maps/world_countries.js']
-                }
+                files: [
+                    {
+                        expand: true,     // Enable dynamic expansion.
+                        src: ['js/**/*.js', '!js/**/*.min.js'],
+                        ext: '.min.js',   // Dest filepaths will have this extension.
+                        extDot: 'last'   // Extensions in filenames begin after the last dot
+                    }
+                ]
             }
         }
     });
