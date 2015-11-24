@@ -25,10 +25,14 @@
 }(function ($, Raphael, mousewheel) { // jshint ignore:line
 
     "use strict";
-    
+
+    /* The plugin name (used on several places) */
     var pluginName = "mapael";
 
-    // Default map options
+    /* Version number of jQuery Mapael. See http://semver.org/ for more information. */
+    var version = "2.0.0-dev";
+
+    /* Default map options */
     var defaultOptions = {
         map : {
             cssClass : "map"
@@ -131,7 +135,7 @@
         , links : {}
     };
 
-    // Default legends option
+    /* Default legends option */
     var legendDefaultOptions = {
         area : {
             cssClass : "areaLegend"
@@ -229,11 +233,8 @@
         });
     };
 
-    /*
-     * Version number of jQuery Mapael. See http://semver.org/ for more information.
-     *  @type string
-     */
-    Mapael.version = '1.1.0';
+    /* Version number */
+    Mapael.version = version;
 
     /* zoom TimeOut handler (used to set and clear) */
     Mapael.zoomTO = 0;
