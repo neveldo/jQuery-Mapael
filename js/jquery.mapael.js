@@ -131,6 +131,7 @@
         , links : {}
     };
 
+    // Default legends option
     var legendDefaultOptions = {
         area : {
             cssClass : "areaLegend"
@@ -193,11 +194,17 @@
         }
     };
 
+    /*
+     * Mapael constructor
+     * Called directly on DOM element to apply the plugin
+     * @param options the user options
+     */
     var Mapael = function(options) {
 
-        // Extend legend default options with user options
+        // Extend default options with user options
         options = $.extend(true, {}, defaultOptions, options);
 
+        // Extend each legend default options with user options
         $.each(options.legend, function(type) {
             if ($.isArray(options.legend[type])) {
                 for (var i = 0; i < options.legend[type].length; ++i)
@@ -207,18 +214,48 @@
             }
         });
 
+        // Init the plugin on each DOM element
         return this.each(function() {
 
             // Avoid multiple instanciation
             if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
-            
+
             // Save instanciation on element
             // This allow external access to Mapael using $(".mapcontainer").data("mapael")
             $.data(this, pluginName, Mapael);
 
-            var $container = $(this) // the current element
+            // Initialize
+            Mapael.init(this, options);
+        });
+    };
+
+    /*
+     * Version number of jQuery Mapael. See http://semver.org/ for more information.
+     *  @type string
+     */
+    Mapael.version = '1.1.0';
+
+    /* zoom TimeOut handler (used to set and clear) */
+    Mapael.zoomTO = 0;
+
+    /* Panning: tell if panning action is in progress */
+    Mapael.panning = false;
+    /* Panning TimeOut handler (used to set and clear) */
+    Mapael.panningTO = 0;
+
+    /* Animate view box Interval handler (used to set and clear) */
+    Mapael.animationIntervalID = null;
+
+    /*
+     * Initialize the plugin
+     * Called by the constructor
+     * @param container the DOM element on which to apply the plugin
+     * @param options the complete options to use
+     */
+    Mapael.init = function(container, options) {
+            var $container = $(container) // the current element
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
-                , $map = $("." + options.map.cssClass, this).empty().append($tooltip) // the map container
+                , $map = $("." + options.map.cssClass, container).empty().append($tooltip) // the map container
                 , mapConf = $.fn[pluginName].maps[options.map.name]
                 , paper = new Raphael($map[0], mapConf.width, mapConf.height)
                 , elemOptions = {}
@@ -637,16 +674,8 @@
             if (options.map.afterInit) options.map.afterInit($container, paper, areas, plots, options);
 
             $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
-        });
+
     };
-
-    /*
-     * Version number of jQuery Mapael. See http://semver.org/ for more information.
-     *  @type string
-     */
-    Mapael.version = '1.1.0';
-
-    Mapael.zoomTO = 0;
 
     /*
      * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
@@ -1007,9 +1036,6 @@
             })(event);
         });
     };
-
-    Mapael.panning = false;
-    Mapael.panningTO = 0;
 
     /*
      * Init zoom and panning for the map
@@ -1568,7 +1594,6 @@
         return {};
     };
 
-    Mapael.animationIntervalID = null;
 
     /*
       * Animated view box changes
