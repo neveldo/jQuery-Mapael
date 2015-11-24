@@ -490,6 +490,16 @@
             if (typeof opt.mapOptions === "object") {
                 if (opt.replaceOptions === true) options = $.extend(true, {}, defaultOptions, opt.mapOptions);
                 else $.extend(true, options, opt.mapOptions);
+
+                // IF we update areas, plots or legend, then reset all legend state to "show"
+                if (typeof opt.mapOptions.areas != "undefined" || typeof opt.mapOptions.plots != "undefined" || typeof opt.mapOptions.legend  != "undefined") {
+                    $("[data-type='elem']", $container).each(function (id, elem) {
+                        if ($(elem).attr('data-hidden') === "1") {
+                            // Toggle state of element by clicking
+                            $(elem).trigger('click', [false, animDuration]);
+                        }
+                    });
+                }
             }
 
             // Delete plots by name if deletePlotKeys is array
