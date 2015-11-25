@@ -332,10 +332,10 @@
                 zoomOptions.y = coords.y;
             }
 
-            if (typeof zoomOptions.x == "undefined")
+            if (zoomOptions.x === undefined)
                 zoomOptions.x = paper._viewBox[0] + paper._viewBox[2] / 2;
 
-            if (typeof zoomOptions.y == "undefined")
+            if (zoomOptions.y === undefined)
                 zoomOptions.y = (paper._viewBox[1] + paper._viewBox[3] / 2);
 
             if (newLevel === 0) {
@@ -424,7 +424,7 @@
 
         // Set initial zoom
         if (typeof options.map.zoom.init != "undefined") {
-            if (typeof options.map.zoom.init.animDuration == "undefined") {
+            if (options.map.zoom.init.animDuration === undefined) {
                 options.map.zoom.init.animDuration = 0;
             }
             $container.trigger("zoom", options.map.zoom.init);
@@ -540,7 +540,7 @@
             // New plots
             if (typeof opt.newPlots === "object") {
                 $.each(opt.newPlots, function(id) {
-                    if (typeof plots[id] == "undefined") {
+                    if (plots[id] === undefined) {
                         options.plots[id] = opt.newPlots[id];
                         plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
                         if (animDuration > 0) {
@@ -891,7 +891,7 @@
 
         // Update the tooltip
         if (elemOptions.tooltip) {
-            if (typeof elem.mapElem.tooltip == "undefined") {
+            if (elem.mapElem.tooltip === undefined) {
                 Mapael.setTooltip(elem.mapElem, $tooltip);
                 if (elem.textElem) Mapael.setTooltip(elem.textElem, $tooltip);
             }
@@ -901,7 +901,7 @@
 
         // Update the link
         if (typeof elemOptions.href != "undefined") {
-            if (typeof elem.mapElem.href == "undefined") {
+            if (elem.mapElem.href === undefined) {
                 Mapael.setHref(elem.mapElem);
                 if (elem.textElem) Mapael.setHref(elem.textElem);
             }
@@ -1172,10 +1172,10 @@
                 var current_yCenter = 0;
 
                 // Check if size is defined. If not, take defaultPlot size
-                if (typeof legendOptions.slices[i].size == "undefined")
+                if (legendOptions.slices[i].size === undefined)
                     legendOptions.slices[i].size = options.map.defaultPlot.size;
 
-                if (typeof legendOptions.slices[i].legendSpecificAttrs == "undefined")
+                if (legendOptions.slices[i].legendSpecificAttrs === undefined)
                     legendOptions.slices[i].legendSpecificAttrs = {};
 
                 sliceAttrs[i] = $.extend(
@@ -1186,22 +1186,22 @@
                 );
 
                 if (legendType == "area") {
-                    if (typeof sliceAttrs[i].width == "undefined")
+                    if (sliceAttrs[i].width === undefined)
                         sliceAttrs[i].width = 30;
-                    if (typeof sliceAttrs[i].height == "undefined")
+                    if (sliceAttrs[i].height === undefined)
                         sliceAttrs[i].height = 20;
                 } else if (legendOptions.slices[i].type == "square") {
-                    if (typeof sliceAttrs[i].width == "undefined")
+                    if (sliceAttrs[i].width === undefined)
                         sliceAttrs[i].width = legendOptions.slices[i].size;
-                    if (typeof sliceAttrs[i].height == "undefined")
+                    if (sliceAttrs[i].height === undefined)
                         sliceAttrs[i].height = legendOptions.slices[i].size;
                 } else if (legendOptions.slices[i].type == "image" || legendOptions.slices[i].type == "svg") {
-                    if (typeof sliceAttrs[i].width == "undefined")
+                    if (sliceAttrs[i].width === undefined)
                         sliceAttrs[i].width = legendOptions.slices[i].width;
-                    if (typeof sliceAttrs[i].height == "undefined")
+                    if (sliceAttrs[i].height === undefined)
                         sliceAttrs[i].height = legendOptions.slices[i].height;
                 } else {
-                    if (typeof sliceAttrs[i].r == "undefined")
+                    if (sliceAttrs[i].r === undefined)
                         sliceAttrs[i].r = legendOptions.slices[i].size / 2;
                 }
 
@@ -1211,7 +1211,7 @@
                 if (title) {
                     current_yCenter += title.getBBox().height;
                 }
-                if(legendType == "plot" && (typeof legendOptions.slices[i].type == "undefined" || legendOptions.slices[i].type == "circle")) {
+                if(legendType == "plot" && (legendOptions.slices[i].type === undefined || legendOptions.slices[i].type == "circle")) {
                     current_yCenter += scale * sliceAttrs[i].r;
                 } else {
                     current_yCenter += scale * sliceAttrs[i].height/2;
@@ -1226,7 +1226,7 @@
 
             // Draw legend elements (circle, square or image in vertical or horizontal mode)
             for(i = 0, length = legendOptions.slices.length; i < length; ++i) {
-                if (typeof legendOptions.slices[i].display == "undefined" || legendOptions.slices[i].display === true) {
+                if (legendOptions.slices[i].display === undefined || legendOptions.slices[i].display === true) {
                     if(legendType == "area") {
                         if (legendOptions.mode == "horizontal") {
                             x = width + legendOptions.marginLeft;
@@ -1353,7 +1353,7 @@
                 , hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
 
             // Check animDuration: if not set, this is a regular click, use the value specified in options
-            if (typeof animDuration === "undefined") animDuration = legendOptions.hideElemsOnClick.animDuration;
+            if (animDuration === undefined) animDuration = legendOptions.hideElemsOnClick.animDuration;
 
             if (hidden === '0') {
                 label.animate({"opacity":0.5}, animDuration);
@@ -1366,7 +1366,7 @@
                 //      'hidden-by' contains the list of legendIndex that is hiding this element
                 var hiddenBy = elems[id].mapElem.data('hidden-by');
                 // Set to empty object if undefined
-                if (typeof hiddenBy == "undefined") hiddenBy = {};
+                if (hiddenBy === undefined) hiddenBy = {};
 
                 if ($.isArray(elems[id].value)) {
                     elemValue = elems[id].value[legendIndex];
@@ -1375,9 +1375,9 @@
                 }
 
                 if ((typeof sliceOptions.sliceValue != "undefined" && elemValue == sliceOptions.sliceValue)
-                    || ((typeof sliceOptions.sliceValue == "undefined")
-                        && (typeof sliceOptions.min == "undefined" || elemValue >= sliceOptions.min)
-                        && (typeof sliceOptions.max == "undefined" || elemValue <= sliceOptions.max))
+                    || ((sliceOptions.sliceValue === undefined)
+                        && (sliceOptions.min === undefined || elemValue >= sliceOptions.min)
+                        && (sliceOptions.max === undefined || elemValue <= sliceOptions.max))
                 ) {
                     (function(id) {
                         if (hidden === '0') { // we want to hide this element
@@ -1412,7 +1412,7 @@
             $(elem.node).attr(hiddenNewAttr);
             $(label.node).attr(hiddenNewAttr);
 
-            if ((typeof hideOtherElems === "undefined" || hideOtherElems === true)
+            if ((hideOtherElems === undefined || hideOtherElems === true)
                 && typeof legendOptions.exclusive !== "undefined" && legendOptions.exclusive === true
             ) {
                 $("[data-type='elem'][data-hidden=0]", $container).each(function() {
@@ -1595,9 +1595,9 @@
     Mapael.getLegendSlice = function (value, legend) {
         for(var i = 0, length = legend.slices.length; i < length; ++i) {
             if ((typeof legend.slices[i].sliceValue != "undefined" && value == legend.slices[i].sliceValue)
-                || ((typeof legend.slices[i].sliceValue == "undefined")
-                    && (typeof legend.slices[i].min == "undefined" || value >= legend.slices[i].min)
-                    && (typeof legend.slices[i].max == "undefined" || value <= legend.slices[i].max))
+                || ((legend.slices[i].sliceValue === undefined)
+                    && (legend.slices[i].min === undefined || value >= legend.slices[i].min)
+                    && (legend.slices[i].max === undefined || value <= legend.slices[i].max))
             ) {
                 return legend.slices[i];
             }
