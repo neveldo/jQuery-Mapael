@@ -321,12 +321,12 @@
                 , panY = 0
                 , previousZoomLevel = (1 + $container.data("zoomLevel") * options.map.zoom.step)
                 , zoomLevel = (1 + newLevel * options.map.zoom.step)
-                , animDuration = (typeof zoomOptions.animDuration != 'undefined') ? zoomOptions.animDuration : options.map.zoom.animDuration
+                , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : options.map.zoom.animDuration
                 , offsetX = 0
                 , offsetY = 0
                 , coords = {};
 
-            if (typeof zoomOptions.latitude != "undefined" && typeof zoomOptions.longitude != "undefined") {
+            if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
                 coords = mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
                 zoomOptions.x = coords.x;
                 zoomOptions.y = coords.y;
@@ -341,7 +341,7 @@
             if (newLevel === 0) {
                 panX = 0;
                 panY = 0;
-            } else if (typeof zoomOptions.fixedCenter != 'undefined' && zoomOptions.fixedCenter === true) {
+            } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
                 offsetX = $container.data("panX") + ((zoomOptions.x - $container.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
                 offsetY = $container.data("panY") + ((zoomOptions.y - $container.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
 
@@ -423,7 +423,7 @@
         }
 
         // Set initial zoom
-        if (typeof options.map.zoom.init != "undefined") {
+        if (options.map.zoom.init !== undefined) {
             if (options.map.zoom.init.animDuration === undefined) {
                 options.map.zoom.init.animDuration = 0;
             }
@@ -480,11 +480,11 @@
                 // Used for newPlots and newLinks
                 , fnShowElement = function(elem) {
                     elem.mapElem.attr({opacity : 0});
-                    elem.mapElem.animate({"opacity": (typeof elem.mapElem.originalAttrs.opacity != "undefined") ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
+                    elem.mapElem.animate({"opacity": (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
 
                     if (elem.textElem) {
                         elem.textElem.attr({opacity : 0});
-                        elem.textElem.animate({"opacity": (typeof elem.textElem.originalAttrs.opacity != "undefined") ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
+                        elem.textElem.animate({"opacity": (elem.textElem.originalAttrs.opacity !== undefined) ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
                     }
                 };
 
@@ -493,7 +493,7 @@
                 else $.extend(true, options, opt.mapOptions);
 
                 // IF we update areas, plots or legend, then reset all legend state to "show"
-                if (typeof opt.mapOptions.areas != "undefined" || typeof opt.mapOptions.plots != "undefined" || typeof opt.mapOptions.legend  != "undefined") {
+                if (opt.mapOptions.areas !== undefined || opt.mapOptions.plots !== undefined || opt.mapOptions.legend !== undefined) {
                     $("[data-type='elem']", $container).each(function (id, elem) {
                         if ($(elem).attr('data-hidden') === "1") {
                             // Toggle state of element by clicking
@@ -506,7 +506,7 @@
             // Delete plots by name if deletePlotKeys is array
             if (typeof opt.deletePlotKeys === "object") {
                 for (;i < opt.deletePlotKeys.length; i++) {
-                    if (typeof plots[opt.deletePlotKeys[i]] != "undefined") {
+                    if (plots[opt.deletePlotKeys[i]] !== undefined) {
                         fnRemoveElement(plots[opt.deletePlotKeys[i]]);
                         delete plots[opt.deletePlotKeys[i]];
                     }
@@ -523,7 +523,7 @@
             // Delete links by name if deleteLinkKeys is array
             if (typeof opt.deleteLinkKeys === "object") {
                 for (i = 0;i < opt.deleteLinkKeys.length; i++) {
-                    if (typeof links[opt.deleteLinkKeys[i]] != "undefined") {
+                    if (links[opt.deleteLinkKeys[i]] !== undefined) {
                         fnRemoveElement(links[opt.deleteLinkKeys[i]]);
                         delete links[opt.deleteLinkKeys[i]];
                     }
@@ -627,7 +627,7 @@
                 $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
                     // Search for the legend
                     var $legend = $container.find("." + legendCSSClass)[0];
-                    if (typeof $legend !== "undefined") {
+                    if ($legend !== undefined) {
                         // Select all elem inside this legend
                         $("[data-type='elem']", $legend).each(function(id, elem) {
                             if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
@@ -693,14 +693,14 @@
      */
     Mapael.initElem = function(paper, elem, options, $tooltip, id) {
         var bbox = {}, textPosition = {};
-        if (typeof options.value != "undefined")
+        if (options.value !== undefined)
             elem.value = options.value;
 
         // Init attrsHover
         Mapael.setHoverOptions(elem.mapElem, options.attrs, options.attrsHover);
 
         // Init the label related to the element
-        if (options.text && typeof options.text.content != "undefined") {
+        if (options.text && options.text.content !== undefined) {
             // Set a text label in the area
             bbox = elem.mapElem.getBBox();
             textPosition = Mapael.getTextPosition(bbox, options.text.position, options.text.margin);
@@ -720,7 +720,7 @@
             elem.mapElem.tooltip = options.tooltip;
             Mapael.setTooltip(elem.mapElem, $tooltip);
 
-            if (options.text && typeof options.text.content != "undefined") {
+            if (options.text && options.text.content !== undefined) {
                 elem.textElem.tooltip = options.tooltip;
                 Mapael.setTooltip(elem.textElem, $tooltip);
             }
@@ -732,7 +732,7 @@
             elem.mapElem.target = options.target;
             Mapael.setHref(elem.mapElem);
 
-            if (options.text && typeof options.text.content != "undefined") {
+            if (options.text && options.text.content !== undefined) {
                 elem.textElem.href = options.href;
                 elem.textElem.target = options.target;
                 Mapael.setHref(elem.textElem);
@@ -768,14 +768,14 @@
                 p2 = linksCollection[id].between[1];
             }
 
-            if (typeof p1.latitude != "undefined" && typeof p1.longitude != "undefined") {
+            if (p1.latitude !== undefined && p1.longitude !== undefined) {
                 coordsP1 = getCoords(p1.latitude, p1.longitude);
             } else {
                 coordsP1.x = p1.x;
                 coordsP1.y = p1.y;
             }
 
-            if (typeof p2.latitude != "undefined" && typeof p2.longitude != "undefined") {
+            if (p2.latitude !== undefined && p2.longitude !== undefined) {
                 coordsP2 = getCoords(p2.latitude, p2.longitude);
             } else {
                 coordsP2.x = p2.x;
@@ -837,12 +837,12 @@
      */
     Mapael.updateElem = function(elemOptions, elem, $tooltip, animDuration) {
         var bbox, textPosition, plotOffsetX, plotOffsetY;
-        if (typeof elemOptions.value != "undefined")
+        if (elemOptions.value !== undefined)
             elem.value = elemOptions.value;
 
         // Update the label
         if (elem.textElem) {
-            if (typeof elemOptions.text != "undefined" && typeof elemOptions.text.content != "undefined" && elemOptions.text.content != elem.textElem.attrs.text)
+            if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content != elem.textElem.attrs.text)
                 elem.textElem.attr({text : elemOptions.text.content});
 
             bbox = elem.mapElem.getBBox();
@@ -900,7 +900,7 @@
         }
 
         // Update the link
-        if (typeof elemOptions.href != "undefined") {
+        if (elemOptions.href !== undefined) {
             if (elem.mapElem.href === undefined) {
                 Mapael.setHref(elem.mapElem);
                 if (elem.textElem) Mapael.setHref(elem.textElem);
@@ -926,7 +926,7 @@
                 , options.legend.plot
             );
 
-        if (typeof elemOptions.x != "undefined" && typeof elemOptions.y != "undefined")
+        if (elemOptions.x !== undefined && elemOptions.y !== undefined)
             coords = {x : elemOptions.x, y : elemOptions.y};
         else
             coords = mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
@@ -988,11 +988,11 @@
                     "top" : Math.min($container.height() - $tooltip.outerHeight() - 5, y - $container.offset().top + 20)
                 };
 
-                if (typeof elem.tooltip.overflow != "undefined") {
-                    if (typeof elem.tooltip.overflow.right != "undefined" && elem.tooltip.overflow.right === true) {
+                if (elem.tooltip.overflow !== undefined) {
+                    if (elem.tooltip.overflow.right !== undefined && elem.tooltip.overflow.right === true) {
                         tooltipPosition.left = x - $container.offset().left + 10;
                     }
-                    if (typeof elem.tooltip.overflow.bottom != "undefined" && elem.tooltip.overflow.bottom === true) {
+                    if (elem.tooltip.overflow.bottom !== undefined && elem.tooltip.overflow.bottom === true) {
                         tooltipPosition.top = y - $container.offset().top + 20;
                     }
                 }
@@ -1004,13 +1004,13 @@
             tooltipTO = setTimeout(
                 function() {
                     $tooltip.attr("class", cssClass);
-                    if (typeof elem.tooltip != "undefined") {
-                        if (typeof elem.tooltip.content != "undefined") {
+                    if (elem.tooltip !== undefined) {
+                        if (elem.tooltip.content !== undefined) {
                             // if tooltip.content is function, call it. Otherwise, assign it directly.
                             var content = (typeof elem.tooltip.content === "function")? elem.tooltip.content(elem) : elem.tooltip.content;
                             $tooltip.html(content).css("display", "block");
                         }
-                        if (typeof elem.tooltip.cssClass != "undefined") {
+                        if (elem.tooltip.cssClass !== undefined) {
                             $tooltip.addClass(elem.tooltip.cssClass);
                         }
                     }
@@ -1078,7 +1078,7 @@
         });
 
         $map.on("mousedown" + (options.touch ? " touchstart" : ""), function(e) {
-            if (typeof e.pageX !== 'undefined') {
+            if (e.pageX !== undefined) {
                 mousedown = true;
                 previousX = e.pageX;
                 previousY = e.pageY;
@@ -1094,7 +1094,7 @@
                 , pageX = 0
                 , pageY = 0;
 
-            if (typeof e.pageX !== 'undefined') {
+            if (e.pageX !== undefined) {
                 pageX = e.pageX;
                 pageY = e.pageY;
             } else {
@@ -1374,7 +1374,7 @@
                     elemValue = elems[id].value;
                 }
 
-                if ((typeof sliceOptions.sliceValue != "undefined" && elemValue == sliceOptions.sliceValue)
+                if ((sliceOptions.sliceValue !== undefined && elemValue == sliceOptions.sliceValue)
                     || ((sliceOptions.sliceValue === undefined)
                         && (sliceOptions.min === undefined || elemValue >= sliceOptions.min)
                         && (sliceOptions.max === undefined || elemValue <= sliceOptions.max))
@@ -1399,8 +1399,8 @@
                                     elems[id].mapElem.show();
                                     if (elems[id].textElem) elems[id].textElem.show();
                                 }
-                                elems[id].mapElem.animate({"opacity":typeof elems[id].mapElem.originalAttrs.opacity != "undefined" ? elems[id].mapElem.originalAttrs.opacity : 1}, animDuration);
-                                if (elems[id].textElem) elems[id].textElem.animate({"opacity":typeof elems[id].textElem.originalAttrs.opacity != "undefined" ? elems[id].textElem.originalAttrs.opacity : 1}, animDuration);
+                                elems[id].mapElem.animate({"opacity":elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1}, animDuration);
+                                if (elems[id].textElem) elems[id].textElem.animate({"opacity":elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1}, animDuration);
                             }
                         }
                         // Update elem data with new values
@@ -1413,7 +1413,7 @@
             $(label.node).attr(hiddenNewAttr);
 
             if ((hideOtherElems === undefined || hideOtherElems === true)
-                && typeof legendOptions.exclusive !== "undefined" && legendOptions.exclusive === true
+                && legendOptions.exclusive !== undefined && legendOptions.exclusive === true
             ) {
                 $("[data-type='elem'][data-hidden=0]", $container).each(function() {
                     if ($(this).attr('data-index') !== $(elem.node).attr('data-index')) {
@@ -1425,7 +1425,7 @@
         $(label.node).on("click", hideMapElems);
         $(elem.node).on("click", hideMapElems);
 
-        if (typeof sliceOptions.clicked !== "undefined" && sliceOptions.clicked === true) {
+        if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
             $(elem.node).trigger('click', false);
         }
     };
@@ -1535,7 +1535,7 @@
      */
     Mapael.getElemOptions = function(defaultOptions, elemOptions, legendOptions) {
         var options = $.extend(true, {}, defaultOptions, elemOptions);
-        if (typeof options.value != "undefined") {
+        if (options.value !== undefined) {
             if ($.isArray(legendOptions)) {
                 for (var i = 0, length = legendOptions.length;i<length;++i) {
                     options = $.extend(true, {}, options, Mapael.getLegendSlice(options.value[i], legendOptions[i]));
@@ -1594,7 +1594,7 @@
      */
     Mapael.getLegendSlice = function (value, legend) {
         for(var i = 0, length = legend.slices.length; i < length; ++i) {
-            if ((typeof legend.slices[i].sliceValue != "undefined" && value == legend.slices[i].sliceValue)
+            if ((legend.slices[i].sliceValue !== undefined && value == legend.slices[i].sliceValue)
                 || ((legend.slices[i].sliceValue === undefined)
                     && (legend.slices[i].min === undefined || value >= legend.slices[i].min)
                     && (legend.slices[i].max === undefined || value <= legend.slices[i].max))
