@@ -3,7 +3,7 @@
  * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
  * Requires jQuery, raphael.js and jquery.mousewheel
  *
- * Version: 1.1.0
+ * Version: 2.0.0-dev
  *
  * Copyright (c) 2015 Vincent Brouté (http://www.vincentbroute.fr/mapael)
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
@@ -25,10 +25,14 @@
 }(function ($, Raphael, mousewheel) { // jshint ignore:line
 
     "use strict";
-    
+
+    /* The plugin name (used on several places) */
     var pluginName = "mapael";
 
-    // Default map options
+    /* Version number of jQuery Mapael. See http://semver.org/ for more information. */
+    var version = "2.0.0-dev";
+
+    /* Default map options */
     var defaultOptions = {
         map : {
             cssClass : "map"
@@ -131,7 +135,7 @@
         , links : {}
     };
 
-    // Default legends option
+    /* Default legends option */
     var legendDefaultOptions = {
         area : {
             cssClass : "areaLegend"
@@ -229,11 +233,8 @@
         });
     };
 
-    /*
-     * Version number of jQuery Mapael. See http://semver.org/ for more information.
-     *  @type string
-     */
-    Mapael.version = '1.1.0';
+    /* Version number */
+    Mapael.version = version;
 
     /* zoom TimeOut handler (used to set and clear) */
     Mapael.zoomTO = 0;
