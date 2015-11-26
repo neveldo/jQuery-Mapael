@@ -315,7 +315,7 @@
          *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
          *    "animDuration" : zoom duration
          */
-        $container.on("zoom", function(e, zoomOptions) {
+        $container.on("zoom." + pluginName, function(e, zoomOptions) {
             var newLevel = Math.min(Math.max(zoomOptions.level, 0), options.map.zoom.maxLevel)
                 , panX = 0
                 , panY = 0
@@ -371,7 +371,7 @@
         * Update the zoom level of the map on mousewheel
         */
             if (options.map.zoom.mousewheel) {
-                $map.on("mousewheel", function(e) {
+                $map.on("mousewheel." + pluginName, function(e) {
                     var offset = $map.offset(),
                         initFactor = (options.map.width) ? (mapConf.width / options.map.width) : (mapConf.width / $map.width())
                         , zoomLevel = (e.deltaY > 0) ? 1 : -1
@@ -389,7 +389,7 @@
              * Update the zoom level of the map on touch pinch
              */
             if (options.map.zoom.touch) {
-                $map.on("touchstart", function(e) {
+                $map.on("touchstart." + pluginName, function(e) {
                     if (e.originalEvent.touches.length === 2) {
                         zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
                         zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
@@ -397,7 +397,7 @@
                     }
                 });
 
-                $map.on("touchmove", function(e) {
+                $map.on("touchmove." + pluginName, function(e) {
                     var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
 
                     if (e.originalEvent.touches.length === 2) {
@@ -448,7 +448,7 @@
          *  opt.animDuration animation duration in ms (default = 0)
          *  opt.afterUpdate Hook that allows to add custom processing on the map
          */
-        $container.on("update", function(e, opt) {
+        $container.on("update." + pluginName, function(e, opt) {
             // Abort if opt is undefined
             if (typeof opt !== "object")  return;
         
@@ -661,7 +661,7 @@
             // Create the legends for plots taking into account the scale of the map
             Mapael.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
         } else {
-            $(window).on("resize", function() {
+            $(window).on("resize." + pluginName, function() {
                 clearTimeout(resizeTO);
                 resizeTO = setTimeout(function(){$map.trigger("resizeEnd");}, 150);
             });
@@ -673,12 +673,12 @@
                 $map.unbind("resizeEnd", createPlotLegend);
             };
 
-            $map.on("resizeEnd", function() {
+            $map.on("resizeEnd." + pluginName, function() {
                 var containerWidth = $map.width();
                 if (paper.width != containerWidth) {
                     paper.setSize(containerWidth, mapConf.height * (containerWidth / mapConf.width));
                 }
-            }).on("resizeEnd", createPlotLegend).trigger("resizeEnd");
+            }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd");
         }
 
         // Hook that allows to add custom processing on the map
@@ -1000,7 +1000,7 @@
                 $tooltip.css(tooltipPosition);
             };
 
-        $(elem.node).on("mouseover", function(e) {
+        $(elem.node).on("mouseover." + pluginName, function(e) {
             tooltipTO = setTimeout(
                 function() {
                     $tooltip.attr("class", cssClass);
@@ -1018,10 +1018,10 @@
                 }
                 , 120
             );
-        }).on("mouseout", function() {
+        }).on("mouseout." + pluginName, function() {
             clearTimeout(tooltipTO);
             $tooltip.css("display", "none");
-        }).on("mousemove", function(e) {
+        }).on("mousemove." + pluginName, function(e) {
             updateTooltipPosition(e.pageX, e.pageY);
         });
     };
@@ -1068,16 +1068,16 @@
         $parentContainer.data("zoomLevel", 0).data({"panX" : 0, "panY" : 0});
         $map.append($zoomIn).append($zoomOut);
 
-        $zoomIn.on("click", function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") + 1});});
-        $zoomOut.on("click", function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") - 1});});
+        $zoomIn.on("click." + pluginName, function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") + 1});});
+        $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") - 1});});
 
         // Panning
-        $("body").on("mouseup" + (options.touch ? " touchend" : ""), function() {
+        $("body").on("mouseup." + pluginName + (options.touch ? " touchend" : ""), function() {
             mousedown = false;
             setTimeout(function () {Mapael.panning = false;}, 50);
         });
 
-        $map.on("mousedown" + (options.touch ? " touchstart" : ""), function(e) {
+        $map.on("mousedown." + pluginName + (options.touch ? " touchstart" : ""), function(e) {
             if (e.pageX !== undefined) {
                 mousedown = true;
                 previousX = e.pageX;
@@ -1089,7 +1089,7 @@
                     previousY = e.originalEvent.touches[0].pageY;
                 }
             }
-        }).on("mousemove" + (options.touch ? " touchmove" : ""), function(e) {
+        }).on("mousemove." + pluginName + (options.touch ? " touchmove" : ""), function(e) {
             var currentLevel = $parentContainer.data("zoomLevel")
                 , pageX = 0
                 , pageY = 0;
@@ -1422,8 +1422,8 @@
                 });
             }
         };
-        $(label.node).on("click", hideMapElems);
-        $(elem.node).on("click", hideMapElems);
+        $(label.node).on("click." + pluginName, hideMapElems);
+        $(elem.node).on("click." + pluginName, hideMapElems);
 
         if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
             $(elem.node).trigger('click', false);
@@ -1482,13 +1482,13 @@
             , outBehaviour = function () {clearTimeout(hoverTO);Mapael.elemOut(paper, mapElem, textElem);};
 
         $mapElem = $(mapElem.node);
-        $mapElem.on("mouseover", overBehaviour);
-        $mapElem.on("mouseout", outBehaviour);
+        $mapElem.on("mouseover." + pluginName, overBehaviour);
+        $mapElem.on("mouseout." + pluginName, outBehaviour);
 
         if (textElem) {
             $textElem = $(textElem.node);
-            $textElem.on("mouseover", overBehaviour);
-            $(textElem.node).on("mouseout", outBehaviour);
+            $textElem.on("mouseover." + pluginName, overBehaviour);
+            $(textElem.node).on("mouseout." + pluginName, outBehaviour);
         }
     };
 
