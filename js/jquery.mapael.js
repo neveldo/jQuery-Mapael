@@ -1453,7 +1453,7 @@
 
         for (var j = 0; j < legendsOptions.length; ++j) {
             // Check for class existence
-            if(legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass).length === 0) {
+            if(legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass, $container).length === 0) {
                 throw "The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.";
             }
             if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
