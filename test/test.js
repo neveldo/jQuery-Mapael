@@ -29,7 +29,7 @@ $(function() {
     });
 
     test( "Mouseover", function(assert ) {
-        var mouseover_done = assert.async();
+        var mouseover_async_done = assert.async();
         
         /* Create the map */
         $(".mapcontainer").mapael({
@@ -38,21 +38,21 @@ $(function() {
             }
         });
 
-        /*
-         * Checking the mouseover event (background changement)
-         */
-        var default_fill = $(".mapcontainer svg path:first").attr("fill");
-        $(".mapcontainer svg path:first").trigger("mouseover");
+        /* mouseover event check (background changement) */
+        var $elem = $(".mapcontainer svg path:first");
+        var default_fill = $elem.attr("fill");
+        $elem.trigger("mouseover");
         setTimeout(function() {
-            var new_fill = $(".mapcontainer svg path:first").attr("fill");
-            notEqual(default_fill, new_fill, "Check mouse over" );
-            mouseover_done();
+            var new_fill = $elem.attr("fill");
+            assert.notEqual(default_fill, new_fill, "Check new background" );
+            assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden" );
+            mouseover_async_done();
         }, 500);
         
     });
 
     test( "Responsive", function(assert ) {
-        var responsive_done = assert.async();
+        var responsive_async_done = assert.async();
         
         /* Create the map */
         $(".mapcontainer").mapael({
@@ -65,9 +65,10 @@ $(function() {
         $(".mapcontainer").width(CST_MAP_MAX_WIDTH/2);
         $(window).trigger('resize');
         setTimeout(function() {
-            assert.equal($(".mapcontainer .map svg").attr("width"), CST_MAP_MAX_WIDTH/2, "Responsive test: check new map width size" );
-            assert.equal($(".mapcontainer .map svg").attr("height"), CST_MAP_MAX_HEIGHT/2, "Responsive test: check new map height size" );
-            responsive_done();
+            var $svg = $(".mapcontainer .map svg");
+            assert.equal($svg.attr("width"), CST_MAP_MAX_WIDTH/2, "Responsive test: check new map width size" );
+            assert.equal($svg.attr("height"), CST_MAP_MAX_HEIGHT/2, "Responsive test: check new map height size" );
+            responsive_async_done();
         }, 500);
 
     });
