@@ -107,7 +107,6 @@ $(function() {
                 if (data_id === "department-56") {
                     assert.ok($(".mapcontainer .map .mapTooltip").is( ":visible" ), "Check tooltip visible for " + data_id);
                     assert.equal($(".mapcontainer .map .mapTooltip").html(), CST_CUSTOMAREA[data_id].tooltip.content, "Check special tooltip content for " + data_id);
-                    /* TODO : check text? */
                 } else {
                     /* We can't test the following because it will fail for area around dptmt 56... */
                     //assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden for " + data_id);
@@ -124,9 +123,6 @@ $(function() {
                     
                     if (data_id === "department-56") {
                         assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden after mouseout for " + data_id);
-                        // assert.equal($(".mapcontainer .map .mapTooltip").html(), "", "Check empty tooltip content after mouseout for " + data_id);
-                    } else {
-                        /* We can't test the following because it will fail for area around dptmt 56... */
                     }
                     
                     mouseover_async_done();
