@@ -49,7 +49,7 @@ $(function() {
     test("Different map cssClass", function(assert) {
         var new_classname = "DIFFERENT_CLASSNAME";
 
-        $(".mapcontainer .map").addClass(new_classname);
+        $(".mapcontainer .map").attr("class", "").addClass(new_classname);
 
         $(".mapcontainer").mapael({
             map: { 
@@ -91,6 +91,43 @@ $(function() {
         assert.ok(beforeInit_spy.calledOnce, "beforeInit call");
         assert.ok(afterInit_spy.calledOnce, "afterInit call");
 
+    });
+    
+    test("Tooltip options", function(assert) {
+        var tooltip_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
+        var container_class = "CONTAINER_CLASSNAME";
+        var tooltip_class = "TOOLTIP_CLASSNAME";
+        var additional_prop = {
+            "border-left": "5"
+        };
+        
+        $('<div/>').addClass(container_class).appendTo('.container');
+        
+        $(".mapcontainer").mapael({
+            map: { 
+                name: "france_departments",
+                tooltip: {
+                    cssClass: tooltip_class,
+                    css: additional_prop,
+                    target: $("." + container_class)
+                }
+            },
+            areas:{
+                "department-56": {
+                    tooltip: {content: "TOOLTIP_department-56"}
+                }
+            }
+        });
+        
+        assert.ok($("." + tooltip_class)[0], "Tooltip created" );
+        assert.ok($("." + container_class + " > ." + tooltip_class)[0], "Tooltip created in target" );
+        
+        $("path[data-id='department-56']").trigger("mouseover");
+        
+        setTimeout(function() {
+            assert.equal($("." + tooltip_class).css("border-left"), additional_prop["border-left"], "CSS added" );
+            tooltip_async_done();
+        }, 500);
     });
     
 });
