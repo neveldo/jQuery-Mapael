@@ -27,8 +27,7 @@ $(function() {
 
     });
     
-
-    test("Creation fail", function(assert) {
+    test("Creation fail: wrong map", function(assert) {
 
         /* Error if wrong map name */
         assert.throws(function(){
@@ -37,7 +36,9 @@ $(function() {
             });
         }, "Not existing map" );
         
-        /* Create map, then create again!
+    });
+    
+    test("Creation fail: existing map", function(assert) {
         $(".mapcontainer").mapael({
             map: { name: "france_departments" }
         });
@@ -46,7 +47,6 @@ $(function() {
                 map: { name: "france_departments" }
             });
         }, "Already existing map" );
- */
     });
 
     test("Mouseover", function(assert) {
