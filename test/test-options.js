@@ -35,6 +35,24 @@ $(function() {
 
     });
     
+    test("Check callbacks", function(assert) {
+        var beforeInit_spy = sinon.spy();
+        var afterInit_spy = sinon.spy();
+        
+        /* Create the map */
+        $(".mapcontainer").mapael({
+            map: {
+                name: "france_departments",
+                beforeInit:beforeInit_spy,
+                afterInit:afterInit_spy
+            }
+        });
+        
+        assert.ok(beforeInit_spy.calledOnce, "beforeInit call");
+        assert.ok(afterInit_spy.calledOnce, "afterInit call");
+
+    });
+    
     test("Default option override", function(assert) {
         var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
         
