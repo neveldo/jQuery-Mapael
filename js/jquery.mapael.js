@@ -254,6 +254,11 @@
      * @param options the complete options to use
      */
     Mapael.init = function(container, options) {
+        
+        if ($.fn[pluginName].maps[options.map.name] === undefined) {
+            throw Error("Unknown map '" + options.map.name + "'");
+        }
+        
         var $container = $(container) // the current element
             , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
             , $map = $("." + options.map.cssClass, container).empty().append($tooltip) // the map container
