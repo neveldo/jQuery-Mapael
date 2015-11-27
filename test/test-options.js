@@ -35,6 +35,35 @@ $(function() {
 
     });
     
+    test("Different map cssClass", function(assert) {
+        var new_classname = "DIFFERENT_CLASSNAME";
+
+        $(".mapcontainer .map").addClass(new_classname);
+
+        $(".mapcontainer").mapael({
+            map: { 
+                name: "france_departments",
+                cssClass: new_classname
+            }
+        });
+        
+        assert.ok($("." + new_classname + " svg")[0], "Map created" );
+        
+    });
+    
+    test("Wrong map cssClass", function(assert) {
+        assert.throws(function(){
+            $(".mapcontainer").mapael({
+                map: { 
+                    name: "not_existing_map",
+                    cssClass: "NOT_EXISTING" 
+                }
+            });
+        }, "Throw error" );
+        
+        assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
+    });
+    
     test("Check callbacks", function(assert) {
         var beforeInit_spy = sinon.spy();
         var afterInit_spy = sinon.spy();

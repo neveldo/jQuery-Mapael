@@ -34,7 +34,9 @@ $(function() {
             $(".mapcontainer").mapael({
                 map: { name: "not_existing_map" }
             });
-        }, "Not existing map" );
+        }, "Throw error" );
+        
+        assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
         
     });
     
@@ -46,7 +48,7 @@ $(function() {
             $(".mapcontainer").mapael({
                 map: { name: "france_departments" }
             });
-        }, "Already existing map" );
+        }, "Throw error" );
     });
 
     test("Mouseover", function(assert) {
