@@ -1,3 +1,12 @@
+/*
+ * Unit Test for Mapael
+ * Module: Basic
+ * 
+ * Here are tested:
+ *      - Basic map creation
+ *      - Basic map interaction
+ *      - options.map.name
+ */
 $(function() {
     
     module("Basic");
