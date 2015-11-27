@@ -2,6 +2,10 @@ $(function() {
     
     module("Options");
     
+    var CST_NB_OF_FRANCE_DPTMT = 96;
+    var CST_MAP_MAX_WIDTH = 800;
+    var CST_MAP_MAX_HEIGHT = 834.8948306319708; // Calculated
+    
     test("Force width", function(assert) {
         var responsive_async_done = assert.async();
         
