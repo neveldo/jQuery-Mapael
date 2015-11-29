@@ -670,7 +670,7 @@
             var createPlotLegend = function() {
                 Mapael.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
 
-                $map.unbind("resizeEnd", createPlotLegend);
+                $map.off("resizeEnd." + pluginName, createPlotLegend);
             };
 
             $map.on("resizeEnd." + pluginName, function() {
@@ -966,7 +966,7 @@
      */
     Mapael.setHref = function(elem) {
         elem.attr({cursor : "pointer"});
-        $(elem.node).bind("click", function() {
+        $(elem.node).on("click." + pluginName, function() {
             if (!Mapael.panning && elem.href)
                 window.open(elem.href, elem.target);
         });
@@ -1498,8 +1498,8 @@
      * @param textElem the optional text element (within the map element)
      */
     Mapael.unsetHover = function (mapElem, textElem) {
-        $(mapElem.node).off();
-        if (textElem) $(textElem.node).off();
+        $(mapElem.node).off("." + pluginName);
+        if (textElem) $(textElem.node).off("." + pluginName);
     };
     /*
      * Set he behaviour for "mouseover" event
