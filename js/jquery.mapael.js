@@ -379,7 +379,7 @@
                         , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $container.data("panX")
                         , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $container.data("panY");
 
-                    $container.trigger("zoom", {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                    $container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
 
                     return false;
                 });
@@ -411,7 +411,7 @@
                             y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $container.data("panY");
 
                             zoomLevel = (pinchDist - previousPinchDist) / Math.abs(pinchDist - previousPinchDist);
-                            $container.trigger("zoom", {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                            $container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
                             previousPinchDist = pinchDist;
                         }
                         return false;
@@ -427,7 +427,7 @@
             if (options.map.zoom.init.animDuration === undefined) {
                 options.map.zoom.init.animDuration = 0;
             }
-            $container.trigger("zoom", options.map.zoom.init);
+            $container.trigger("zoom." + pluginName, options.map.zoom.init);
         }
 
         // Create the legends for areas
@@ -497,7 +497,7 @@
                     $("[data-type='elem']", $container).each(function (id, elem) {
                         if ($(elem).attr('data-hidden') === "1") {
                             // Toggle state of element by clicking
-                            $(elem).trigger('click', [false, animDuration]);
+                            $(elem).trigger("click." + pluginName, [false, animDuration]);
                         }
                     });
                 }
@@ -633,7 +633,7 @@
                             if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                                 ($(elem).attr('data-hidden') === "1" && action === "show")) {
                                 // Toggle state of element by clicking
-                                $(elem).trigger('click', [false, animDuration]);
+                                $(elem).trigger("click." + pluginName, [false, animDuration]);
                             }
                         });
                     }
@@ -647,7 +647,7 @@
                     if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                         ($(elem).attr('data-hidden') === "1" && action === "show")) {
                         // Toggle state of element by clicking
-                        $(elem).trigger('click', [false, animDuration]);
+                        $(elem).trigger("click." + pluginName, [false, animDuration]);
                     }
                 });
             }
@@ -663,7 +663,7 @@
         } else {
             $(window).on("resize." + pluginName, function() {
                 clearTimeout(resizeTO);
-                resizeTO = setTimeout(function(){$map.trigger("resizeEnd");}, 150);
+                resizeTO = setTimeout(function(){$map.trigger("resizeEnd." + pluginName);}, 150);
             });
 
             // Create the legends for plots taking into account the scale of the map
@@ -678,7 +678,7 @@
                 if (paper.width != containerWidth) {
                     paper.setSize(containerWidth, mapConf.height * (containerWidth / mapConf.width));
                 }
-            }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd");
+            }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd." + pluginName);
         }
 
         // Hook that allows to add custom processing on the map
@@ -1068,8 +1068,8 @@
         $parentContainer.data("zoomLevel", 0).data({"panX" : 0, "panY" : 0});
         $map.append($zoomIn).append($zoomOut);
 
-        $zoomIn.on("click." + pluginName, function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") + 1});});
-        $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom", {"level" : $parentContainer.data("zoomLevel") - 1});});
+        $zoomIn.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : $parentContainer.data("zoomLevel") + 1});});
+        $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : $parentContainer.data("zoomLevel") - 1});});
 
         // Panning
         $("body").on("mouseup." + pluginName + (options.touch ? " touchend" : ""), function() {
@@ -1417,7 +1417,7 @@
             ) {
                 $("[data-type='elem'][data-hidden=0]", $container).each(function() {
                     if ($(this).attr('data-index') !== $(elem.node).attr('data-index')) {
-                        $(this).trigger('click', false);
+                        $(this).trigger("click." + pluginName, false);
                     }
                 });
             }
@@ -1426,7 +1426,7 @@
         $(elem.node).on("click." + pluginName, hideMapElems);
 
         if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
-            $(elem.node).trigger('click', false);
+            $(elem.node).trigger("click." pluginName, false);
         }
     };
 
