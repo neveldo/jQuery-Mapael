@@ -66,13 +66,13 @@ $(function() {
         assert.throws(function(){
             $(".mapcontainer").mapael({
                 map: { 
-                    name: "not_existing_map",
+                    name: "france_departments",
                     cssClass: "NOT_EXISTING" 
                 }
             });
         }, "Throw error" );
         
-        assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
+        assert.notOk($(".mapcontainer svg")[0], "Container not existing" );
     });
     
     test("Check callbacks", function(assert) {
