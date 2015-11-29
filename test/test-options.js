@@ -95,21 +95,19 @@ $(function() {
     
     test("Tooltip options", function(assert) {
         var tooltip_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
-        var container_class = "CONTAINER_CLASSNAME";
         var tooltip_class = "TOOLTIP_CLASSNAME";
         var additional_prop = {
-            "border-left": "5"
+            "border-left": "5px solid rgb(0, 255, 0)"
         };
         
-        $('<div/>').addClass(container_class).appendTo('.container');
+        $('<div/>').addClass(tooltip_class).appendTo('.container');
         
         $(".mapcontainer").mapael({
             map: { 
                 name: "france_departments",
                 tooltip: {
                     cssClass: tooltip_class,
-                    css: additional_prop,
-                    target: $("." + container_class)
+                    css: additional_prop
                 }
             },
             areas:{
@@ -120,7 +118,7 @@ $(function() {
         });
         
         assert.ok($("." + tooltip_class)[0], "Tooltip created" );
-        assert.ok($("." + container_class + " > ." + tooltip_class)[0], "Tooltip created in target" );
+        assert.ok($(".mapcontainer > .map > ." + tooltip_class)[0], "Tooltip created in target" );
         
         $("path[data-id='department-56']").trigger("mouseover");
         
