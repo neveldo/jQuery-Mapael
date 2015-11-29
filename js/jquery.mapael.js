@@ -25,7 +25,7 @@
 }(function ($, Raphael, mousewheel, undefined) {
 
     "use strict";
-
+    
     /* The plugin name (used on several places) */
     var pluginName = "mapael";
 
@@ -200,52 +200,40 @@
 
     /*
      * Mapael constructor
-     * Called directly on DOM element to apply the plugin
-     * @param options the user options
+     * Init instance vars and call init()
+     * @param container the DOM element on which to apply the plugin
+     * @param options the complete options to use
      */
-    var Mapael = function(options) {
+    var Mapael = function(container, options) {
+        var self = this;
 
-        // Extend default options with user options
-        options = $.extend(true, {}, defaultOptions, options);
+        self.container = container;
+        self.$container = $(container);
+        self.options = options;
 
-        // Extend each legend default options with user options
-        $.each(options.legend, function(type) {
-            if ($.isArray(options.legend[type])) {
-                for (var i = 0; i < options.legend[type].length; ++i)
-                    options.legend[type][i] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type][i]);
-            } else {
-                options.legend[type] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type]);
-            }
-        });
 
-        // Init the plugin on each DOM element
-        return this.each(function() {
+        /* Version number */
+        self.version = version;
+        
+        /* zoom TimeOut handler (used to set and clear) */
+        self.zoomTO = 0;
 
-            // Avoid multiple instanciation
-            if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
+        /* Panning: tell if panning action is in progress */
+        self.panning = false;
+        /* Panning TimeOut handler (used to set and clear) */
+        self.panningTO = 0;
 
-            // Save instanciation on element
-            // This allow external access to Mapael using $(".mapcontainer").data("mapael")
-            $.data(this, pluginName, Mapael);
+        /* Animate view box Interval handler (used to set and clear) */
+        self.animationIntervalID = null;
 
-            // Initialize
-            Mapael.init(this, options);
-        });
+        self.init(container, options);
     };
 
-    /* Version number */
-    Mapael.version = version;
-
-    /* zoom TimeOut handler (used to set and clear) */
-    Mapael.zoomTO = 0;
-
-    /* Panning: tell if panning action is in progress */
-    Mapael.panning = false;
-    /* Panning TimeOut handler (used to set and clear) */
-    Mapael.panningTO = 0;
-
-    /* Animate view box Interval handler (used to set and clear) */
-    Mapael.animationIntervalID = null;
+    /*
+     * Mapael Prototype
+     * Defines all functions needed by Mapael
+     */
+    Mapael.prototype = {
 
     /*
      * Initialize the plugin
@@ -253,7 +241,7 @@
      * @param container the DOM element on which to apply the plugin
      * @param options the complete options to use
      */
-    Mapael.init = function(container, options) {
+    init: function(container, options) {
 
         // Init check for class existence
         if (options.map.cssClass === "" || $("." + options.map.cssClass, container).length === 0) {
@@ -264,7 +252,8 @@
             throw Error("Unknown map '" + options.map.name + "'");
         }
 
-        var $container = $(container) // the current element
+        var self = this
+            , $container = $(container) // the current element
             , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
             , $map = $("." + options.map.cssClass, container).empty().append($tooltip) // the map container
             , mapConf = $.fn[pluginName].maps[options.map.name]
@@ -286,7 +275,7 @@
 
         // Draw map areas
         $.each(mapConf.elems, function(id) {
-            elemOptions = Mapael.getElemOptions(
+            elemOptions = self.getElemOptions(
                 options.map.defaultArea
                 , (options.areas[id] ? options.areas[id] : {})
                 , options.legend.area
@@ -299,20 +288,20 @@
 
         // Init map areas in a second loop (prevent texts to be hidden by map elements)
         $.each(mapConf.elems, function(id) {
-            elemOptions = Mapael.getElemOptions(
+            elemOptions = self.getElemOptions(
                 options.map.defaultArea
                 , (options.areas[id] ? options.areas[id] : {})
                 , options.legend.area
             );
-            Mapael.initElem(paper, areas[id], elemOptions, $tooltip, id);
+            self.initElem(paper, areas[id], elemOptions, $tooltip, id);
         });
 
         // Draw links
-        links = Mapael.drawLinksCollection(paper, options, options.links, mapConf.getCoords, $tooltip);
+        links = self.drawLinksCollection(paper, options, options.links, mapConf.getCoords, $tooltip);
 
         // Draw plots
         $.each(options.plots, function(id) {
-            plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
+            plots[id] = self.drawPlot(id, options, mapConf, paper, $tooltip);
         });
 
         /*
@@ -366,11 +355,11 @@
             if (zoomLevel == previousZoomLevel && panX == $container.data('panX') && panY == $container.data('panY')) return;
 
             if (animDuration > 0) {
-                Mapael.animateViewBox($map, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, options.map.zoom.animEasing);
+                self.animateViewBox($map, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, options.map.zoom.animEasing);
             } else {
                 paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
-                clearTimeout(Mapael.zoomTO);
-                Mapael.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
+                clearTimeout(self.zoomTO);
+                self.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
             }
 
             $container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
@@ -429,7 +418,7 @@
                 });
             }
             // Enable zoom
-            Mapael.initZoom($map, paper, mapConf.width, mapConf.height, options.map.zoom);
+            self.initZoom($map, paper, mapConf.width, mapConf.height, options.map.zoom);
         }
 
         // Set initial zoom
@@ -441,7 +430,7 @@
         }
 
         // Create the legends for areas
-        Mapael.createLegends($container, options, "area", areas, 1);
+        self.createLegends($container, options, "area", areas, 1);
 
         /*
          *
@@ -469,7 +458,7 @@
                 // Used for deletePlotKeys and deleteLinkKeys
                 , fnRemoveElement = function(elem) {
                     // Unset all event handlers
-                    Mapael.unsetHover(elem.mapElem, elem.textElem);
+                    self.unsetHover(elem.mapElem, elem.textElem);
                     if (animDuration > 0) {
                         elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
                             elem.mapElem.remove();
@@ -552,7 +541,7 @@
                 $.each(opt.newPlots, function(id) {
                     if (plots[id] === undefined) {
                         options.plots[id] = opt.newPlots[id];
-                        plots[id] = Mapael.drawPlot(id, options, mapConf, paper, $tooltip);
+                        plots[id] = self.drawPlot(id, options, mapConf, paper, $tooltip);
                         if (animDuration > 0) {
                             fnShowElement(plots[id]);
                         }
@@ -562,7 +551,7 @@
 
             // New links
             if (typeof opt.newLinks === "object") {
-                var newLinks = Mapael.drawLinksCollection(paper, options, opt.newLinks, mapConf.getCoords, $tooltip);
+                var newLinks = self.drawLinksCollection(paper, options, opt.newLinks, mapConf.getCoords, $tooltip);
                 $.extend(links, newLinks);
                 $.extend(options.links, opt.newLinks);
                 if (animDuration > 0) {
@@ -574,18 +563,18 @@
 
             // Update areas attributes and tooltips
             $.each(areas, function(id) {
-                elemOptions = Mapael.getElemOptions(
+                elemOptions = self.getElemOptions(
                     options.map.defaultArea
                     , (options.areas[id] ? options.areas[id] : {})
                     , options.legend.area
                 );
 
-                Mapael.updateElem(elemOptions, areas[id], $tooltip, animDuration);
+                self.updateElem(elemOptions, areas[id], $tooltip, animDuration);
             });
 
             // Update plots attributes and tooltips
             $.each(plots, function(id) {
-                elemOptions = Mapael.getElemOptions(
+                elemOptions = self.getElemOptions(
                     options.map.defaultPlot
                     , (options.plots[id] ? options.plots[id] : {})
                     , options.legend.plot
@@ -604,27 +593,27 @@
                     elemOptions.attrs.r = elemOptions.size / 2;
                 }
 
-                Mapael.updateElem(elemOptions, plots[id], $tooltip, animDuration);
+                self.updateElem(elemOptions, plots[id], $tooltip, animDuration);
             });
 
             // Update links attributes and tooltips
             $.each(links, function(id) {
-                elemOptions = Mapael.getElemOptions(
+                elemOptions = self.getElemOptions(
                     options.map.defaultLink
                     , (options.links[id] ? options.links[id] : {})
                     , {}
                 );
 
-                Mapael.updateElem(elemOptions, links[id], $tooltip, animDuration);
+                self.updateElem(elemOptions, links[id], $tooltip, animDuration);
             });
 
             // Update legends
             if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
-                Mapael.createLegends($container, options, "area", areas, 1);
+                self.createLegends($container, options, "area", areas, 1);
                 if (options.map.width) {
-                    Mapael.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
+                    self.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
                 } else {
-                    Mapael.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
+                    self.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
                 }
             }
 
@@ -669,7 +658,7 @@
             paper.setSize(options.map.width, mapConf.height * (options.map.width / mapConf.width));
 
             // Create the legends for plots taking into account the scale of the map
-            Mapael.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
+            self.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
         } else {
             $(window).on("resize." + pluginName, function() {
                 clearTimeout(resizeTO);
@@ -678,7 +667,7 @@
 
             // Create the legends for plots taking into account the scale of the map
             var createPlotLegend = function() {
-                Mapael.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
+                self.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
 
                 $map.off("resizeEnd." + pluginName, createPlotLegend);
             };
@@ -695,44 +684,43 @@
         if (options.map.afterInit) options.map.afterInit($container, paper, areas, plots, options);
 
         $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
-
-    };
+    },
 
     /*
      * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
      */
-    Mapael.initElem = function(paper, elem, options, $tooltip, id) {
-        var bbox = {}, textPosition = {};
+    initElem: function(paper, elem, options, $tooltip, id) {
+        var bbox = {}, textPosition = {}, self=this;
         if (options.value !== undefined)
             elem.value = options.value;
 
         // Init attrsHover
-        Mapael.setHoverOptions(elem.mapElem, options.attrs, options.attrsHover);
+        self.setHoverOptions(elem.mapElem, options.attrs, options.attrsHover);
 
         // Init the label related to the element
         if (options.text && options.text.content !== undefined) {
             // Set a text label in the area
             bbox = elem.mapElem.getBBox();
-            textPosition = Mapael.getTextPosition(bbox, options.text.position, options.text.margin);
+            textPosition = self.getTextPosition(bbox, options.text.position, options.text.margin);
             options.text.attrs["text-anchor"] = textPosition.textAnchor;
             elem.textElem = paper.text(textPosition.x, textPosition.y, options.text.content).attr(options.text.attrs);
-            Mapael.setHoverOptions(elem.textElem, options.text.attrs, options.text.attrsHover);
-            if (options.eventHandlers) Mapael.setEventHandlers(id, options, elem.mapElem, elem.textElem);
-            Mapael.setHover(paper, elem.mapElem, elem.textElem);
+            self.setHoverOptions(elem.textElem, options.text.attrs, options.text.attrsHover);
+            if (options.eventHandlers) self.setEventHandlers(id, options, elem.mapElem, elem.textElem);
+            self.setHover(paper, elem.mapElem, elem.textElem);
             $(elem.textElem.node).attr("data-id", id);
         } else {
-            if (options.eventHandlers) Mapael.setEventHandlers(id, options, elem.mapElem);
-            Mapael.setHover(paper, elem.mapElem);
+            if (options.eventHandlers) self.setEventHandlers(id, options, elem.mapElem);
+            self.setHover(paper, elem.mapElem);
         }
 
         // Init the tooltip
         if (options.tooltip) {
             elem.mapElem.tooltip = options.tooltip;
-            Mapael.setTooltip(elem.mapElem, $tooltip);
+            self.setTooltip(elem.mapElem, $tooltip);
 
             if (options.text && options.text.content !== undefined) {
                 elem.textElem.tooltip = options.tooltip;
-                Mapael.setTooltip(elem.textElem, $tooltip);
+                self.setTooltip(elem.textElem, $tooltip);
             }
         }
 
@@ -740,22 +728,22 @@
         if (options.href) {
             elem.mapElem.href = options.href;
             elem.mapElem.target = options.target;
-            Mapael.setHref(elem.mapElem);
+            self.setHref(elem.mapElem);
 
             if (options.text && options.text.content !== undefined) {
                 elem.textElem.href = options.href;
                 elem.textElem.target = options.target;
-                Mapael.setHref(elem.textElem);
+                self.setHref(elem.textElem);
             }
         }
 
         $(elem.mapElem.node).attr("data-id", id);
-    };
+    },
 
     /*
      * Draw all links between plots on the paper
      */
-    Mapael.drawLinksCollection = function(paper, options, linksCollection, getCoords, $tooltip) {
+    drawLinksCollection: function(paper, options, linksCollection, getCoords, $tooltip) {
         var p1 = {}
             , p2 = {}
             , elemOptions = {}
@@ -764,7 +752,7 @@
             , links = {};
 
         $.each(linksCollection, function(id) {
-            elemOptions = Mapael.getElemOptions(options.map.defaultLink, linksCollection[id], {});
+            elemOptions = self.getElemOptions(options.map.defaultLink, linksCollection[id], {});
 
             if (typeof linksCollection[id].between[0] == 'string') {
                 p1 = options.plots[linksCollection[id].between[0]];
@@ -791,17 +779,17 @@
                 coordsP2.x = p2.x;
                 coordsP2.y = p2.y;
             }
-            links[id] = Mapael.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions, $tooltip);
+            links[id] = self.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions, $tooltip);
         });
         return links;
-    };
+    },
 
     /*
      * Draw a curved link between two couples of coordinates a(xa,ya) and b(xb, yb) on the paper
      */
-    Mapael.drawLink = function(id, paper, xa, ya, xb, yb, elemOptions, $tooltip) {
+    drawLink: function(id, paper, xa, ya, xb, yb, elemOptions, $tooltip) {
         var elem = {}
-
+            , self = this
             // Compute the "curveto" SVG point, d(x,y)
             // c(xc, yc) is the center of (xa,ya) and (xb, yb)
             , xc = (xa + xb) / 2
@@ -837,16 +825,16 @@
         }
 
         elem.mapElem = paper.path("m "+xa+","+ya+" C "+x+","+y+" "+xb+","+yb+" "+xb+","+yb+"").attr(elemOptions.attrs);
-        Mapael.initElem(paper, elem, elemOptions, $tooltip, id);
+        self.initElem(paper, elem, elemOptions, $tooltip, id);
 
         return elem;
-    };
+    },
 
     /*
      * Update the element "elem" on the map with the new elemOptions options
      */
-    Mapael.updateElem = function(elemOptions, elem, $tooltip, animDuration) {
-        var bbox, textPosition, plotOffsetX, plotOffsetY;
+    updateElem: function(elemOptions, elem, $tooltip, animDuration) {
+        var bbox, textPosition, plotOffsetX, plotOffsetY, self=this;
         if (elemOptions.value !== undefined)
             elem.value = elemOptions.value;
 
@@ -871,7 +859,7 @@
                 bbox.y2 += plotOffsetY;
             }
 
-            textPosition = Mapael.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
+            textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
             if (textPosition.x != elem.textElem.attrs.x || textPosition.y != elem.textElem.attrs.y) {
                 if (animDuration > 0) {
                     elem.textElem.attr({"text-anchor" : textPosition.textAnchor});
@@ -880,7 +868,7 @@
                     elem.textElem.attr({x : textPosition.x, y : textPosition.y, "text-anchor" : textPosition.textAnchor});
             }
 
-            Mapael.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
+            self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
             if (animDuration > 0)
                 elem.textElem.animate(elemOptions.text.attrs, animDuration);
             else
@@ -888,7 +876,7 @@
         }
 
         // Update elements attrs and attrsHover
-        Mapael.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
+        self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
         if (animDuration > 0)
             elem.mapElem.animate(elemOptions.attrs, animDuration);
         else
@@ -902,8 +890,8 @@
         // Update the tooltip
         if (elemOptions.tooltip) {
             if (elem.mapElem.tooltip === undefined) {
-                Mapael.setTooltip(elem.mapElem, $tooltip);
-                if (elem.textElem) Mapael.setTooltip(elem.textElem, $tooltip);
+                self.setTooltip(elem.mapElem, $tooltip);
+                if (elem.textElem) self.setTooltip(elem.textElem, $tooltip);
             }
             elem.mapElem.tooltip = elemOptions.tooltip;
             if (elem.textElem) elem.textElem.tooltip = elemOptions.tooltip;
@@ -912,8 +900,8 @@
         // Update the link
         if (elemOptions.href !== undefined) {
             if (elem.mapElem.href === undefined) {
-                Mapael.setHref(elem.mapElem);
-                if (elem.textElem) Mapael.setHref(elem.textElem);
+                self.setHref(elem.mapElem);
+                if (elem.textElem) self.setHref(elem.textElem);
             }
             elem.mapElem.href = elemOptions.href;
             elem.mapElem.target = elemOptions.target;
@@ -922,15 +910,16 @@
                 elem.textElem.target = elemOptions.target;
             }
         }
-    };
+    },
 
     /*
      * Draw the plot
      */
-    Mapael.drawPlot = function(id, options, mapConf, paper, $tooltip) {
-        var plot = {}
+    drawPlot: function(id, options, mapConf, paper, $tooltip) {
+        var self=this
+            , plot = {}
             , coords = {}
-            , elemOptions = Mapael.getElemOptions(
+            , elemOptions = self.getElemOptions(
                 options.map.defaultPlot
                 , (options.plots[id] ? options.plots[id] : {})
                 , options.legend.plot
@@ -967,20 +956,20 @@
             plot = {"mapElem" : paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
         }
 
-        Mapael.initElem(paper, plot, elemOptions, $tooltip, id);
+        self.initElem(paper, plot, elemOptions, $tooltip, id);
         return plot;
-    };
+    },
 
     /*
      * Set target link on elem
      */
-    Mapael.setHref = function(elem) {
+    setHref: function(elem) {
         elem.attr({cursor : "pointer"});
         $(elem.node).on("click." + pluginName, function() {
-            if (!Mapael.panning && elem.href)
+            if (!self.panning && elem.href)
                 window.open(elem.href, elem.target);
         });
-    };
+    },
 
     /*
      * Set a tooltip for the areas and plots
@@ -988,7 +977,7 @@
      * @param $tooltip the tooltip container
      * @param content the content to set in the tooltip
      */
-    Mapael.setTooltip = function(elem, $tooltip) {
+    setTooltip: function(elem, $tooltip) {
         var tooltipTO = 0
             , $container = $tooltip.parent()
             , cssClass = $tooltip.attr('class')
@@ -1034,7 +1023,7 @@
         }).on("mousemove." + pluginName, function(e) {
             updateTooltipPosition(e.pageX, e.pageY);
         });
-    };
+    },
 
     /*
      * Set user defined handlers for events on areas and plots
@@ -1043,20 +1032,21 @@
      * @param mapElem the map element to set callback on
      * @param textElem the optional text within the map element
      */
-    Mapael.setEventHandlers = function(id, elemOptions, mapElem, textElem) {
+    setEventHandlers: function(id, elemOptions, mapElem, textElem) {
+        var self = this;
         $.each(elemOptions.eventHandlers, function(event) {
             (function(event) {
                 $(mapElem.node).on(event, function(e) {
-                    if (!Mapael.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                    if (!self.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
                 });
                 if (textElem) {
                     $(textElem.node).on(event, function(e) {
-                        if (!Mapael.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
+                        if (!self.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
                     });
                 }
             })(event);
         });
-    };
+    },
 
     /*
      * Init zoom and panning for the map
@@ -1066,13 +1056,14 @@
      * @param mapHeight
     * @param options
      */
-    Mapael.initZoom = function($map, paper, mapWidth, mapHeight, options) {
+    initZoom: function($map, paper, mapWidth, mapHeight, options) {
         var $parentContainer = $map.parent()
             , $zoomIn = $("<div>").addClass(options.zoomInCssClass).html("+")
             , $zoomOut = $("<div>").addClass(options.zoomOutCssClass).html("&#x2212;")
             , mousedown = false
             , previousX = 0
-            , previousY = 0;
+            , previousY = 0
+            , self = this;
 
         // Zoom
         $parentContainer.data("zoomLevel", 0).data({"panX" : 0, "panY" : 0});
@@ -1084,7 +1075,7 @@
         // Panning
         $("body").on("mouseup." + pluginName + (options.touch ? " touchend" : ""), function() {
             mousedown = false;
-            setTimeout(function () {Mapael.panning = false;}, 50);
+            setTimeout(function () {self.panning = false;}, 50);
         });
 
         $map.on("mousedown." + pluginName + (options.touch ? " touchstart" : ""), function(e) {
@@ -1127,17 +1118,17 @@
 
                     paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
 
-                    clearTimeout(Mapael.panningTO);
-                    Mapael.panningTO = setTimeout(function(){$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
+                    clearTimeout(self.panningTO);
+                    self.panningTO = setTimeout(function(){$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
 
                     previousX = pageX;
                     previousY = pageY;
-                    Mapael.panning = true;
+                    self.panning = true;
                 }
                 return false;
             }
         });
-    };
+    },
 
     /*
      * Draw a legend for areas and / or plots
@@ -1148,8 +1139,9 @@
      * @param elems collection of plots or areas on the maps
      * @param legendIndex index of the legend in the conf array
      */
-    Mapael.drawLegend = function (legendOptions, $container, options, legendType, elems, scale, legendIndex) {
-        var $legend = {}
+    drawLegend: function (legendOptions, $container, options, legendType, elems, scale, legendIndex) {
+        var self = this
+            , $legend = {}
             , paper = {}
             , width = 0
             , height = 0
@@ -1329,10 +1321,10 @@
                         label.attr({cursor:"pointer"});
                         elem.attr({cursor:"pointer"});
 
-                        Mapael.setHoverOptions(elem, sliceAttrs[i], sliceAttrs[i]);
-                        Mapael.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
-                        Mapael.setHover(paper, elem, label);
-                        Mapael.handleClickOnLegendElem($container, legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
+                        self.setHoverOptions(elem, sliceAttrs[i], sliceAttrs[i]);
+                        self.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
+                        self.setHover(paper, elem, label);
+                        self.handleClickOnLegendElem($container, legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
                     }
                 }
             }
@@ -1344,7 +1336,7 @@
 
             paper.setSize(width, height);
             return paper;
-    };
+    },
 
     /*
      * Allow to hide elements of the map when the user clicks on a related legend item
@@ -1356,7 +1348,7 @@
      * @param elems collection of plots or areas displayed on the map
      * @param legendIndex index of the legend in the conf array
      */
-    Mapael.handleClickOnLegendElem = function($container, legendOptions, sliceOptions, label, elem, elems, legendIndex) {
+    handleClickOnLegendElem: function($container, legendOptions, sliceOptions, label, elem, elems, legendIndex) {
         var hideMapElems = function(e, hideOtherElems, animDuration) {
             var elemValue = 0
                 , hidden = $(label.node).attr('data-hidden')
@@ -1438,7 +1430,7 @@
         if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
             $(elem.node).trigger("click." + pluginName, false);
         }
-    };
+    },
 
     /*
      * Create all legends for a specified type (area or plot)
@@ -1448,8 +1440,8 @@
      * @param elems collection of plots or areas displayed on the map
      * @param scale scale ratio of the map
      */
-    Mapael.createLegends = function ($container, options, legendType, elems, scale) {
-        var legendsOptions = options.legend[legendType], legends = [];
+    createLegends: function ($container, options, legendType, elems, scale) {
+        var self = this, legendsOptions = options.legend[legendType], legends = [];
 
         if (!$.isArray(options.legend[legendType])) {
             legendsOptions = [options.legend[legendType]];
@@ -1461,11 +1453,11 @@
                 throw "The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.";
             }
             if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
-                legends.push(Mapael.drawLegend(legendsOptions[j], $container, options, legendType, elems, scale, j));
+                legends.push(self.drawLegend(legendsOptions[j], $container, options, legendType, elems, scale, j));
             }
         }
         return legends;
-    };
+    },
 
     /*
     * Set the attributes on hover and the attributes to restore for a map element
@@ -1473,14 +1465,14 @@
      * @param originalAttrs the original attributes to restore on mouseout event
      * @param attrsHover the attributes to set on mouseover event
      */
-    Mapael.setHoverOptions = function (elem, originalAttrs, attrsHover) {
+    setHoverOptions: function (elem, originalAttrs, attrsHover) {
         // Disable transform option on hover for VML (IE<9) because of several bugs
         if (Raphael.type != "SVG") delete attrsHover.transform;
         elem.attrsHover = attrsHover;
 
         if (elem.attrsHover.transform) elem.originalAttrs = $.extend({transform : "s1"}, originalAttrs);
         else elem.originalAttrs = originalAttrs;
-    };
+    },
 
     /*
      * Set the hover behavior (mouseover & mouseout) for plots and areas
@@ -1488,12 +1480,13 @@
      * @param mapElem the map element
      * @param textElem the optional text element (within the map element)
      */
-    Mapael.setHover = function (paper, mapElem, textElem) {
-        var $mapElem = {}
+    setHover: function (paper, mapElem, textElem) {
+        var self = this
+            , $mapElem = {}
             , $textElem = {}
             , hoverTO = 0
-            , overBehaviour = function() {hoverTO = setTimeout(function () {Mapael.elemHover(paper, mapElem, textElem);}, 120);}
-            , outBehaviour = function () {clearTimeout(hoverTO);Mapael.elemOut(paper, mapElem, textElem);};
+            , overBehaviour = function() {hoverTO = setTimeout(function () {self.elemHover(paper, mapElem, textElem);}, 120);}
+            , outBehaviour = function () {clearTimeout(hoverTO);self.elemOut(paper, mapElem, textElem);};
 
         $mapElem = $(mapElem.node);
         $mapElem.on("mouseover." + pluginName, overBehaviour);
@@ -1504,29 +1497,30 @@
             $textElem.on("mouseover." + pluginName, overBehaviour);
             $(textElem.node).on("mouseout." + pluginName, outBehaviour);
         }
-    };
+    },
 
     /*
      * Remove the hover behavior for plots and areas
      * @param mapElem the map element
      * @param textElem the optional text element (within the map element)
      */
-    Mapael.unsetHover = function (mapElem, textElem) {
+    unsetHover: function (mapElem, textElem) {
         $(mapElem.node).off("." + pluginName);
         if (textElem) $(textElem.node).off("." + pluginName);
-    };
+    },
+
     /*
      * Set he behaviour for "mouseover" event
      * @param paper paper Raphael paper object
      * @param mapElem mapElem the map element
      * @param textElem the optional text element (within the map element)
      */
-    Mapael.elemHover = function (paper, mapElem, textElem) {
+    elemHover: function (paper, mapElem, textElem) {
         mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
         if (textElem) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
         // workaround for older version of Raphael
         if (paper.safari) paper.safari();
-    };
+    },
 
     /*
      * Set he behaviour for "mouseout" event
@@ -1534,12 +1528,12 @@
      * @param mapElem the map element
      * @param textElem the optional text element (within the map element)
      */
-    Mapael.elemOut = function (paper, mapElem, textElem) {
+    elemOut: function (paper, mapElem, textElem) {
         mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
         if (textElem) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
         // workaround for older version of Raphael
         if (paper.safari) paper.safari();
-    };
+    },
 
     /*
      * Get element options by merging default options, element options and legend options
@@ -1547,26 +1541,26 @@
      * @param elemOptions
      * @param legendOptions
      */
-    Mapael.getElemOptions = function(defaultOptions, elemOptions, legendOptions) {
-        var options = $.extend(true, {}, defaultOptions, elemOptions);
+    getElemOptions: function(defaultOptions, elemOptions, legendOptions) {
+        var self = this, options = $.extend(true, {}, defaultOptions, elemOptions);
         if (options.value !== undefined) {
             if ($.isArray(legendOptions)) {
                 for (var i = 0, length = legendOptions.length;i<length;++i) {
-                    options = $.extend(true, {}, options, Mapael.getLegendSlice(options.value[i], legendOptions[i]));
+                    options = $.extend(true, {}, options, self.getLegendSlice(options.value[i], legendOptions[i]));
                 }
             } else {
-                options = $.extend(true, {}, options, Mapael.getLegendSlice(options.value, legendOptions));
+                options = $.extend(true, {}, options, self.getLegendSlice(options.value, legendOptions));
             }
         }
         return options;
-    };
+    },
 
     /*
      * Get the coordinates of the text relative to a bbox and a position
      * @param bbox the boundary box of the element
      * @param textPosition the wanted text position (inner, right, left, top or bottom)
      */
-    Mapael.getTextPosition = function(bbox, textPosition, margin) {
+    getTextPosition: function(bbox, textPosition, margin) {
         var textX = 0
             , textY = 0
             , textAnchor = "";
@@ -1598,7 +1592,7 @@
                 textAnchor = "middle";
         }
         return {"x" : textX, "y" : textY, "textAnchor" : textAnchor};
-    };
+    },
 
     /*
      * Get the legend conf matching with the value
@@ -1606,7 +1600,7 @@
      * @param legend the legend params object
      * @return the legend slice matching with the value
      */
-    Mapael.getLegendSlice = function (value, legend) {
+    getLegendSlice: function (value, legend) {
         for(var i = 0, length = legend.slices.length; i < length; ++i) {
             if ((legend.slices[i].sliceValue !== undefined && value == legend.slices[i].sliceValue)
                 || ((legend.slices[i].sliceValue === undefined)
@@ -1617,7 +1611,7 @@
             }
         }
         return {};
-    };
+    },
 
 
     /*
@@ -1634,7 +1628,7 @@
       * @param easying_function defined Raphael supported easing_formula to use
       * @param callback method when animated action is complete
       */
-    Mapael.animateViewBox = function animateViewBox($map, paper, x, y, w, h, duration, easingFunction ) {
+    animateViewBox: function animateViewBox($map, paper, x, y, w, h, duration, easingFunction ) {
         var cx = paper._viewBox ? paper._viewBox[0] : 0
             , dx = x - cx
             , cy = paper._viewBox ? paper._viewBox[1] : 0
@@ -1646,30 +1640,58 @@
             , interval = 25
             , steps = duration / interval
             , current_step = 0
-            , easingFormula;
+            , easingFormula
+            , self = this;
 
         easingFunction = easingFunction || "linear";
         easingFormula = Raphael.easing_formulas[easingFunction];
 
-        clearInterval(Mapael.animationIntervalID);
+        clearInterval(self.animationIntervalID);
 
-        Mapael.animationIntervalID = setInterval(function() {
+        self.animationIntervalID = setInterval(function() {
                 var ratio = current_step / steps;
                 paper.setViewBox(cx + dx * easingFormula(ratio),
                                 cy + dy * easingFormula(ratio),
                                 cw + dw * easingFormula(ratio),
                                 ch + dh * easingFormula(ratio), false);
                 if (current_step++ >= steps) {
-                    clearInterval(Mapael.animationIntervalID);
-                    clearTimeout(Mapael.zoomTO);
-                    Mapael.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
+                    clearInterval(self.animationIntervalID);
+                    clearTimeout(self.zoomTO);
+                    self.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
                 }
             }
             , interval
         );
+    }
+
     };
 
-    // jQuery access
-    $.fn[pluginName] = Mapael;
+    // Extend jQuery with Mapael
+    $[pluginName] = Mapael;
+    // Add jQuery DOM function
+    $.fn[pluginName] = function(options) {
+
+        // Extend default options with user options
+        options = $.extend(true, {}, defaultOptions, options);
+
+        // Extend legend default options
+        $.each(options.legend, function(type) {
+            if ($.isArray(options.legend[type])) {
+                for (var i = 0; i < options.legend[type].length; ++i)
+                    options.legend[type][i] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type][i]);
+            } else {
+                options.legend[type] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type]);
+            }
+        });
+
+        // Now that everything is ready, call Mapael on each element
+        return this.each(function () {
+            // Avoid multiple instanciation
+            if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
+            // Create Mapael and save it as jQuery data
+            // This allow external access to Mapael using $(".mapcontainer").data.mapael
+            $.data(this, pluginName, new Mapael(this, options));
+        });
+    };
 
 }));
