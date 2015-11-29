@@ -1436,7 +1436,7 @@
         $(elem.node).on("click." + pluginName, hideMapElems);
 
         if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
-            $(elem.node).trigger("click." pluginName, false);
+            $(elem.node).trigger("click." + pluginName, false);
         }
     };
 
