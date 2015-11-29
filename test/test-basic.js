@@ -31,7 +31,7 @@ $(function() {
         assert.equal($(".mapcontainer .map svg").attr("width"), CST_MAP_MAX_WIDTH, "Check map width size" );
         assert.equal($(".mapcontainer .map svg").attr("height"), CST_MAP_MAX_HEIGHT, "Check map height size" );
         assert.ok($(".mapcontainer").hasClass("mapael"), "Has mapael class" );
-        assert.ok(typeof $(".mapcontainer").data("mapael") === "function", "Has mapael data" );
+        assert.ok(typeof $(".mapcontainer").data("mapael") === "object", "Has mapael data" );
         assert.ok($(".mapcontainer .map .mapTooltip")[0], "Has tooltip div" );
 
     });
