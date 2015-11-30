@@ -123,7 +123,8 @@ $(function() {
         $("path[data-id='department-56']").trigger("mouseover");
         
         setTimeout(function() {
-            assert.equal($("." + tooltip_class).css("border-left"), additional_prop["border-left"], "CSS added" );
+            var tooltip_style = $("." + tooltip_class).attr("style");
+            assert.ok(tooltip_style.indexOf(additional_prop["border-left"]) > -1, "CSS added" );
             tooltip_async_done();
         }, 500);
     });
