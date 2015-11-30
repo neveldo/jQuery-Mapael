@@ -94,7 +94,7 @@ $(function() {
     });
     
     test("Tooltip options", function(assert) {
-        var tooltip_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
+        var tooltip_async_done = assert.async();
         var tooltip_class = "TOOLTIP_CLASSNAME";
         var additional_prop = {
             "border-left": "5px solid rgb(0, 255, 0)"
