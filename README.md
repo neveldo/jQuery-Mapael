@@ -1,5 +1,7 @@
 # jQuery Mapael - Dynamic vector maps
 
+[![Build Status](https://travis-ci.org/neveldo/jQuery-Mapael.svg?branch=master)](https://travis-ci.org/neveldo/jQuery-Mapael)
+
 The complete documentation is available on [Mapael website](http://www.vincentbroute.fr/mapael) (repository:  ['neveldo/mapael-documentation'](https://github.com/neveldo/mapael-documentation)).
 
 Additional maps are stored in the repository ['neveldo/mapael-maps'](https://github.com/neveldo/mapael-maps).
