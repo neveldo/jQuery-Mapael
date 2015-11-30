@@ -23,11 +23,17 @@ module.exports = function(grunt) {
                     }
                 ]
             }
+        },
+        qunit: {
+            all: ['test/index.html']
         }
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['jshint', 'uglify']);
+    grunt.registerTask('test', ['jshint', 'qunit']);
+    grunt.registerTask('build', ['uglify']);
+    grunt.registerTask('default', ['test', 'build']);
 };
