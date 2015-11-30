@@ -260,15 +260,11 @@
             throw "The map class `" + options.map.cssClass + "` doesn't exists";
         }
 
-        if ($.fn[pluginName].maps[options.map.name] === undefined) {
-            throw Error("Unknown map '" + options.map.name + "'");
-        }
-
         var $container = $(container) // the current element
             , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
             , $map = $("." + options.map.cssClass, container).empty().append($tooltip) // the map container
-            , mapConf = $.fn[pluginName].maps[options.map.name]
-            , paper = new Raphael($map[0], mapConf.width, mapConf.height)
+            , mapConf
+            , paper
             , elemOptions = {}
             , resizeTO = 0
             , areas = {}
@@ -277,6 +273,23 @@
             , zoomCenterX = 0
             , zoomCenterY = 0
             , previousPinchDist = 0;
+            
+        // Get the map
+        if ($[pluginName] && $[pluginName].maps && $[pluginName].maps[options.map.name]) {
+            // Mapael version >= 2.x 
+            mapConf = $[pluginName].maps[options.map.name];
+        } else if ($.fn[pluginName] && $.fn[pluginName].maps && $.fn[pluginName].maps[options.map.name]) {
+            // Mapael version <= 1.x - DEPRECATED
+            mapConf = $.fn[pluginName].maps[options.map.name];
+            if (window.console && window.console.warn) {
+                window.console.warn("Extending $.fn.mapael is deprecated (map '" + options.map.name + "')");
+            }
+        } else {
+            throw Error("Unknown map '" + options.map.name + "'");
+        }
+        
+        // Create Raphael paper
+        paper = new Raphael($map[0], mapConf.width, mapConf.height);
 
         // add plugin class name on element
         $container.addClass(pluginName);
