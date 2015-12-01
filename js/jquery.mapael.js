@@ -1628,7 +1628,7 @@
           * @param easying_function defined Raphael supported easing_formula to use
           * @param callback method when animated action is complete
           */
-        animateViewBox: function animateViewBox($map, paper, x, y, w, h, duration, easingFunction ) {
+        animateViewBox: function ($map, paper, x, y, w, h, duration, easingFunction ) {
             var cx = paper._viewBox ? paper._viewBox[0] : 0
                 , dx = x - cx
                 , cy = paper._viewBox ? paper._viewBox[1] : 0
