@@ -120,6 +120,9 @@ $(function() {
         
         setTimeout(function() {
             var tooltip_style = $("." + tooltip_class).attr("style");
+            console.log(tooltip_style);
+            console.log(additional_prop["border-left"]);
+            console.log(tooltip_style.indexOf(additional_prop["border-left"]));
             assert.ok(tooltip_style.indexOf(additional_prop["border-left"]) > -1, "CSS added" );
             tooltip_async_done();
         }, 500);
