@@ -93,7 +93,9 @@ $(function() {
         var tooltip_async_done = assert.async();
         var tooltip_class = "TOOLTIP_CLASSNAME";
         var additional_prop = {
-            "border-left": "5px solid rgb(0, 255, 0)"
+            "border-left-width": "5px",
+            "border-left-style": "solid",
+            "border-left-color": "rgb(0, 255, 0)"
         };
         
         $('<div/>').addClass(tooltip_class).appendTo('.container');
@@ -119,11 +121,9 @@ $(function() {
         $("path[data-id='department-56']").trigger("mouseover");
         
         setTimeout(function() {
-            var tooltip_style = $("." + tooltip_class).attr("style");
-            console.log(tooltip_style);
-            console.log(additional_prop["border-left"]);
-            console.log(tooltip_style.indexOf(additional_prop["border-left"]));
-            assert.ok(tooltip_style.indexOf(additional_prop["border-left"]) > -1, "CSS added" );
+            $.each(additional_prop, function(propertyName, value){
+                assert.equal($("." + tooltip_class).css(propertyName), value, "CSS property " + propertyName + " added");
+            });
             tooltip_async_done();
         }, 500);
     });
