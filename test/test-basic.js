@@ -10,19 +10,15 @@
 $(function() {
     
     module("Basic");
-    
-    var CST_NB_OF_FRANCE_DPTMT = 96;
-    var CST_MAP_MAX_WIDTH = 800;
-    var CST_MAP_MAX_HEIGHT = 834.8948306319708; // Calculated
 
     test("Default instance creation", function(assert) {
 
         /* Create the basic map! */
-        $(".mapcontainer").mapael({
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             }
-        });
+        }));
 
         /* Some basic checks */
         assert.ok($(".mapcontainer .map svg")[0], "SVG map created" );
@@ -40,9 +36,9 @@ $(function() {
 
         /* Error if wrong map name */
         assert.throws(function(){
-            $(".mapcontainer").mapael({
+            $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
                 map: { name: "not_existing_map" }
-            });
+            }));
         }, "Throw error" );
         
         assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
@@ -50,43 +46,45 @@ $(function() {
     });
     
     test("Creation fail: existing map", function(assert) {
-        $(".mapcontainer").mapael({
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: { name: "france_departments" }
-        });
+        }));
         assert.throws(function(){
-            $(".mapcontainer").mapael({
+            $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
                 map: { name: "france_departments" }
-            });
+            }));
         }, "Throw error" );
     });
 
     test("Mouseover", function(assert) {
-        var mouseover_async_done = assert.async();
+        var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
         
         /* Create the map */
-        $(".mapcontainer").mapael({
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             }
-        });
+        }));
 
         /* mouseover event check (background changement) */
-        var $elem = $(".mapcontainer svg path:first");
-        var default_fill = $elem.attr("fill");
-        
-        $elem.trigger("mouseover");
-        setTimeout(function() {
-            var new_fill = $elem.attr("fill");
-            assert.notEqual(default_fill, new_fill, "Check new background" );
-            assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden" );
-
-            $elem.trigger("mouseout");
+        var default_fill = $(".mapcontainer svg path:first").attr("fill");
+        $(".mapcontainer svg path").each(function(id, elem) {
+            var $elem = $(elem);
+            
+            $elem.trigger("mouseover");
             setTimeout(function() {
                 var new_fill = $elem.attr("fill");
-                assert.equal(new_fill, default_fill, "Check old background" );
-                mouseover_async_done();
+                assert.notEqual(default_fill, new_fill, "Check new background" );
+                assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden" );
+                
+                $elem.trigger("mouseout");
+                setTimeout(function() {
+                    var new_fill = $elem.attr("fill");
+                    assert.equal(new_fill, default_fill, "Check old background" );
+                    mouseover_async_done();
+                }, 500);
             }, 500);
-        }, 500);
+        });
         
     });
 
@@ -94,11 +92,11 @@ $(function() {
         var responsive_async_done = assert.async();
         
         /* Create the map */
-        $(".mapcontainer").mapael({
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             }
-        });
+        }));
         
         /* Responsive checks */
         $(".mapcontainer").width(CST_MAP_MAX_WIDTH/2);
