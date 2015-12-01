@@ -10,8 +10,6 @@ $(function() {
     
     module("Areas");
     
-    var CST_NB_OF_FRANCE_DPTMT = 96;
-    
     test("defaultArea option override", function(assert) {
         var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
         
@@ -34,12 +32,12 @@ $(function() {
             }
         };
         
-        $(".mapcontainer").mapael({
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments",
                 defaultArea: CST_DEFAULTAREA
             }
-        }); 
+        })); 
         
         assert.ok($(".mapcontainer .map svg")[0], "Map created" );
         
@@ -97,12 +95,12 @@ $(function() {
             }
         };
         
-        $(".mapcontainer").mapael({
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             },
             areas: CST_CUSTOMAREA
-        }); 
+        })); 
         
         assert.ok($(".mapcontainer .map svg")[0], "Map created" );
         
