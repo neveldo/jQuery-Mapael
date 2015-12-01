@@ -61,7 +61,7 @@ $(function() {
     });
 
     test("Mouseover", function(assert) {
-        var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
+        var mouseover_async_done = assert.async();
         
         /* Create the map */
         $(".mapcontainer").mapael({
@@ -71,24 +71,22 @@ $(function() {
         });
 
         /* mouseover event check (background changement) */
-        var default_fill = $(".mapcontainer svg path:first").attr("fill");
-        $(".mapcontainer svg path").each(function(id, elem) {
-            var $elem = $(elem);
-            
-            $elem.trigger("mouseover");
+        var $elem = $(".mapcontainer svg path:first");
+        var default_fill = $elem.attr("fill");
+        
+        $elem.trigger("mouseover");
+        setTimeout(function() {
+            var new_fill = $elem.attr("fill");
+            assert.notEqual(default_fill, new_fill, "Check new background" );
+            assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden" );
+
+            $elem.trigger("mouseout");
             setTimeout(function() {
                 var new_fill = $elem.attr("fill");
-                assert.notEqual(default_fill, new_fill, "Check new background" );
-                assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden" );
-                
-                $elem.trigger("mouseout");
-                setTimeout(function() {
-                    var new_fill = $elem.attr("fill");
-                    assert.equal(new_fill, default_fill, "Check old background" );
-                    mouseover_async_done();
-                }, 500);
+                assert.equal(new_fill, default_fill, "Check old background" );
+                mouseover_async_done();
             }, 500);
-        });
+        }, 500);
         
     });
 

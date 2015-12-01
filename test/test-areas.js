@@ -13,7 +13,7 @@ $(function() {
     var CST_NB_OF_FRANCE_DPTMT = 96;
     
     test("defaultArea option override", function(assert) {
-        var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
+        var mouseover_async_done = assert.async();
         
         var CST_DEFAULTAREA = {
             attrs: {
@@ -43,26 +43,25 @@ $(function() {
         
         assert.ok($(".mapcontainer .map svg")[0], "Map created" );
         
-        $(".mapcontainer svg path").each(function(id, elem) {
-            var $elem = $(elem);
-            var data_id = $elem.attr("data-id");
-            
-            assert.equal($elem.attr("fill"), CST_DEFAULTAREA.attrs.fill, "Check overriden fill before mouseover for " + data_id);
-            assert.equal($elem.attr("stroke"), CST_DEFAULTAREA.attrs.stroke, "Check overriden stroke before mouseover for " + data_id);
-            
-            $elem.trigger("mouseover");
+        var $elem = $(".mapcontainer svg path:first");
+        var data_id = $elem.attr("data-id");
+        
+        assert.equal($elem.attr("fill"), CST_DEFAULTAREA.attrs.fill, "Check overriden fill before mouseover for " + data_id);
+        assert.equal($elem.attr("stroke"), CST_DEFAULTAREA.attrs.stroke, "Check overriden stroke before mouseover for " + data_id);
+
+        $elem.trigger("mouseover");
+        setTimeout(function() {
+
+            assert.equal($elem.attr("fill"), CST_DEFAULTAREA.attrsHover.fill, "Check overriden hover fill after mouseover for " + data_id);
+            assert.equal($elem.attr("stroke"), CST_DEFAULTAREA.attrsHover.stroke, "Check overriden hover stroke after mouseover for " + data_id);
+
+            $elem.trigger("mouseout");
             setTimeout(function() {
-                
-                assert.equal($elem.attr("fill"), CST_DEFAULTAREA.attrsHover.fill, "Check overriden hover fill after mouseover for " + data_id);
-                assert.equal($elem.attr("stroke"), CST_DEFAULTAREA.attrsHover.stroke, "Check overriden hover stroke after mouseover for " + data_id);
-                
-                $elem.trigger("mouseout");
-                setTimeout(function() {
-                    assert.equal($elem.attr("fill"), CST_DEFAULTAREA.attrs.fill, "Check overriden fill after mouseout for " + data_id);
-                    mouseover_async_done();
-                }, 500);
+                assert.equal($elem.attr("fill"), CST_DEFAULTAREA.attrs.fill, "Check overriden fill after mouseout for " + data_id);
+                mouseover_async_done();
             }, 500);
-        });
+        }, 500);
+            
     });
     
     test("Area custom option override", function(assert) {
