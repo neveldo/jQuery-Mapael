@@ -1533,12 +1533,13 @@
          * @param textElem the optional text element (within the map element)
          */
         elemHover: function (paper, mapElem, textElem) {
-            if (mapElem.attrsHover.animDuration > 0) {
-                mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
-                if (textElem) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
-            } else {
-                mapElem.attr(mapElem.attrsHover);
-                if (textElem) textElem.attr(textElem.attrsHover);
+            // Set mapElem
+            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
+            else mapElem.attr(mapElem.attrsHover);
+            // Set textElem
+            if (textElem) {
+                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
+                else textElem.attr(textElem.attrsHover);
             }
             // workaround for older version of Raphael
             if (paper.safari) paper.safari();
@@ -1551,13 +1552,15 @@
          * @param textElem the optional text element (within the map element)
          */
         elemOut: function (paper, mapElem, textElem) {
-            if (mapElem.attrsHover.animDuration > 0) {
-                mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
-                if (textElem) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
-            } else {
-                mapElem.attr(mapElem.originalAttrs);
-                if (textElem) textElem.attr(textElem.originalAttrs);
+            // Set mapElem
+            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
+            else mapElem.attr(mapElem.originalAttrs);
+            // Set textElem
+            if (textElem) {
+                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
+                else textElem.attr(textElem.originalAttrs);
             }
+            
             // workaround for older version of Raphael
             if (paper.safari) paper.safari();
         },
