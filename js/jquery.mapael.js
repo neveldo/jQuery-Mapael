@@ -1358,9 +1358,11 @@
                 if (animDuration === undefined) animDuration = legendOptions.hideElemsOnClick.animDuration;
 
                 if (hidden === '0') {
-                    label.animate({"opacity":0.5}, animDuration);
+                    if (animDuration > 0) label.animate({"opacity":0.5}, animDuration);
+                    else label.attr({"opacity":0.5});
                 } else {
-                    label.animate({"opacity":1}, animDuration);
+                    if (animDuration > 0) label.animate({"opacity":1}, animDuration);
+                    else label.attr({"opacity":1});
                 }
 
                 $.each(elems, function(id) {
@@ -1384,13 +1386,23 @@
                         (function(id) {
                             if (hidden === '0') { // we want to hide this element
                                 hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
-                                elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function() {
-                                    if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
-                                });
-                                if (elems[id].textElem) {
-                                    elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function() {
-                                        if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
+                                if (animDuration > 0) {
+                                    elems[id].mapElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function() {
+                                        if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
                                     });
+                                    if (elems[id].textElem) {
+                                        elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function() {
+                                            if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
+                                        });
+                                    }
+                                } else {
+                                    if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
+                                    else elems[id].mapElem.attr({"opacity":legendOptions.hideElemsOnClick.opacity});
+                                    
+                                    if (elems[id].textElem) {
+                                        if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
+                                        else elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity});
+                                    }
                                 }
                             } else { // We want to show this element
                                 delete hiddenBy[legendIndex]; // Remove this legendIndex from object
@@ -1401,8 +1413,13 @@
                                         elems[id].mapElem.show();
                                         if (elems[id].textElem) elems[id].textElem.show();
                                     }
-                                    elems[id].mapElem.animate({"opacity":elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1}, animDuration);
-                                    if (elems[id].textElem) elems[id].textElem.animate({"opacity":elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1}, animDuration);
+                                    if (animDuration > 0) {
+                                        elems[id].mapElem.animate({"opacity":elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1}, animDuration);
+                                        if (elems[id].textElem) elems[id].textElem.animate({"opacity":elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1}, animDuration);
+                                    } else {
+                                        elems[id].mapElem.attr({"opacity":elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1});
+                                        if (elems[id].textElem) elems[id].textElem.attr({"opacity":elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1});
+                                    }
                                 }
                             }
                             // Update elem data with new values
@@ -1516,8 +1533,14 @@
          * @param textElem the optional text element (within the map element)
          */
         elemHover: function (paper, mapElem, textElem) {
-            mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
-            if (textElem) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
+            // Set mapElem
+            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
+            else mapElem.attr(mapElem.attrsHover);
+            // Set textElem
+            if (textElem) {
+                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
+                else textElem.attr(textElem.attrsHover);
+            }
             // workaround for older version of Raphael
             if (paper.safari) paper.safari();
         },
@@ -1529,8 +1552,15 @@
          * @param textElem the optional text element (within the map element)
          */
         elemOut: function (paper, mapElem, textElem) {
-            mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
-            if (textElem) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
+            // Set mapElem
+            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
+            else mapElem.attr(mapElem.originalAttrs);
+            // Set textElem
+            if (textElem) {
+                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
+                else textElem.attr(textElem.originalAttrs);
+            }
+            
             // workaround for older version of Raphael
             if (paper.safari) paper.safari();
         },
