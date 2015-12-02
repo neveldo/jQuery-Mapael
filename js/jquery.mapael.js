@@ -240,6 +240,7 @@
          * @param options the complete options to use
          */
         init: function(options) {
+            var self = this;
 
             // Init check for class existence
             if (options.map.cssClass === "" || $("." + options.map.cssClass, self.container).length === 0) {
@@ -250,8 +251,7 @@
                 throw Error("Unknown map '" + options.map.name + "'");
             }
 
-            var self = this
-                , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
+            var $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
                 , $map = $("." + options.map.cssClass, self.container).empty().append($tooltip) // the map container
                 , mapConf = $.fn[pluginName].maps[options.map.name]
                 , paper = new Raphael($map[0], mapConf.width, mapConf.height)
