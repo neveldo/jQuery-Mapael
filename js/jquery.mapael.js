@@ -211,7 +211,6 @@
         self.$container = $(container);
         self.options = options;
 
-
         /* Version number */
         self.version = version;
         
@@ -226,7 +225,7 @@
         /* Animate view box Interval handler (used to set and clear) */
         self.animationIntervalID = null;
 
-        self.init(container, options);
+        self.init(options);
     };
 
     /*
@@ -238,13 +237,13 @@
         /*
          * Initialize the plugin
          * Called by the constructor
-         * @param container the DOM element on which to apply the plugin
          * @param options the complete options to use
          */
-        init: function(container, options) {
+        init: function(options) {
+            var self = this;
 
             // Init check for class existence
-            if (options.map.cssClass === "" || $("." + options.map.cssClass, container).length === 0) {
+            if (options.map.cssClass === "" || $("." + options.map.cssClass, self.container).length === 0) {
                 throw "The map class `" + options.map.cssClass + "` doesn't exists";
             }
 
@@ -252,10 +251,8 @@
                 throw Error("Unknown map '" + options.map.name + "'");
             }
 
-            var self = this
-                , $container = $(container) // the current element
-                , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
-                , $map = $("." + options.map.cssClass, container).empty().append($tooltip) // the map container
+            var $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
+                , $map = $("." + options.map.cssClass, self.container).empty().append($tooltip) // the map container
                 , mapConf = $.fn[pluginName].maps[options.map.name]
                 , paper = new Raphael($map[0], mapConf.width, mapConf.height)
                 , elemOptions = {}
@@ -268,7 +265,7 @@
                 , previousPinchDist = 0;
 
             // add plugin class name on element
-            $container.addClass(pluginName);
+            self.$container.addClass(pluginName);
 
             if (options.map.tooltip.css) $tooltip.css(options.map.tooltip.css);
             paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
@@ -284,7 +281,7 @@
             });
 
             // Hook that allows to add custom processing on the map
-            if (options.map.beforeInit) options.map.beforeInit($container, paper, options);
+            if (options.map.beforeInit) options.map.beforeInit(self.$container, paper, options);
 
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(mapConf.elems, function(id) {
@@ -314,11 +311,11 @@
              *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
              *    "animDuration" : zoom duration
              */
-            $container.on("zoom." + pluginName, function(e, zoomOptions) {
+            self.$container.on("zoom." + pluginName, function(e, zoomOptions) {
                 var newLevel = Math.min(Math.max(zoomOptions.level, 0), options.map.zoom.maxLevel)
                     , panX = 0
                     , panY = 0
-                    , previousZoomLevel = (1 + $container.data("zoomLevel") * options.map.zoom.step)
+                    , previousZoomLevel = (1 + self.$container.data("zoomLevel") * options.map.zoom.step)
                     , zoomLevel = (1 + newLevel * options.map.zoom.step)
                     , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : options.map.zoom.animDuration
                     , offsetX = 0
@@ -341,8 +338,8 @@
                     panX = 0;
                     panY = 0;
                 } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
-                    offsetX = $container.data("panX") + ((zoomOptions.x - $container.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                    offsetY = $container.data("panY") + ((zoomOptions.y - $container.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    offsetX = self.$container.data("panX") + ((zoomOptions.x - self.$container.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    offsetY = self.$container.data("panY") + ((zoomOptions.y - self.$container.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
 
                     panX = Math.min(Math.max(0, offsetX), (mapConf.width - (mapConf.width / zoomLevel)));
                     panY = Math.min(Math.max(0, offsetY), (mapConf.height - (mapConf.height / zoomLevel)));
@@ -352,7 +349,7 @@
                 }
 
                 // Update zoom level of the map
-                if (zoomLevel == previousZoomLevel && panX == $container.data('panX') && panY == $container.data('panY')) return;
+                if (zoomLevel == previousZoomLevel && panX == self.$container.data('panX') && panY == self.$container.data('panY')) return;
 
                 if (animDuration > 0) {
                     self.animateViewBox($map, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, options.map.zoom.animEasing);
@@ -362,7 +359,7 @@
                     self.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
                 }
 
-                $container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
+                self.$container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
             });
 
             if (options.map.zoom.enabled) {
@@ -374,11 +371,11 @@
                         var offset = $map.offset(),
                             initFactor = (options.map.width) ? (mapConf.width / options.map.width) : (mapConf.width / $map.width())
                             , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                            , zoomFactor = 1 / (1 + ($container.data("zoomLevel")) * options.map.zoom.step)
-                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + $container.data("panX")
-                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + $container.data("panY");
+                            , zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * options.map.zoom.step)
+                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.$container.data("panX")
+                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
 
-                        $container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                        self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.$container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
 
                         return false;
                     });
@@ -405,12 +402,12 @@
                             if (Math.abs(pinchDist - previousPinchDist) > 15) {
                                 offset = $map.offset();
                                 initFactor = (options.map.width) ? (mapConf.width / options.map.width) : (mapConf.width / $map.width());
-                                zoomFactor = 1 / (1 + ($container.data("zoomLevel")) * options.map.zoom.step);
-                                x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + $container.data("panX");
-                                y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + $container.data("panY");
+                                zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * options.map.zoom.step);
+                                x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + self.$container.data("panX");
+                                y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
 
                                 zoomLevel = (pinchDist - previousPinchDist) / Math.abs(pinchDist - previousPinchDist);
-                                $container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : $container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                                self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.$container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
                                 previousPinchDist = pinchDist;
                             }
                             return false;
@@ -426,11 +423,11 @@
                 if (options.map.zoom.init.animDuration === undefined) {
                     options.map.zoom.init.animDuration = 0;
                 }
-                $container.trigger("zoom." + pluginName, options.map.zoom.init);
+                self.$container.trigger("zoom." + pluginName, options.map.zoom.init);
             }
 
             // Create the legends for areas
-            self.createLegends($container, options, "area", areas, 1);
+            self.createLegends(options, "area", areas, 1);
 
             /*
              *
@@ -447,7 +444,7 @@
              *  opt.animDuration animation duration in ms (default = 0)
              *  opt.afterUpdate Hook that allows to add custom processing on the map
              */
-            $container.on("update." + pluginName, function(e, opt) {
+            self.$container.on("update." + pluginName, function(e, opt) {
                 // Abort if opt is undefined
                 if (typeof opt !== "object")  return;
             
@@ -493,7 +490,7 @@
 
                     // IF we update areas, plots or legend, then reset all legend state to "show"
                     if (opt.mapOptions.areas !== undefined || opt.mapOptions.plots !== undefined || opt.mapOptions.legend !== undefined) {
-                        $("[data-type='elem']", $container).each(function (id, elem) {
+                        $("[data-type='elem']", self.$container).each(function (id, elem) {
                             if ($(elem).attr('data-hidden') === "1") {
                                 // Toggle state of element by clicking
                                 $(elem).trigger("click." + pluginName, [false, animDuration]);
@@ -609,11 +606,11 @@
 
                 // Update legends
                 if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
-                    self.createLegends($container, options, "area", areas, 1);
+                    self.createLegends(options, "area", areas, 1);
                     if (options.map.width) {
-                        self.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
+                        self.createLegends(options, "plot", plots, (options.map.width / mapConf.width));
                     } else {
-                        self.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
+                        self.createLegends(options, "plot", plots, ($map.width() / mapConf.width));
                     }
                 }
 
@@ -625,7 +622,7 @@
                     // setLegendElemsState is an object listing the legend we want to hide/show
                     $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
                         // Search for the legend
-                        var $legend = $container.find("." + legendCSSClass)[0];
+                        var $legend = self.$container.find("." + legendCSSClass)[0];
                         if ($legend !== undefined) {
                             // Select all elem inside this legend
                             $("[data-type='elem']", $legend).each(function(id, elem) {
@@ -642,7 +639,7 @@
                     // Default : "show"
                     var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
 
-                    $("[data-type='elem']", $container).each(function(id, elem) {
+                    $("[data-type='elem']", self.$container).each(function(id, elem) {
                         if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                             ($(elem).attr('data-hidden') === "1" && action === "show")) {
                             // Toggle state of element by clicking
@@ -650,7 +647,7 @@
                         }
                     });
                 }
-                if (opt.afterUpdate) opt.afterUpdate($container, paper, areas, plots, options);
+                if (opt.afterUpdate) opt.afterUpdate(self.$container, paper, areas, plots, options);
             });
 
             // Handle resizing of the map
@@ -658,7 +655,7 @@
                 paper.setSize(options.map.width, mapConf.height * (options.map.width / mapConf.width));
 
                 // Create the legends for plots taking into account the scale of the map
-                self.createLegends($container, options, "plot", plots, (options.map.width / mapConf.width));
+                self.createLegends(options, "plot", plots, (options.map.width / mapConf.width));
             } else {
                 $(window).on("resize." + pluginName, function() {
                     clearTimeout(resizeTO);
@@ -667,7 +664,7 @@
 
                 // Create the legends for plots taking into account the scale of the map
                 var createPlotLegend = function() {
-                    self.createLegends($container, options, "plot", plots, ($map.width() / mapConf.width));
+                    self.createLegends(options, "plot", plots, ($map.width() / mapConf.width));
 
                     $map.off("resizeEnd." + pluginName, createPlotLegend);
                 };
@@ -681,7 +678,7 @@
             }
 
             // Hook that allows to add custom processing on the map
-            if (options.map.afterInit) options.map.afterInit($container, paper, areas, plots, options);
+            if (options.map.afterInit) options.map.afterInit(self.$container, paper, areas, plots, options);
 
             $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         },
@@ -978,21 +975,21 @@
          * @param content the content to set in the tooltip
          */
         setTooltip: function(elem, $tooltip) {
-            var tooltipTO = 0
-                , $container = $tooltip.parent()
+            var self = this,
+                tooltipTO = 0
                 , cssClass = $tooltip.attr('class')
                 , updateTooltipPosition = function(x, y) {
                     var tooltipPosition = {
-                        "left" : Math.min($container.width() - $tooltip.outerWidth() - 5, x - $container.offset().left + 10),
-                        "top" : Math.min($container.height() - $tooltip.outerHeight() - 5, y - $container.offset().top + 20)
+                        "left" : Math.min(self.$container.width() - $tooltip.outerWidth() - 5, x - self.$container.offset().left + 10),
+                        "top" : Math.min(self.$container.height() - $tooltip.outerHeight() - 5, y - self.$container.offset().top + 20)
                     };
 
                     if (elem.tooltip.overflow !== undefined) {
                         if (elem.tooltip.overflow.right !== undefined && elem.tooltip.overflow.right === true) {
-                            tooltipPosition.left = x - $container.offset().left + 10;
+                            tooltipPosition.left = x - self.$container.offset().left + 10;
                         }
                         if (elem.tooltip.overflow.bottom !== undefined && elem.tooltip.overflow.bottom === true) {
-                            tooltipPosition.top = y - $container.offset().top + 20;
+                            tooltipPosition.top = y - self.$container.offset().top + 20;
                         }
                     }
 
@@ -1133,13 +1130,12 @@
         /*
          * Draw a legend for areas and / or plots
          * @param legendOptions options for the legend to draw
-         * @param $container the whole element container
          * @param options map options object
          * @param legendType the type of the legend : "area" or "plot"
          * @param elems collection of plots or areas on the maps
          * @param legendIndex index of the legend in the conf array
          */
-        drawLegend: function (legendOptions, $container, options, legendType, elems, scale, legendIndex) {
+        drawLegend: function (legendOptions, options, legendType, elems, scale, legendIndex) {
             var self = this
                 , $legend = {}
                 , paper = {}
@@ -1156,7 +1152,7 @@
                 , sliceAttrs = []
                 , length = 0;
 
-                $legend = $("." + legendOptions.cssClass, $container).empty();
+                $legend = $("." + legendOptions.cssClass, self.$container).empty();
                 paper = new Raphael($legend.get(0));
                 height = width = 0;
 
@@ -1324,7 +1320,7 @@
                             self.setHoverOptions(elem, sliceAttrs[i], sliceAttrs[i]);
                             self.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
                             self.setHover(paper, elem, label);
-                            self.handleClickOnLegendElem($container, legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
+                            self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
                         }
                     }
                 }
@@ -1340,7 +1336,6 @@
 
         /*
          * Allow to hide elements of the map when the user clicks on a related legend item
-         * @param $container the map container
          * @param legendOptions options for the legend to draw
          * @param sliceOptions options of the slice
          * @param label label of the legend item
@@ -1348,7 +1343,8 @@
          * @param elems collection of plots or areas displayed on the map
          * @param legendIndex index of the legend in the conf array
          */
-        handleClickOnLegendElem: function($container, legendOptions, sliceOptions, label, elem, elems, legendIndex) {
+        handleClickOnLegendElem: function(legendOptions, sliceOptions, label, elem, elems, legendIndex) {
+            var self = this;
             var hideMapElems = function(e, hideOtherElems, animDuration) {
                 var elemValue = 0
                     , hidden = $(label.node).attr('data-hidden')
@@ -1434,7 +1430,7 @@
                 if ((hideOtherElems === undefined || hideOtherElems === true)
                     && legendOptions.exclusive !== undefined && legendOptions.exclusive === true
                 ) {
-                    $("[data-type='elem'][data-hidden=0]", $container).each(function() {
+                    $("[data-type='elem'][data-hidden=0]", self.$container).each(function() {
                         if ($(this).attr('data-index') !== $(elem.node).attr('data-index')) {
                             $(this).trigger("click." + pluginName, false);
                         }
@@ -1451,14 +1447,15 @@
 
         /*
          * Create all legends for a specified type (area or plot)
-         * @param $container the whole element container
          * @param options map options
          * @param legendType the type of the legend : "area" or "plot"
          * @param elems collection of plots or areas displayed on the map
          * @param scale scale ratio of the map
          */
-        createLegends: function ($container, options, legendType, elems, scale) {
-            var self = this, legendsOptions = options.legend[legendType], legends = [];
+        createLegends: function (options, legendType, elems, scale) {
+            var self = this,
+                legendsOptions = options.legend[legendType],
+                legends = [];
 
             if (!$.isArray(options.legend[legendType])) {
                 legendsOptions = [options.legend[legendType]];
@@ -1466,11 +1463,11 @@
 
             for (var j = 0; j < legendsOptions.length; ++j) {
                 // Check for class existence
-                if(legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass, $container).length === 0) {
+                if(legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass, self.$container).length === 0) {
                     throw "The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.";
                 }
                 if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
-                    legends.push(self.drawLegend(legendsOptions[j], $container, options, legendType, elems, scale, j));
+                    legends.push(self.drawLegend(legendsOptions[j], options, legendType, elems, scale, j));
                 }
             }
             return legends;
