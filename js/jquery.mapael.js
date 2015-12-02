@@ -211,7 +211,6 @@
         self.$container = $(container);
         self.options = options;
 
-
         /* Version number */
         self.version = version;
         
@@ -226,7 +225,7 @@
         /* Animate view box Interval handler (used to set and clear) */
         self.animationIntervalID = null;
 
-        self.init(container, options);
+        self.init(options);
     };
 
     /*
@@ -238,13 +237,12 @@
         /*
          * Initialize the plugin
          * Called by the constructor
-         * @param container the DOM element on which to apply the plugin
          * @param options the complete options to use
          */
-        init: function(container, options) {
+        init: function(options) {
 
             // Init check for class existence
-            if (options.map.cssClass === "" || $("." + options.map.cssClass, container).length === 0) {
+            if (options.map.cssClass === "" || $("." + options.map.cssClass, self.container).length === 0) {
                 throw "The map class `" + options.map.cssClass + "` doesn't exists";
             }
 
@@ -254,7 +252,7 @@
 
             var self = this
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
-                , $map = $("." + options.map.cssClass, container).empty().append($tooltip) // the map container
+                , $map = $("." + options.map.cssClass, self.container).empty().append($tooltip) // the map container
                 , mapConf = $.fn[pluginName].maps[options.map.name]
                 , paper = new Raphael($map[0], mapConf.width, mapConf.height)
                 , elemOptions = {}
