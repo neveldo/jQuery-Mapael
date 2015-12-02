@@ -248,10 +248,6 @@
                 throw "The map class `" + options.map.cssClass + "` doesn't exists";
             }
 
-            if ($.fn[pluginName].maps[options.map.name] === undefined) {
-                throw Error("Unknown map '" + options.map.name + "'");
-            }
-
             var self = this
                 , $container = $(container) // the current element
                 , $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none") // the tooltip container
