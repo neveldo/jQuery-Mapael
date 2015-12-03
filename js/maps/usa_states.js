@@ -16,7 +16,7 @@
         define(['jquery', 'mapael'], factory);
     } else {
         // Browser globals
-        factory(jQuery, jQuery.fn.mapael);
+        factory(jQuery, jQuery.mapael);
     }
 }(function ($, Mapael) {
 
