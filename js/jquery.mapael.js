@@ -225,7 +225,7 @@
         /* Animate view box Interval handler (used to set and clear) */
         self.animationIntervalID = null;
 
-        self.init(options);
+        self.init();
     };
 
     /*
@@ -237,9 +237,8 @@
         /*
          * Initialize the plugin
          * Called by the constructor
-         * @param options the complete options to use
          */
-        init: function(options) {
+        init: function() {
 
             var self = this
                 , $tooltip = {} // the tooltip container
@@ -256,28 +255,28 @@
                 , previousPinchDist = 0;
 
             // Init check for class existence
-            if (options.map.cssClass === "" || $("." + options.map.cssClass, self.container).length === 0) {
-                throw "The map class `" + options.map.cssClass + "` doesn't exists";
+            if (self.options.map.cssClass === "" || $("." + self.options.map.cssClass, self.container).length === 0) {
+                throw "The map class `" + self.options.map.cssClass + "` doesn't exists";
             }
 
             // Create the tooltip container
-            $tooltip = $("<div>").addClass(options.map.tooltip.cssClass).css("display", "none");
+            $tooltip = $("<div>").addClass(self.options.map.tooltip.cssClass).css("display", "none");
 
             // Get the map container, empty it then append tooltip
-            $map = $("." + options.map.cssClass, self.container).empty().append($tooltip);
+            $map = $("." + self.options.map.cssClass, self.container).empty().append($tooltip);
 
             // Get the map from $.mapael or $.fn.mapael (backward compatibility)
-            if ($[pluginName] && $[pluginName].maps && $[pluginName].maps[options.map.name]) {
+            if ($[pluginName] && $[pluginName].maps && $[pluginName].maps[self.options.map.name]) {
                 // Mapael version >= 2.x 
-                mapConf = $[pluginName].maps[options.map.name];
-            } else if ($.fn[pluginName] && $.fn[pluginName].maps && $.fn[pluginName].maps[options.map.name]) {
+                mapConf = $[pluginName].maps[self.options.map.name];
+            } else if ($.fn[pluginName] && $.fn[pluginName].maps && $.fn[pluginName].maps[self.options.map.name]) {
                 // Mapael version <= 1.x - DEPRECATED
-                mapConf = $.fn[pluginName].maps[options.map.name];
+                mapConf = $.fn[pluginName].maps[self.options.map.name];
                 if (window.console && window.console.warn) {
-                    window.console.warn("Extending $.fn.mapael is deprecated (map '" + options.map.name + "')");
+                    window.console.warn("Extending $.fn.mapael is deprecated (map '" + self.options.map.name + "')");
                 }
             } else {
-                throw Error("Unknown map '" + options.map.name + "'");
+                throw Error("Unknown map '" + self.options.map.name + "'");
             }
             
             // Create Raphael paper
@@ -286,38 +285,38 @@
             // add plugin class name on element
             self.$container.addClass(pluginName);
 
-            if (options.map.tooltip.css) $tooltip.css(options.map.tooltip.css);
+            if (self.options.map.tooltip.css) $tooltip.css(self.options.map.tooltip.css);
             paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
 
             // Draw map areas
             $.each(mapConf.elems, function(id) {
                 elemOptions = self.getElemOptions(
-                    options.map.defaultArea
-                    , (options.areas[id] ? options.areas[id] : {})
-                    , options.legend.area
+                    self.options.map.defaultArea
+                    , (self.options.areas[id] ? self.options.areas[id] : {})
+                    , self.options.legend.area
                 );
                 areas[id] = {"mapElem" : paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
             });
 
             // Hook that allows to add custom processing on the map
-            if (options.map.beforeInit) options.map.beforeInit(self.$container, paper, options);
+            if (self.options.map.beforeInit) self.options.map.beforeInit(self.$container, paper, self.options);
 
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(mapConf.elems, function(id) {
                 elemOptions = self.getElemOptions(
-                    options.map.defaultArea
-                    , (options.areas[id] ? options.areas[id] : {})
-                    , options.legend.area
+                    self.options.map.defaultArea
+                    , (self.options.areas[id] ? self.options.areas[id] : {})
+                    , self.options.legend.area
                 );
                 self.initElem(paper, areas[id], elemOptions, $tooltip, id);
             });
 
             // Draw links
-            links = self.drawLinksCollection(paper, options, options.links, mapConf.getCoords, $tooltip);
+            links = self.drawLinksCollection(paper, self.options.links, mapConf.getCoords, $tooltip);
 
             // Draw plots
-            $.each(options.plots, function(id) {
-                plots[id] = self.drawPlot(id, options, mapConf, paper, $tooltip);
+            $.each(self.options.plots, function(id) {
+                plots[id] = self.drawPlot(id, mapConf, paper, $tooltip);
             });
 
             /*
@@ -331,12 +330,12 @@
              *    "animDuration" : zoom duration
              */
             self.$container.on("zoom." + pluginName, function(e, zoomOptions) {
-                var newLevel = Math.min(Math.max(zoomOptions.level, 0), options.map.zoom.maxLevel)
+                var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel)
                     , panX = 0
                     , panY = 0
-                    , previousZoomLevel = (1 + self.$container.data("zoomLevel") * options.map.zoom.step)
-                    , zoomLevel = (1 + newLevel * options.map.zoom.step)
-                    , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : options.map.zoom.animDuration
+                    , previousZoomLevel = (1 + self.$container.data("zoomLevel") * self.options.map.zoom.step)
+                    , zoomLevel = (1 + newLevel * self.options.map.zoom.step)
+                    , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration
                     , offsetX = 0
                     , offsetY = 0
                     , coords = {};
@@ -371,7 +370,7 @@
                 if (zoomLevel == previousZoomLevel && panX == self.$container.data('panX') && panY == self.$container.data('panY')) return;
 
                 if (animDuration > 0) {
-                    self.animateViewBox($map, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, options.map.zoom.animEasing);
+                    self.animateViewBox($map, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
                 } else {
                     paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
                     clearTimeout(self.zoomTO);
@@ -381,16 +380,16 @@
                 self.$container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
             });
 
-            if (options.map.zoom.enabled) {
+            if (self.options.map.zoom.enabled) {
             /*
             * Update the zoom level of the map on mousewheel
             */
-                if (options.map.zoom.mousewheel) {
+                if (self.options.map.zoom.mousewheel) {
                     $map.on("mousewheel." + pluginName, function(e) {
                         var offset = $map.offset(),
-                            initFactor = (options.map.width) ? (mapConf.width / options.map.width) : (mapConf.width / $map.width())
+                            initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / $map.width())
                             , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                            , zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * options.map.zoom.step)
+                            , zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * self.options.map.zoom.step)
                             , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.$container.data("panX")
                             , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
 
@@ -403,7 +402,7 @@
                 /*
                  * Update the zoom level of the map on touch pinch
                  */
-                if (options.map.zoom.touch) {
+                if (self.options.map.zoom.touch) {
                     $map.on("touchstart." + pluginName, function(e) {
                         if (e.originalEvent.touches.length === 2) {
                             zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
@@ -420,8 +419,8 @@
 
                             if (Math.abs(pinchDist - previousPinchDist) > 15) {
                                 offset = $map.offset();
-                                initFactor = (options.map.width) ? (mapConf.width / options.map.width) : (mapConf.width / $map.width());
-                                zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * options.map.zoom.step);
+                                initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / $map.width());
+                                zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * self.options.map.zoom.step);
                                 x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + self.$container.data("panX");
                                 y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
 
@@ -434,19 +433,19 @@
                     });
                 }
                 // Enable zoom
-                self.initZoom($map, paper, mapConf.width, mapConf.height, options.map.zoom);
+                self.initZoom($map, paper, mapConf.width, mapConf.height, self.options.map.zoom);
             }
 
             // Set initial zoom
-            if (options.map.zoom.init !== undefined) {
-                if (options.map.zoom.init.animDuration === undefined) {
-                    options.map.zoom.init.animDuration = 0;
+            if (self.options.map.zoom.init !== undefined) {
+                if (self.options.map.zoom.init.animDuration === undefined) {
+                    self.options.map.zoom.init.animDuration = 0;
                 }
-                self.$container.trigger("zoom." + pluginName, options.map.zoom.init);
+                self.$container.trigger("zoom." + pluginName, self.options.map.zoom.init);
             }
 
             // Create the legends for areas
-            self.createLegends(options, "area", areas, 1);
+            self.createLegends("area", areas, 1);
 
             /*
              *
@@ -504,8 +503,8 @@
                     };
 
                 if (typeof opt.mapOptions === "object") {
-                    if (opt.replaceOptions === true) options = $.extend(true, {}, defaultOptions, opt.mapOptions);
-                    else $.extend(true, options, opt.mapOptions);
+                    if (opt.replaceOptions === true) self.options = $.extend(true, {}, defaultOptions, opt.mapOptions);
+                    else $.extend(true, self.options, opt.mapOptions);
 
                     // IF we update areas, plots or legend, then reset all legend state to "show"
                     if (opt.mapOptions.areas !== undefined || opt.mapOptions.plots !== undefined || opt.mapOptions.legend !== undefined) {
@@ -556,8 +555,8 @@
                 if (typeof opt.newPlots === "object") {
                     $.each(opt.newPlots, function(id) {
                         if (plots[id] === undefined) {
-                            options.plots[id] = opt.newPlots[id];
-                            plots[id] = self.drawPlot(id, options, mapConf, paper, $tooltip);
+                            self.options.plots[id] = opt.newPlots[id];
+                            plots[id] = self.drawPlot(id, mapConf, paper, $tooltip);
                             if (animDuration > 0) {
                                 fnShowElement(plots[id]);
                             }
@@ -567,9 +566,9 @@
 
                 // New links
                 if (typeof opt.newLinks === "object") {
-                    var newLinks = self.drawLinksCollection(paper, options, opt.newLinks, mapConf.getCoords, $tooltip);
+                    var newLinks = self.drawLinksCollection(paper, opt.newLinks, mapConf.getCoords, $tooltip);
                     $.extend(links, newLinks);
-                    $.extend(options.links, opt.newLinks);
+                    $.extend(self.options.links, opt.newLinks);
                     if (animDuration > 0) {
                         $.each(newLinks, function(id) {
                             fnShowElement(newLinks[id]);
@@ -580,9 +579,9 @@
                 // Update areas attributes and tooltips
                 $.each(areas, function(id) {
                     elemOptions = self.getElemOptions(
-                        options.map.defaultArea
-                        , (options.areas[id] ? options.areas[id] : {})
-                        , options.legend.area
+                        self.options.map.defaultArea
+                        , (self.options.areas[id] ? self.options.areas[id] : {})
+                        , self.options.legend.area
                     );
 
                     self.updateElem(elemOptions, areas[id], $tooltip, animDuration);
@@ -591,9 +590,9 @@
                 // Update plots attributes and tooltips
                 $.each(plots, function(id) {
                     elemOptions = self.getElemOptions(
-                        options.map.defaultPlot
-                        , (options.plots[id] ? options.plots[id] : {})
-                        , options.legend.plot
+                        self.options.map.defaultPlot
+                        , (self.options.plots[id] ? self.options.plots[id] : {})
+                        , self.options.legend.plot
                     );
                     if (elemOptions.type == "square") {
                         elemOptions.attrs.width = elemOptions.size;
@@ -615,8 +614,8 @@
                 // Update links attributes and tooltips
                 $.each(links, function(id) {
                     elemOptions = self.getElemOptions(
-                        options.map.defaultLink
-                        , (options.links[id] ? options.links[id] : {})
+                        self.options.map.defaultLink
+                        , (self.options.links[id] ? self.options.links[id] : {})
                         , {}
                     );
 
@@ -625,11 +624,11 @@
 
                 // Update legends
                 if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
-                    self.createLegends(options, "area", areas, 1);
-                    if (options.map.width) {
-                        self.createLegends(options, "plot", plots, (options.map.width / mapConf.width));
+                    self.createLegends("area", areas, 1);
+                    if (self.options.map.width) {
+                        self.createLegends("plot", plots, (self.options.map.width / mapConf.width));
                     } else {
-                        self.createLegends(options, "plot", plots, ($map.width() / mapConf.width));
+                        self.createLegends("plot", plots, ($map.width() / mapConf.width));
                     }
                 }
 
@@ -666,15 +665,15 @@
                         }
                     });
                 }
-                if (opt.afterUpdate) opt.afterUpdate(self.$container, paper, areas, plots, options);
+                if (opt.afterUpdate) opt.afterUpdate(self.$container, paper, areas, plots, self.options);
             });
 
             // Handle resizing of the map
-            if (options.map.width) {
-                paper.setSize(options.map.width, mapConf.height * (options.map.width / mapConf.width));
+            if (self.options.map.width) {
+                paper.setSize(self.options.map.width, mapConf.height * (self.options.map.width / mapConf.width));
 
                 // Create the legends for plots taking into account the scale of the map
-                self.createLegends(options, "plot", plots, (options.map.width / mapConf.width));
+                self.createLegends("plot", plots, (self.options.map.width / mapConf.width));
             } else {
                 $(window).on("resize." + pluginName, function() {
                     clearTimeout(resizeTO);
@@ -683,7 +682,7 @@
 
                 // Create the legends for plots taking into account the scale of the map
                 var createPlotLegend = function() {
-                    self.createLegends(options, "plot", plots, ($map.width() / mapConf.width));
+                    self.createLegends("plot", plots, ($map.width() / mapConf.width));
 
                     $map.off("resizeEnd." + pluginName, createPlotLegend);
                 };
@@ -697,7 +696,7 @@
             }
 
             // Hook that allows to add custom processing on the map
-            if (options.map.afterInit) options.map.afterInit(self.$container, paper, areas, plots, options);
+            if (self.options.map.afterInit) self.options.map.afterInit(self.$container, paper, areas, plots, self.options);
 
             $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         },
@@ -705,50 +704,50 @@
         /*
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
-        initElem: function(paper, elem, options, $tooltip, id) {
+        initElem: function(paper, elem, elemOptions, $tooltip, id) {
             var bbox = {}, textPosition = {}, self=this;
-            if (options.value !== undefined)
-                elem.value = options.value;
+            if (elemOptions.value !== undefined)
+                elem.value = elemOptions.value;
 
             // Init attrsHover
-            self.setHoverOptions(elem.mapElem, options.attrs, options.attrsHover);
+            self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
 
             // Init the label related to the element
-            if (options.text && options.text.content !== undefined) {
+            if (elemOptions.text && elemOptions.text.content !== undefined) {
                 // Set a text label in the area
                 bbox = elem.mapElem.getBBox();
-                textPosition = self.getTextPosition(bbox, options.text.position, options.text.margin);
-                options.text.attrs["text-anchor"] = textPosition.textAnchor;
-                elem.textElem = paper.text(textPosition.x, textPosition.y, options.text.content).attr(options.text.attrs);
-                self.setHoverOptions(elem.textElem, options.text.attrs, options.text.attrsHover);
-                if (options.eventHandlers) self.setEventHandlers(id, options, elem.mapElem, elem.textElem);
+                textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
+                elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
+                elem.textElem = paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
+                self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
+                if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem, elem.textElem);
                 self.setHover(paper, elem.mapElem, elem.textElem);
                 $(elem.textElem.node).attr("data-id", id);
             } else {
-                if (options.eventHandlers) self.setEventHandlers(id, options, elem.mapElem);
+                if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem);
                 self.setHover(paper, elem.mapElem);
             }
 
             // Init the tooltip
-            if (options.tooltip) {
-                elem.mapElem.tooltip = options.tooltip;
+            if (elemOptions.tooltip) {
+                elem.mapElem.tooltip = elemOptions.tooltip;
                 self.setTooltip(elem.mapElem, $tooltip);
 
-                if (options.text && options.text.content !== undefined) {
-                    elem.textElem.tooltip = options.tooltip;
+                if (elemOptions.text && elemOptions.text.content !== undefined) {
+                    elem.textElem.tooltip = elemOptions.tooltip;
                     self.setTooltip(elem.textElem, $tooltip);
                 }
             }
 
             // Init the link
-            if (options.href) {
-                elem.mapElem.href = options.href;
-                elem.mapElem.target = options.target;
+            if (elemOptions.href) {
+                elem.mapElem.href = elemOptions.href;
+                elem.mapElem.target = elemOptions.target;
                 self.setHref(elem.mapElem);
 
-                if (options.text && options.text.content !== undefined) {
-                    elem.textElem.href = options.href;
-                    elem.textElem.target = options.target;
+                if (elemOptions.text && elemOptions.text.content !== undefined) {
+                    elem.textElem.href = elemOptions.href;
+                    elem.textElem.target = elemOptions.target;
                     self.setHref(elem.textElem);
                 }
             }
@@ -759,7 +758,7 @@
         /*
          * Draw all links between plots on the paper
          */
-        drawLinksCollection: function(paper, options, linksCollection, getCoords, $tooltip) {
+        drawLinksCollection: function(paper, linksCollection, getCoords, $tooltip) {
             var p1 = {}
                 , p2 = {}
                 , elemOptions = {}
@@ -768,16 +767,16 @@
                 , links = {};
 
             $.each(linksCollection, function(id) {
-                elemOptions = self.getElemOptions(options.map.defaultLink, linksCollection[id], {});
+                elemOptions = self.getElemOptions(self.options.map.defaultLink, linksCollection[id], {});
 
                 if (typeof linksCollection[id].between[0] == 'string') {
-                    p1 = options.plots[linksCollection[id].between[0]];
+                    p1 = self.options.plots[linksCollection[id].between[0]];
                 } else {
                     p1 = linksCollection[id].between[0];
                 }
 
                 if (typeof linksCollection[id].between[1] == 'string') {
-                    p2 = options.plots[linksCollection[id].between[1]];
+                    p2 = self.options.plots[linksCollection[id].between[1]];
                 } else {
                     p2 = linksCollection[id].between[1];
                 }
@@ -931,14 +930,14 @@
         /*
          * Draw the plot
          */
-        drawPlot: function(id, options, mapConf, paper, $tooltip) {
+        drawPlot: function(id, mapConf, paper, $tooltip) {
             var self=this
                 , plot = {}
                 , coords = {}
                 , elemOptions = self.getElemOptions(
-                    options.map.defaultPlot
-                    , (options.plots[id] ? options.plots[id] : {})
-                    , options.legend.plot
+                    self.options.map.defaultPlot
+                    , (self.options.plots[id] ? self.options.plots[id] : {})
+                    , self.options.legend.plot
                 );
 
             if (elemOptions.x !== undefined && elemOptions.y !== undefined)
@@ -1070,12 +1069,12 @@
          * @param paper
          * @param mapWidth
          * @param mapHeight
-        * @param options
+        * @param zoom_options
          */
-        initZoom: function($map, paper, mapWidth, mapHeight, options) {
+        initZoom: function($map, paper, mapWidth, mapHeight, zoomOptions) {
             var $parentContainer = $map.parent()
-                , $zoomIn = $("<div>").addClass(options.zoomInCssClass).html("+")
-                , $zoomOut = $("<div>").addClass(options.zoomOutCssClass).html("&#x2212;")
+                , $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+")
+                , $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;")
                 , mousedown = false
                 , previousX = 0
                 , previousY = 0
@@ -1089,12 +1088,12 @@
             $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : $parentContainer.data("zoomLevel") - 1});});
 
             // Panning
-            $("body").on("mouseup." + pluginName + (options.touch ? " touchend" : ""), function() {
+            $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function() {
                 mousedown = false;
                 setTimeout(function () {self.panning = false;}, 50);
             });
 
-            $map.on("mousedown." + pluginName + (options.touch ? " touchstart" : ""), function(e) {
+            $map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart" : ""), function(e) {
                 if (e.pageX !== undefined) {
                     mousedown = true;
                     previousX = e.pageX;
@@ -1106,7 +1105,7 @@
                         previousY = e.originalEvent.touches[0].pageY;
                     }
                 }
-            }).on("mousemove." + pluginName + (options.touch ? " touchmove" : ""), function(e) {
+            }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove" : ""), function(e) {
                 var currentLevel = $parentContainer.data("zoomLevel")
                     , pageX = 0
                     , pageY = 0;
@@ -1124,8 +1123,8 @@
                 }
 
                 if (mousedown && currentLevel !== 0) {
-                    var offsetX = (previousX - pageX) / (1 + (currentLevel * options.step)) * (mapWidth / paper.width)
-                        , offsetY = (previousY - pageY) / (1 + (currentLevel * options.step)) * (mapHeight / paper.height)
+                    var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / paper.width)
+                        , offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / paper.height)
                         , panX = Math.min(Math.max(0, paper._viewBox[0] + offsetX), (mapWidth - paper._viewBox[2]))
                         , panY = Math.min(Math.max(0, paper._viewBox[1] + offsetY), (mapHeight - paper._viewBox[3]));
 
@@ -1149,12 +1148,11 @@
         /*
          * Draw a legend for areas and / or plots
          * @param legendOptions options for the legend to draw
-         * @param options map options object
          * @param legendType the type of the legend : "area" or "plot"
          * @param elems collection of plots or areas on the maps
          * @param legendIndex index of the legend in the conf array
          */
-        drawLegend: function (legendOptions, options, legendType, elems, scale, legendIndex) {
+        drawLegend: function (legendOptions, legendType, elems, scale, legendIndex) {
             var self = this
                 , $legend = {}
                 , paper = {}
@@ -1190,14 +1188,14 @@
 
                     // Check if size is defined. If not, take defaultPlot size
                     if (legendOptions.slices[i].size === undefined)
-                        legendOptions.slices[i].size = options.map.defaultPlot.size;
+                        legendOptions.slices[i].size = self.options.map.defaultPlot.size;
 
                     if (legendOptions.slices[i].legendSpecificAttrs === undefined)
                         legendOptions.slices[i].legendSpecificAttrs = {};
 
                     sliceAttrs[i] = $.extend(
                         {}
-                        , (legendType == "plot") ? options.map.defaultPlot.attrs : options.map.defaultArea.attrs
+                        , (legendType == "plot") ? self.options.map.defaultPlot.attrs : self.options.map.defaultArea.attrs
                         , legendOptions.slices[i].attrs
                         , legendOptions.slices[i].legendSpecificAttrs
                     );
@@ -1465,16 +1463,15 @@
 
         /*
          * Create all legends for a specified type (area or plot)
-         * @param options map options
          * @param legendType the type of the legend : "area" or "plot"
          * @param elems collection of plots or areas displayed on the map
          * @param scale scale ratio of the map
          */
-        createLegends: function (options, legendType, elems, scale) {
-            var self = this, legendsOptions = options.legend[legendType], legends = [];
+        createLegends: function (legendType, elems, scale) {
+            var self = this, legendsOptions = self.options.legend[legendType], legends = [];
 
-            if (!$.isArray(options.legend[legendType])) {
-                legendsOptions = [options.legend[legendType]];
+            if (!$.isArray(self.options.legend[legendType])) {
+                legendsOptions = [self.options.legend[legendType]];
             }
 
             for (var j = 0; j < legendsOptions.length; ++j) {
@@ -1483,7 +1480,7 @@
                     throw "The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.";
                 }
                 if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
-                    legends.push(self.drawLegend(legendsOptions[j], options, legendType, elems, scale, j));
+                    legends.push(self.drawLegend(legendsOptions[j], legendType, elems, scale, j));
                 }
             }
             return legends;
