@@ -9,9 +9,9 @@
  */
 $(function() {
     
-    module("Basic");
+    QUnit.module("Basic");
 
-    test("Default instance creation", function(assert) {
+    QUnit.test("Default instance creation", function(assert) {
 
         /* Create the basic map! */
         $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
@@ -32,7 +32,7 @@ $(function() {
 
     });
     
-    test("Creation fail: wrong map", function(assert) {
+    QUnit.test("Creation fail: wrong map", function(assert) {
 
         /* Error if wrong map name */
         assert.throws(function(){
@@ -45,7 +45,7 @@ $(function() {
         
     });
     
-    test("Creation fail: existing map", function(assert) {
+    QUnit.test("Creation fail: existing map", function(assert) {
         $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: { name: "france_departments" }
         }));
@@ -56,7 +56,7 @@ $(function() {
         }, "Throw error" );
     });
 
-    test("Mouseover", function(assert) {
+    QUnit.test("Mouseover", function(assert) {
         var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
         
         /* Create the map */
@@ -88,7 +88,7 @@ $(function() {
         
     });
 
-    test("Responsive", function(assert) {
+    QUnit.test("Responsive", function(assert) {
         var responsive_async_done = assert.async();
         
         /* Create the map */

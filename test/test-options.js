@@ -11,9 +11,9 @@
  */
 $(function() {
     
-    module("Options");
+    QUnit.module("Options");
     
-    test("Force width", function(assert) {
+    QUnit.test("Force width", function(assert) {
         var responsive_async_done = assert.async();
         
         /* Create the map */
@@ -42,7 +42,7 @@ $(function() {
 
     });
     
-    test("Different map cssClass", function(assert) {
+    QUnit.test("Different map cssClass", function(assert) {
         var new_classname = "DIFFERENT_CLASSNAME";
 
         $(".mapcontainer .map").attr("class", "").addClass(new_classname);
@@ -58,7 +58,7 @@ $(function() {
         
     });
     
-    test("Wrong map cssClass", function(assert) {
+    QUnit.test("Wrong map cssClass", function(assert) {
         assert.throws(function(){
             $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
                 map: { 
@@ -71,7 +71,7 @@ $(function() {
         assert.notOk($(".mapcontainer svg")[0], "Container not existing" );
     });
     
-    test("Check callbacks", function(assert) {
+    QUnit.test("Check callbacks", function(assert) {
         var beforeInit_spy = sinon.spy();
         var afterInit_spy = sinon.spy();
         
@@ -89,7 +89,7 @@ $(function() {
 
     });
     
-    test("Tooltip options", function(assert) {
+    QUnit.test("Tooltip options", function(assert) {
         var tooltip_async_done = assert.async();
         var tooltip_class = "TOOLTIP_CLASSNAME";
         var additional_prop = {
