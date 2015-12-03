@@ -1,6 +1,6 @@
 /*
  * Unit Test for Mapael
- * Module: Areas
+ * Module: Plots
  * 
  * Here are tested:
  *      - options.map.defaultPlot 
