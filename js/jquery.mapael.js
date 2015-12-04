@@ -230,6 +230,9 @@
 
         // Animate view box Interval handler (used to set and clear) 
         self.animationIntervalID = null;
+        
+        // Map subcontainer jQuery object
+        self.$map = {};
 
         // Let's start the initialization
         self.init();
@@ -248,7 +251,6 @@
         init: function() {
             var self = this;
             var $tooltip = {} // the tooltip container
-                , $map = {} // the map container
                 , mapConf = {} // the map configuration from the user
                 , paper = {}
                 , elemOptions = {}
@@ -269,7 +271,7 @@
             $tooltip = $("<div>").addClass(self.options.map.tooltip.cssClass).css("display", "none");
 
             // Get the map container, empty it then append tooltip
-            $map = $("." + self.options.map.cssClass, self.container).empty().append($tooltip);
+            self.$map = $("." + self.options.map.cssClass, self.container).empty().append($tooltip);
 
             // Get the map from $.mapael or $.fn.mapael (backward compatibility)
             if ($[pluginName] && $[pluginName].maps && $[pluginName].maps[self.options.map.name]) {
@@ -286,7 +288,7 @@
             }
             
             // Create Raphael paper
-            paper = new Raphael($map[0], mapConf.width, mapConf.height);
+            paper = new Raphael(self.$map[0], mapConf.width, mapConf.height);
 
             // add plugin class name on element
             self.$container.addClass(pluginName);
@@ -376,11 +378,11 @@
                 if (zoomLevel == previousZoomLevel && panX == self.$container.data('panX') && panY == self.$container.data('panY')) return;
 
                 if (animDuration > 0) {
-                    self.animateViewBox($map, paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
+                    self.animateViewBox(paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
                 } else {
                     paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
                     clearTimeout(self.zoomTO);
-                    self.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
+                    self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
                 }
 
                 self.$container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
@@ -391,9 +393,9 @@
             * Update the zoom level of the map on mousewheel
             */
                 if (self.options.map.zoom.mousewheel) {
-                    $map.on("mousewheel." + pluginName, function(e) {
-                        var offset = $map.offset(),
-                            initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / $map.width())
+                    self.$map.on("mousewheel." + pluginName, function(e) {
+                        var offset = self.$map.offset(),
+                            initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / self.$map.width())
                             , zoomLevel = (e.deltaY > 0) ? 1 : -1
                             , zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * self.options.map.zoom.step)
                             , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.$container.data("panX")
@@ -409,7 +411,7 @@
                  * Update the zoom level of the map on touch pinch
                  */
                 if (self.options.map.zoom.touch) {
-                    $map.on("touchstart." + pluginName, function(e) {
+                    self.$map.on("touchstart." + pluginName, function(e) {
                         if (e.originalEvent.touches.length === 2) {
                             zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
                             zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
@@ -417,15 +419,15 @@
                         }
                     });
 
-                    $map.on("touchmove." + pluginName, function(e) {
+                    self.$map.on("touchmove." + pluginName, function(e) {
                         var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
 
                         if (e.originalEvent.touches.length === 2) {
                             pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
 
                             if (Math.abs(pinchDist - previousPinchDist) > 15) {
-                                offset = $map.offset();
-                                initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / $map.width());
+                                offset = self.$map.offset();
+                                initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / self.$map.width());
                                 zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * self.options.map.zoom.step);
                                 x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + self.$container.data("panX");
                                 y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
@@ -439,7 +441,7 @@
                     });
                 }
                 // Enable zoom
-                self.initZoom($map, paper, mapConf.width, mapConf.height, self.options.map.zoom);
+                self.initZoom(paper, mapConf.width, mapConf.height, self.options.map.zoom);
             }
 
             // Set initial zoom
@@ -634,7 +636,7 @@
                     if (self.options.map.width) {
                         self.createLegends("plot", plots, (self.options.map.width / mapConf.width));
                     } else {
-                        self.createLegends("plot", plots, ($map.width() / mapConf.width));
+                        self.createLegends("plot", plots, (self.$map.width() / mapConf.width));
                     }
                 }
 
@@ -683,18 +685,18 @@
             } else {
                 $(window).on("resize." + pluginName, function() {
                     clearTimeout(resizeTO);
-                    resizeTO = setTimeout(function(){$map.trigger("resizeEnd." + pluginName);}, 150);
+                    resizeTO = setTimeout(function(){self.$map.trigger("resizeEnd." + pluginName);}, 150);
                 });
 
                 // Create the legends for plots taking into account the scale of the map
                 var createPlotLegend = function() {
-                    self.createLegends("plot", plots, ($map.width() / mapConf.width));
+                    self.createLegends("plot", plots, (self.$map.width() / mapConf.width));
 
-                    $map.off("resizeEnd." + pluginName, createPlotLegend);
+                    self.$map.off("resizeEnd." + pluginName, createPlotLegend);
                 };
 
-                $map.on("resizeEnd." + pluginName, function() {
-                    var containerWidth = $map.width();
+                self.$map.on("resizeEnd." + pluginName, function() {
+                    var containerWidth = self.$map.width();
                     if (paper.width != containerWidth) {
                         paper.setSize(containerWidth, mapConf.height * (containerWidth / mapConf.width));
                     }
@@ -1075,15 +1077,14 @@
 
         /*
          * Init zoom and panning for the map
-         * @param $map
          * @param paper
          * @param mapWidth
          * @param mapHeight
         * @param zoom_options
          */
-        initZoom: function($map, paper, mapWidth, mapHeight, zoomOptions) {
+        initZoom: function(paper, mapWidth, mapHeight, zoomOptions) {
             var self = this;
-            var $parentContainer = $map.parent()
+            var $parentContainer = self.$map.parent() // TODO: use self.$container
                 , $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+")
                 , $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;")
                 , mousedown = false
@@ -1092,7 +1093,7 @@
 
             // Zoom
             $parentContainer.data("zoomLevel", 0).data({"panX" : 0, "panY" : 0});
-            $map.append($zoomIn).append($zoomOut);
+            self.$map.append($zoomIn).append($zoomOut);
 
             $zoomIn.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : $parentContainer.data("zoomLevel") + 1});});
             $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : $parentContainer.data("zoomLevel") - 1});});
@@ -1103,7 +1104,7 @@
                 setTimeout(function () {self.panning = false;}, 50);
             });
 
-            $map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart" : ""), function(e) {
+            self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart" : ""), function(e) {
                 if (e.pageX !== undefined) {
                     mousedown = true;
                     previousX = e.pageX;
@@ -1144,7 +1145,7 @@
                         paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
 
                         clearTimeout(self.panningTO);
-                        self.panningTO = setTimeout(function(){$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
+                        self.panningTO = setTimeout(function(){self.$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
 
                         previousX = pageX;
                         previousY = pageY;
@@ -1671,7 +1672,6 @@
           * Animated view box changes
           * As from http://code.voidblossom.com/animating-viewbox-easing-formulas/,
           * (from https://github.com/theshaun works on mapael)
-          * @param $map the map container
           * @param paper paper Raphael paper object
           * @param x coordinate of the point to focus on
           * @param y coordinate of the point to focus on
@@ -1681,7 +1681,7 @@
           * @param easying_function defined Raphael supported easing_formula to use
           * @param callback method when animated action is complete
           */
-        animateViewBox: function ($map, paper, x, y, w, h, duration, easingFunction ) {
+        animateViewBox: function (paper, x, y, w, h, duration, easingFunction ) {
             var self = this;
             var cx = paper._viewBox ? paper._viewBox[0] : 0
                 , dx = x - cx
@@ -1710,7 +1710,7 @@
                     if (current_step++ >= steps) {
                         clearInterval(self.animationIntervalID);
                         clearTimeout(self.zoomTO);
-                        self.zoomTO = setTimeout(function(){$map.trigger("afterZoom", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
+                        self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
                     }
                 }
                 , interval
