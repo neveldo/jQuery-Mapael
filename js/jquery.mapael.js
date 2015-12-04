@@ -26,13 +26,13 @@
 
     "use strict";
     
-    /* The plugin name (used on several places) */
+    // The plugin name (used on several places) 
     var pluginName = "mapael";
 
-    /* Version number of jQuery Mapael. See http://semver.org/ for more information. */
+    // Version number of jQuery Mapael. See http://semver.org/ for more information. 
     var version = "2.0.0-dev";
 
-    /* Default map options */
+    // Default map options 
     var defaultOptions = {
         map : {
             cssClass : "map"
@@ -135,7 +135,7 @@
         , links : {}
     };
 
-    /* Default legends option */
+    // Default legends option 
     var legendDefaultOptions = {
         area : {
             cssClass : "areaLegend"
@@ -211,18 +211,18 @@
         self.$container = $(container);
         self.options = options;
 
-        /* Version number */
+        // Version number 
         self.version = version;
         
-        /* zoom TimeOut handler (used to set and clear) */
+        // zoom TimeOut handler (used to set and clear) 
         self.zoomTO = 0;
 
-        /* Panning: tell if panning action is in progress */
+        // Panning: tell if panning action is in progress 
         self.panning = false;
-        /* Panning TimeOut handler (used to set and clear) */
+        // Panning TimeOut handler (used to set and clear) 
         self.panningTO = 0;
 
-        /* Animate view box Interval handler (used to set and clear) */
+        // Animate view box Interval handler (used to set and clear) 
         self.animationIntervalID = null;
 
         self.init();
