@@ -256,7 +256,7 @@
 
             // Init check for class existence
             if (self.options.map.cssClass === "" || $("." + self.options.map.cssClass, self.container).length === 0) {
-                throw "The map class `" + self.options.map.cssClass + "` doesn't exists";
+                throw new Error("The map class `" + self.options.map.cssClass + "` doesn't exists");
             }
 
             // Create the tooltip container
@@ -276,7 +276,7 @@
                     window.console.warn("Extending $.fn.mapael is deprecated (map '" + self.options.map.name + "')");
                 }
             } else {
-                throw Error("Unknown map '" + self.options.map.name + "'");
+                throw new Error("Unknown map '" + self.options.map.name + "'");
             }
             
             // Create Raphael paper
@@ -1477,7 +1477,7 @@
             for (var j = 0; j < legendsOptions.length; ++j) {
                 // Check for class existence
                 if(legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass, self.$container).length === 0) {
-                    throw "The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.";
+                    throw new Error("The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.");
                 }
                 if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
                     legends.push(self.drawLegend(legendsOptions[j], legendType, elems, scale, j));
