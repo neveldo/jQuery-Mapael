@@ -221,6 +221,9 @@
         
         // zoom TimeOut handler (used to set and clear) 
         self.zoomTO = 0;
+        
+        // resize TimeOut handler (used to set and clear) 
+        self.resizeTO = 0;
 
         // Panning: tell if panning action is in progress 
         self.panning = false;
@@ -266,7 +269,6 @@
         init: function() {
             var self = this;
             var mapConf = {} // the map configuration from the user
-                , resizeTO = 0
                 , zoomCenterX = 0
                 , zoomCenterY = 0
                 , previousPinchDist = 0;
@@ -692,8 +694,8 @@
                 self.createLegends("plot", self.plots, (self.options.map.width / mapConf.width));
             } else {
                 $(window).on("resize." + pluginName, function() {
-                    clearTimeout(resizeTO);
-                    resizeTO = setTimeout(function(){self.$map.trigger("resizeEnd." + pluginName);}, 150);
+                    clearTimeout(self.resizeTO);
+                    self.resizeTO = setTimeout(function(){self.$map.trigger("resizeEnd." + pluginName);}, 150);
                 });
 
                 // Create the legends for plots taking into account the scale of the map
