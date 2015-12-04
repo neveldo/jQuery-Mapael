@@ -1010,16 +1010,16 @@
                 , cssClass = $tooltip.attr('class')
                 , updateTooltipPosition = function(x, y) {
                     var tooltipPosition = {
-                        "left" : Math.min(self.$container.width() - $tooltip.outerWidth() - 5, x - self.$container.offset().left + 10),
-                        "top" : Math.min(self.$container.height() - $tooltip.outerHeight() - 5, y - self.$container.offset().top + 20)
+                        "left" : Math.min(self.$map.width() - $tooltip.outerWidth() - 5, x - self.$map.offset().left + 10),
+                        "top" : Math.min(self.$map.height() - $tooltip.outerHeight() - 5, y - self.$map.offset().top + 20)
                     };
 
                     if (elem.tooltip.overflow !== undefined) {
                         if (elem.tooltip.overflow.right !== undefined && elem.tooltip.overflow.right === true) {
-                            tooltipPosition.left = x - self.$container.offset().left + 10;
+                            tooltipPosition.left = x - self.$map.offset().left + 10;
                         }
                         if (elem.tooltip.overflow.bottom !== undefined && elem.tooltip.overflow.bottom === true) {
-                            tooltipPosition.top = y - self.$container.offset().top + 20;
+                            tooltipPosition.top = y - self.$map.offset().top + 20;
                         }
                     }
 
