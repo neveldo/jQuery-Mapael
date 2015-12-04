@@ -1348,7 +1348,7 @@
 
                             self.setHoverOptions(elem, sliceAttrs[i], sliceAttrs[i]);
                             self.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
-                            self.setHover(legend_paper, elem, label);
+                            self.setHover(elem, label);
                             self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
                         }
                     }
