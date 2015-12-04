@@ -257,7 +257,6 @@
         init: function() {
             var self = this;
             var mapConf = {} // the map configuration from the user
-                , elemOptions = {}
                 , resizeTO = 0
                 , areas = {}
                 , plots = {}
@@ -302,7 +301,7 @@
 
             // Draw map areas
             $.each(mapConf.elems, function(id) {
-                elemOptions = self.getElemOptions(
+                var elemOptions = self.getElemOptions(
                     self.options.map.defaultArea
                     , (self.options.areas[id] ? self.options.areas[id] : {})
                     , self.options.legend.area
@@ -315,7 +314,7 @@
 
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(mapConf.elems, function(id) {
-                elemOptions = self.getElemOptions(
+                var elemOptions = self.getElemOptions(
                     self.options.map.defaultArea
                     , (self.options.areas[id] ? self.options.areas[id] : {})
                     , self.options.legend.area
@@ -480,7 +479,6 @@
             
                 var i = 0
                     , animDuration = (opt.animDuration) ? opt.animDuration : 0
-                    , elemOptions = {}
                     // This function remove an element using animation (or not, depending on animDuration)
                     // Used for deletePlotKeys and deleteLinkKeys
                     , fnRemoveElement = function(elem) {
@@ -590,7 +588,7 @@
 
                 // Update areas attributes and tooltips
                 $.each(areas, function(id) {
-                    elemOptions = self.getElemOptions(
+                    var elemOptions = self.getElemOptions(
                         self.options.map.defaultArea
                         , (self.options.areas[id] ? self.options.areas[id] : {})
                         , self.options.legend.area
@@ -601,7 +599,7 @@
 
                 // Update plots attributes and tooltips
                 $.each(plots, function(id) {
-                    elemOptions = self.getElemOptions(
+                    var elemOptions = self.getElemOptions(
                         self.options.map.defaultPlot
                         , (self.options.plots[id] ? self.options.plots[id] : {})
                         , self.options.legend.plot
@@ -625,7 +623,7 @@
 
                 // Update links attributes and tooltips
                 $.each(links, function(id) {
-                    elemOptions = self.getElemOptions(
+                    var elemOptions = self.getElemOptions(
                         self.options.map.defaultLink
                         , (self.options.links[id] ? self.options.links[id] : {})
                         , {}
@@ -775,13 +773,12 @@
             var self = this;
             var p1 = {}
                 , p2 = {}
-                , elemOptions = {}
                 , coordsP1 = {}
                 , coordsP2 ={}
                 , links = {};
 
             $.each(linksCollection, function(id) {
-                elemOptions = self.getElemOptions(self.options.map.defaultLink, linksCollection[id], {});
+                var elemOptions = self.getElemOptions(self.options.map.defaultLink, linksCollection[id], {});
 
                 if (typeof linksCollection[id].between[0] == 'string') {
                     p1 = self.options.plots[linksCollection[id].between[0]];
