@@ -236,6 +236,9 @@
         
         // The tooltip jQuery object
         self.$tooltip = {};
+        
+        // The paper Raphael object
+        self.paper = {};
 
         // Let's start the initialization
         self.init();
@@ -254,7 +257,6 @@
         init: function() {
             var self = this;
             var mapConf = {} // the map configuration from the user
-                , paper = {}
                 , elemOptions = {}
                 , resizeTO = 0
                 , areas = {}
@@ -290,13 +292,13 @@
             }
             
             // Create Raphael paper
-            paper = new Raphael(self.$map[0], mapConf.width, mapConf.height);
+            self.paper = new Raphael(self.$map[0], mapConf.width, mapConf.height);
 
             // add plugin class name on element
             self.$container.addClass(pluginName);
 
             if (self.options.map.tooltip.css) self.$tooltip.css(self.options.map.tooltip.css);
-            paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
+            self.paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
 
             // Draw map areas
             $.each(mapConf.elems, function(id) {
@@ -305,11 +307,11 @@
                     , (self.options.areas[id] ? self.options.areas[id] : {})
                     , self.options.legend.area
                 );
-                areas[id] = {"mapElem" : paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
+                areas[id] = {"mapElem" : self.paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
             });
 
             // Hook that allows to add custom processing on the map
-            if (self.options.map.beforeInit) self.options.map.beforeInit(self.$container, paper, self.options);
+            if (self.options.map.beforeInit) self.options.map.beforeInit(self.$container, self.paper, self.options);
 
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(mapConf.elems, function(id) {
@@ -318,15 +320,15 @@
                     , (self.options.areas[id] ? self.options.areas[id] : {})
                     , self.options.legend.area
                 );
-                self.initElem(paper, areas[id], elemOptions, id);
+                self.initElem(areas[id], elemOptions, id);
             });
 
             // Draw links
-            links = self.drawLinksCollection(paper, self.options.links, mapConf.getCoords);
+            links = self.drawLinksCollection(self.options.links, mapConf.getCoords);
 
             // Draw plots
             $.each(self.options.plots, function(id) {
-                plots[id] = self.drawPlot(id, mapConf, paper);
+                plots[id] = self.drawPlot(id, mapConf);
             });
 
             /*
@@ -357,10 +359,10 @@
                 }
 
                 if (zoomOptions.x === undefined)
-                    zoomOptions.x = paper._viewBox[0] + paper._viewBox[2] / 2;
+                    zoomOptions.x = self.paper._viewBox[0] + self.paper._viewBox[2] / 2;
 
                 if (zoomOptions.y === undefined)
-                    zoomOptions.y = (paper._viewBox[1] + paper._viewBox[3] / 2);
+                    zoomOptions.y = (self.paper._viewBox[1] + self.paper._viewBox[3] / 2);
 
                 if (newLevel === 0) {
                     panX = 0;
@@ -380,14 +382,14 @@
                 if (zoomLevel == previousZoomLevel && panX == self.$container.data('panX') && panY == self.$container.data('panY')) return;
 
                 if (animDuration > 0) {
-                    self.animateViewBox(paper, panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
+                    self.animateViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
                 } else {
-                    paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
+                    self.paper.setViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel);
                     clearTimeout(self.zoomTO);
                     self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
                 }
 
-                self.$container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
+                self.$container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + self.paper._viewBox[2] / 2, "zoomY" : panY + self.paper._viewBox[3] / 2});
             });
 
             if (self.options.map.zoom.enabled) {
@@ -443,7 +445,7 @@
                     });
                 }
                 // Enable zoom
-                self.initZoom(paper, mapConf.width, mapConf.height, self.options.map.zoom);
+                self.initZoom(mapConf.width, mapConf.height, self.options.map.zoom);
             }
 
             // Set initial zoom
@@ -566,7 +568,7 @@
                     $.each(opt.newPlots, function(id) {
                         if (plots[id] === undefined) {
                             self.options.plots[id] = opt.newPlots[id];
-                            plots[id] = self.drawPlot(id, mapConf, paper);
+                            plots[id] = self.drawPlot(id, mapConf);
                             if (animDuration > 0) {
                                 fnShowElement(plots[id]);
                             }
@@ -576,7 +578,7 @@
 
                 // New links
                 if (typeof opt.newLinks === "object") {
-                    var newLinks = self.drawLinksCollection(paper, opt.newLinks, mapConf.getCoords);
+                    var newLinks = self.drawLinksCollection(opt.newLinks, mapConf.getCoords);
                     $.extend(links, newLinks);
                     $.extend(self.options.links, opt.newLinks);
                     if (animDuration > 0) {
@@ -675,12 +677,12 @@
                         }
                     });
                 }
-                if (opt.afterUpdate) opt.afterUpdate(self.$container, paper, areas, plots, self.options);
+                if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, areas, plots, self.options);
             });
 
             // Handle resizing of the map
             if (self.options.map.width) {
-                paper.setSize(self.options.map.width, mapConf.height * (self.options.map.width / mapConf.width));
+                self.paper.setSize(self.options.map.width, mapConf.height * (self.options.map.width / mapConf.width));
 
                 // Create the legends for plots taking into account the scale of the map
                 self.createLegends("plot", plots, (self.options.map.width / mapConf.width));
@@ -699,22 +701,22 @@
 
                 self.$map.on("resizeEnd." + pluginName, function() {
                     var containerWidth = self.$map.width();
-                    if (paper.width != containerWidth) {
-                        paper.setSize(containerWidth, mapConf.height * (containerWidth / mapConf.width));
+                    if (self.paper.width != containerWidth) {
+                        self.paper.setSize(containerWidth, mapConf.height * (containerWidth / mapConf.width));
                     }
                 }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd." + pluginName);
             }
 
             // Hook that allows to add custom processing on the map
-            if (self.options.map.afterInit) self.options.map.afterInit(self.$container, paper, areas, plots, self.options);
+            if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, areas, plots, self.options);
 
-            $(paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
+            $(self.paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         },
 
         /*
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
-        initElem: function(paper, elem, elemOptions, id) {
+        initElem: function(elem, elemOptions, id) {
             var self = this;
             var bbox = {}, textPosition = {};
             if (elemOptions.value !== undefined)
@@ -729,14 +731,14 @@
                 bbox = elem.mapElem.getBBox();
                 textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
                 elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
-                elem.textElem = paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
+                elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
                 self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
                 if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem, elem.textElem);
-                self.setHover(paper, elem.mapElem, elem.textElem);
+                self.setHover(elem.mapElem, elem.textElem);
                 $(elem.textElem.node).attr("data-id", id);
             } else {
                 if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem);
-                self.setHover(paper, elem.mapElem);
+                self.setHover(elem.mapElem);
             }
 
             // Init the tooltip
@@ -769,7 +771,7 @@
         /*
          * Draw all links between plots on the paper
          */
-        drawLinksCollection: function(paper, linksCollection, getCoords) {
+        drawLinksCollection: function(linksCollection, getCoords) {
             var self = this;
             var p1 = {}
                 , p2 = {}
@@ -806,7 +808,7 @@
                     coordsP2.x = p2.x;
                     coordsP2.y = p2.y;
                 }
-                links[id] = self.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions);
+                links[id] = self.drawLink(id, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions);
             });
             return links;
         },
@@ -814,7 +816,7 @@
         /*
          * Draw a curved link between two couples of coordinates a(xa,ya) and b(xb, yb) on the paper
          */
-        drawLink: function(id, paper, xa, ya, xb, yb, elemOptions) {
+        drawLink: function(id, xa, ya, xb, yb, elemOptions) {
             var self = this;
             var elem = {}
                 // Compute the "curveto" SVG point, d(x,y)
@@ -851,8 +853,8 @@
                  y = acd * x + bcd;
             }
 
-            elem.mapElem = paper.path("m "+xa+","+ya+" C "+x+","+y+" "+xb+","+yb+" "+xb+","+yb+"").attr(elemOptions.attrs);
-            self.initElem(paper, elem, elemOptions, id);
+            elem.mapElem = self.paper.path("m "+xa+","+ya+" C "+x+","+y+" "+xb+","+yb+" "+xb+","+yb+"").attr(elemOptions.attrs);
+            self.initElem(elem, elemOptions, id);
 
             return elem;
         },
@@ -943,7 +945,7 @@
         /*
          * Draw the plot
          */
-        drawPlot: function(id, mapConf, paper) {
+        drawPlot: function(id, mapConf) {
             var self = this;
             var plot = {}
                 , coords = {}
@@ -959,7 +961,7 @@
                 coords = mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
 
             if (elemOptions.type == "square") {
-                plot = {"mapElem" : paper.rect(
+                plot = {"mapElem" : self.paper.rect(
                     coords.x - (elemOptions.size / 2)
                     , coords.y - (elemOptions.size / 2)
                     , elemOptions.size
@@ -967,7 +969,7 @@
                 ).attr(elemOptions.attrs)};
             } else if (elemOptions.type == "image") {
                 plot = {
-                    "mapElem" : paper.image(
+                    "mapElem" : self.paper.image(
                         elemOptions.url
                         , coords.x - elemOptions.width / 2
                         , coords.y - elemOptions.height / 2
@@ -976,15 +978,15 @@
                     ).attr(elemOptions.attrs)
                 };
             } else if (elemOptions.type == "svg") {
-                plot = {"mapElem" : paper.path(elemOptions.path).attr(elemOptions.attrs)};
+                plot = {"mapElem" : self.paper.path(elemOptions.path).attr(elemOptions.attrs)};
                 plot.mapElem.originalWidth = plot.mapElem.getBBox().width;
                 plot.mapElem.originalHeight = plot.mapElem.getBBox().height;
                 plot.mapElem.transform("m"+(elemOptions.width / plot.mapElem.originalWidth)+",0,0,"+(elemOptions.height / plot.mapElem.originalHeight)+","+(coords.x - elemOptions.width / 2)+","+(coords.y - elemOptions.height / 2));
             } else { // Default = circle
-                plot = {"mapElem" : paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
+                plot = {"mapElem" : self.paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
             }
 
-            self.initElem(paper, plot, elemOptions, id);
+            self.initElem(plot, elemOptions, id);
             return plot;
         },
 
@@ -1078,12 +1080,11 @@
 
         /*
          * Init zoom and panning for the map
-         * @param paper
          * @param mapWidth
          * @param mapHeight
         * @param zoom_options
          */
-        initZoom: function(paper, mapWidth, mapHeight, zoomOptions) {
+        initZoom: function(mapWidth, mapHeight, zoomOptions) {
             var self = this;
             var $parentContainer = self.$map.parent() // TODO: use self.$container
                 , $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+")
@@ -1135,18 +1136,18 @@
                 }
 
                 if (mousedown && currentLevel !== 0) {
-                    var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / paper.width)
-                        , offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / paper.height)
-                        , panX = Math.min(Math.max(0, paper._viewBox[0] + offsetX), (mapWidth - paper._viewBox[2]))
-                        , panY = Math.min(Math.max(0, paper._viewBox[1] + offsetY), (mapHeight - paper._viewBox[3]));
+                    var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / self.paper.width)
+                        , offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / self.paper.height)
+                        , panX = Math.min(Math.max(0, self.paper._viewBox[0] + offsetX), (mapWidth - self.paper._viewBox[2]))
+                        , panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
 
                     if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
-                        $parentContainer.data({"panX" : panX, "panY" : panY, "zoomX" : panX + paper._viewBox[2] / 2, "zoomY" : panY + paper._viewBox[3] / 2});
+                        $parentContainer.data({"panX" : panX, "panY" : panY, "zoomX" : panX + self.paper._viewBox[2] / 2, "zoomY" : panY + self.paper._viewBox[3] / 2});
 
-                        paper.setViewBox(panX, panY, paper._viewBox[2], paper._viewBox[3]);
+                        self.paper.setViewBox(panX, panY, self.paper._viewBox[2], self.paper._viewBox[3]);
 
                         clearTimeout(self.panningTO);
-                        self.panningTO = setTimeout(function(){self.$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+paper._viewBox[2]), y2 : (panY+paper._viewBox[3])});}, 150);
+                        self.panningTO = setTimeout(function(){self.$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+self.paper._viewBox[2]), y2 : (panY+self.paper._viewBox[3])});}, 150);
 
                         previousX = pageX;
                         previousY = pageY;
@@ -1167,7 +1168,7 @@
         drawLegend: function (legendOptions, legendType, elems, scale, legendIndex) {
             var self = this;
             var $legend = {}
-                , paper = {}
+                , legend_paper = {}
                 , width = 0
                 , height = 0
                 , title = null
@@ -1182,12 +1183,12 @@
                 , length = 0;
 
                 $legend = $("." + legendOptions.cssClass, self.$container).empty();
-                paper = new Raphael($legend.get(0));
+                legend_paper = new Raphael($legend.get(0));
                 height = width = 0;
 
                 // Set the title of the legend
                 if(legendOptions.title && legendOptions.title !== "") {
-                    title = paper.text(legendOptions.marginLeftTitle, 0, legendOptions.title).attr(legendOptions.titleAttrs);
+                    title = legend_paper.text(legendOptions.marginLeftTitle, 0, legendOptions.title).attr(legendOptions.titleAttrs);
                     title.attr({y : 0.5 * title.getBBox().height});
 
                     width = legendOptions.marginLeftTitle + title.getBBox().width;
@@ -1263,7 +1264,7 @@
                                 y = height;
                             }
 
-                            elem = paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
+                            elem = legend_paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
                         } else if(legendOptions.slices[i].type == "square") {
                             if (legendOptions.mode == "horizontal") {
                                 x = width + legendOptions.marginLeft;
@@ -1273,7 +1274,7 @@
                                 y = height;
                             }
 
-                            elem = paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
+                            elem = legend_paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
 
                         } else if(legendOptions.slices[i].type == "image" || legendOptions.slices[i].type == "svg") {
                             if (legendOptions.mode == "horizontal") {
@@ -1285,10 +1286,10 @@
                             }
 
                             if (legendOptions.slices[i].type == "image") {
-                                elem = paper.image(
+                                elem = legend_paper.image(
                                     legendOptions.slices[i].url, x, y, scale * sliceAttrs[i].width, scale * sliceAttrs[i].height);
                             } else {
-                                elem = paper.path(legendOptions.slices[i].path);
+                                elem = legend_paper.path(legendOptions.slices[i].path);
                                 elem.transform("m"+((scale*legendOptions.slices[i].width) / elem.getBBox().width)+",0,0,"+((scale*legendOptions.slices[i].height) / elem.getBBox().height)+","+x+","+y);
                             }
                         } else {
@@ -1299,7 +1300,7 @@
                                 x = legendOptions.marginLeft + scale * (sliceAttrs[i].r);
                                 y = height + scale * (sliceAttrs[i].r);
                             }
-                            elem = paper.circle(x, y, scale * (sliceAttrs[i].r));
+                            elem = legend_paper.circle(x, y, scale * (sliceAttrs[i].r));
                         }
 
                         // Set attrs to the element drawn above
@@ -1318,7 +1319,7 @@
                             y = height + (elemBBox.height / 2);
                         }
 
-                        label = paper.text(x, y, legendOptions.slices[i].label).attr(legendOptions.labelAttrs);
+                        label = legend_paper.text(x, y, legendOptions.slices[i].label).attr(legendOptions.labelAttrs);
 
                         // Update the width and height for the paper
                         if (legendOptions.mode == "horizontal") {
@@ -1348,7 +1349,7 @@
 
                             self.setHoverOptions(elem, sliceAttrs[i], sliceAttrs[i]);
                             self.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
-                            self.setHover(paper, elem, label);
+                            self.setHover(legend_paper, elem, label);
                             self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
                         }
                     }
@@ -1359,8 +1360,8 @@
                 if (Raphael.type != "SVG" && legendOptions.VMLWidth)
                     width = legendOptions.VMLWidth;
 
-                paper.setSize(width, height);
-                return paper;
+                legend_paper.setSize(width, height);
+                return legend_paper;
         },
 
         /*
@@ -1517,17 +1518,16 @@
 
         /*
          * Set the hover behavior (mouseover & mouseout) for plots and areas
-         * @param paper Raphael paper object
          * @param mapElem the map element
          * @param textElem the optional text element (within the map element)
          */
-        setHover: function (paper, mapElem, textElem) {
+        setHover: function (mapElem, textElem) {
             var self = this;
             var $mapElem = {}
                 , $textElem = {}
                 , hoverTO = 0
-                , overBehaviour = function() {hoverTO = setTimeout(function () {self.elemHover(paper, mapElem, textElem);}, 120);}
-                , outBehaviour = function () {clearTimeout(hoverTO);self.elemOut(paper, mapElem, textElem);};
+                , overBehaviour = function() {hoverTO = setTimeout(function () {self.elemHover(mapElem, textElem);}, 120);}
+                , outBehaviour = function () {clearTimeout(hoverTO);self.elemOut(mapElem, textElem);};
 
             $mapElem = $(mapElem.node);
             $mapElem.on("mouseover." + pluginName, overBehaviour);
@@ -1552,11 +1552,11 @@
 
         /*
          * Set he behaviour for "mouseover" event
-         * @param paper paper Raphael paper object
          * @param mapElem mapElem the map element
          * @param textElem the optional text element (within the map element)
          */
-        elemHover: function (paper, mapElem, textElem) {
+        elemHover: function (mapElem, textElem) {
+            var self = this;
             // Set mapElem
             if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
             else mapElem.attr(mapElem.attrsHover);
@@ -1566,16 +1566,16 @@
                 else textElem.attr(textElem.attrsHover);
             }
             // workaround for older version of Raphael
-            if (paper.safari) paper.safari();
+            if (self.paper.safari) self.paper.safari();
         },
 
         /*
          * Set he behaviour for "mouseout" event
-         * @param paper Raphael paper object
          * @param mapElem the map element
          * @param textElem the optional text element (within the map element)
          */
-        elemOut: function (paper, mapElem, textElem) {
+        elemOut: function (mapElem, textElem) {
+            var self = this;
             // Set mapElem
             if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
             else mapElem.attr(mapElem.originalAttrs);
@@ -1586,7 +1586,7 @@
             }
             
             // workaround for older version of Raphael
-            if (paper.safari) paper.safari();
+            if (self.paper.safari) self.paper.safari();
         },
 
         /*
@@ -1673,7 +1673,6 @@
           * Animated view box changes
           * As from http://code.voidblossom.com/animating-viewbox-easing-formulas/,
           * (from https://github.com/theshaun works on mapael)
-          * @param paper paper Raphael paper object
           * @param x coordinate of the point to focus on
           * @param y coordinate of the point to focus on
           * @param w map defined width
@@ -1682,21 +1681,21 @@
           * @param easying_function defined Raphael supported easing_formula to use
           * @param callback method when animated action is complete
           */
-        animateViewBox: function (paper, x, y, w, h, duration, easingFunction ) {
+        animateViewBox: function (x, y, w, h, duration, easingFunction ) {
             var self = this;
-            var cx = paper._viewBox ? paper._viewBox[0] : 0
+            var cx = self.paper._viewBox ? self.paper._viewBox[0] : 0
                 , dx = x - cx
-                , cy = paper._viewBox ? paper._viewBox[1] : 0
+                , cy = self.paper._viewBox ? self.paper._viewBox[1] : 0
                 , dy = y - cy
-                , cw = paper._viewBox ? paper._viewBox[2] : paper.width
+                , cw = self.paper._viewBox ? self.paper._viewBox[2] : self.paper.width
                 , dw = w - cw
-                , ch = paper._viewBox ? paper._viewBox[3] : paper.height
+                , ch = self.paper._viewBox ? self.paper._viewBox[3] : self.paper.height
                 , dh = h - ch
                 , interval = 25
                 , steps = duration / interval
                 , current_step = 0
                 , easingFormula;
-            
+
             easingFunction = easingFunction || "linear";
             easingFormula = Raphael.easing_formulas[easingFunction];
 
@@ -1704,10 +1703,10 @@
 
             self.animationIntervalID = setInterval(function() {
                     var ratio = current_step / steps;
-                    paper.setViewBox(cx + dx * easingFormula(ratio),
-                                    cy + dy * easingFormula(ratio),
-                                    cw + dw * easingFormula(ratio),
-                                    ch + dh * easingFormula(ratio), false);
+                    self.paper.setViewBox(cx + dx * easingFormula(ratio),
+                                          cy + dy * easingFormula(ratio),
+                                          cw + dw * easingFormula(ratio),
+                                          ch + dh * easingFormula(ratio), false);
                     if (current_step++ >= steps) {
                         clearInterval(self.animationIntervalID);
                         clearTimeout(self.zoomTO);
