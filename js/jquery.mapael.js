@@ -242,6 +242,9 @@
         
         // The areas object list
         self.areas = {};
+        
+        // The plots object list
+        self.plots = {};
 
         // Let's start the initialization
         self.init();
@@ -261,7 +264,6 @@
             var self = this;
             var mapConf = {} // the map configuration from the user
                 , resizeTO = 0
-                , plots = {}
                 , links = {}
                 , zoomCenterX = 0
                 , zoomCenterY = 0
@@ -329,7 +331,7 @@
 
             // Draw plots
             $.each(self.options.plots, function(id) {
-                plots[id] = self.drawPlot(id, mapConf);
+                self.plots[id] = self.drawPlot(id, mapConf);
             });
 
             /*
@@ -532,18 +534,18 @@
                 // Delete plots by name if deletePlotKeys is array
                 if (typeof opt.deletePlotKeys === "object") {
                     for (;i < opt.deletePlotKeys.length; i++) {
-                        if (plots[opt.deletePlotKeys[i]] !== undefined) {
-                            fnRemoveElement(plots[opt.deletePlotKeys[i]]);
-                            delete plots[opt.deletePlotKeys[i]];
+                        if (self.plots[opt.deletePlotKeys[i]] !== undefined) {
+                            fnRemoveElement(self.plots[opt.deletePlotKeys[i]]);
+                            delete self.plots[opt.deletePlotKeys[i]];
                         }
                     }
                 // Delete ALL plots if deletePlotKeys is set to "all"
                 } else if (opt.deletePlotKeys === "all") {
-                    $.each(plots, function(id, elem) {
+                    $.each(self.plots, function(id, elem) {
                         fnRemoveElement(elem);
                     });
                     // Empty plots object
-                    plots = {};
+                    self.plots = {};
                 }
 
                 // Delete links by name if deleteLinkKeys is array
@@ -566,11 +568,11 @@
                 // New plots
                 if (typeof opt.newPlots === "object") {
                     $.each(opt.newPlots, function(id) {
-                        if (plots[id] === undefined) {
+                        if (self.plots[id] === undefined) {
                             self.options.plots[id] = opt.newPlots[id];
-                            plots[id] = self.drawPlot(id, mapConf);
+                            self.plots[id] = self.drawPlot(id, mapConf);
                             if (animDuration > 0) {
-                                fnShowElement(plots[id]);
+                                fnShowElement(self.plots[id]);
                             }
                         }
                     });
@@ -600,7 +602,7 @@
                 });
 
                 // Update plots attributes and tooltips
-                $.each(plots, function(id) {
+                $.each(self.plots, function(id) {
                     var elemOptions = self.getElemOptions(
                         self.options.map.defaultPlot
                         , (self.options.plots[id] ? self.options.plots[id] : {})
@@ -609,18 +611,18 @@
                     if (elemOptions.type == "square") {
                         elemOptions.attrs.width = elemOptions.size;
                         elemOptions.attrs.height = elemOptions.size;
-                        elemOptions.attrs.x = plots[id].mapElem.attrs.x - (elemOptions.size - plots[id].mapElem.attrs.width) / 2;
-                        elemOptions.attrs.y = plots[id].mapElem.attrs.y - (elemOptions.size - plots[id].mapElem.attrs.height) / 2;
+                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.size - self.plots[id].mapElem.attrs.width) / 2;
+                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.size - self.plots[id].mapElem.attrs.height) / 2;
                     } else if (elemOptions.type == "image") {
                         elemOptions.attrs.width = elemOptions.width;
                         elemOptions.attrs.height = elemOptions.height;
-                        elemOptions.attrs.x = plots[id].mapElem.attrs.x - (elemOptions.width - plots[id].mapElem.attrs.width) / 2;
-                        elemOptions.attrs.y = plots[id].mapElem.attrs.y - (elemOptions.height - plots[id].mapElem.attrs.height) / 2;
+                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
+                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
                     } else { // Default : circle
                         elemOptions.attrs.r = elemOptions.size / 2;
                     }
 
-                    self.updateElem(elemOptions, plots[id], animDuration);
+                    self.updateElem(elemOptions, self.plots[id], animDuration);
                 });
 
                 // Update links attributes and tooltips
@@ -638,9 +640,9 @@
                 if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
                     self.createLegends("area", self.areas, 1);
                     if (self.options.map.width) {
-                        self.createLegends("plot", plots, (self.options.map.width / mapConf.width));
+                        self.createLegends("plot", self.plots, (self.options.map.width / mapConf.width));
                     } else {
-                        self.createLegends("plot", plots, (self.$map.width() / mapConf.width));
+                        self.createLegends("plot", self.plots, (self.$map.width() / mapConf.width));
                     }
                 }
 
@@ -685,7 +687,7 @@
                 self.paper.setSize(self.options.map.width, mapConf.height * (self.options.map.width / mapConf.width));
 
                 // Create the legends for plots taking into account the scale of the map
-                self.createLegends("plot", plots, (self.options.map.width / mapConf.width));
+                self.createLegends("plot", self.plots, (self.options.map.width / mapConf.width));
             } else {
                 $(window).on("resize." + pluginName, function() {
                     clearTimeout(resizeTO);
@@ -694,7 +696,7 @@
 
                 // Create the legends for plots taking into account the scale of the map
                 var createPlotLegend = function() {
-                    self.createLegends("plot", plots, (self.$map.width() / mapConf.width));
+                    self.createLegends("plot", self.plots, (self.$map.width() / mapConf.width));
 
                     self.$map.off("resizeEnd." + pluginName, createPlotLegend);
                 };
@@ -708,7 +710,7 @@
             }
 
             // Hook that allows to add custom processing on the map
-            if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, plots, self.options);
+            if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
             $(self.paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         },
