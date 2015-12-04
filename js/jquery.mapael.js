@@ -222,6 +222,13 @@
         // zoom TimeOut handler (used to set and clear) 
         self.zoomTO = 0;
         
+        // zoom center coordinate (set at touchstart)
+        self.zoomCenterX = 0;
+        self.zoomCenterY = 0;
+        
+        // Zoom pinch (set at touchstart and touchmove)
+        self.previousPinchDist = 0;
+        
         // resize TimeOut handler (used to set and clear) 
         self.resizeTO = 0;
 
@@ -268,10 +275,7 @@
          */
         init: function() {
             var self = this;
-            var mapConf = {} // the map configuration from the user
-                , zoomCenterX = 0
-                , zoomCenterY = 0
-                , previousPinchDist = 0;
+            var mapConf = {}; // the map configuration from the user
 
             // Init check for class existence
             if (self.options.map.cssClass === "" || $("." + self.options.map.cssClass, self.container).length === 0) {
@@ -424,9 +428,9 @@
                 if (self.options.map.zoom.touch) {
                     self.$map.on("touchstart." + pluginName, function(e) {
                         if (e.originalEvent.touches.length === 2) {
-                            zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
-                            zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
-                            previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+                            self.zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
+                            self.zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
+                            self.previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
                         }
                     });
 
@@ -436,16 +440,16 @@
                         if (e.originalEvent.touches.length === 2) {
                             pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
 
-                            if (Math.abs(pinchDist - previousPinchDist) > 15) {
+                            if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
                                 offset = self.$map.offset();
                                 initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / self.$map.width());
                                 zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * self.options.map.zoom.step);
-                                x = zoomFactor * initFactor * (zoomCenterX + $(window).scrollLeft() - offset.left) + self.$container.data("panX");
-                                y = zoomFactor * initFactor * (zoomCenterY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
+                                x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.$container.data("panX");
+                                y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
 
-                                zoomLevel = (pinchDist - previousPinchDist) / Math.abs(pinchDist - previousPinchDist);
+                                zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
                                 self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.$container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
-                                previousPinchDist = pinchDist;
+                                self.previousPinchDist = pinchDist;
                             }
                             return false;
                         }
