@@ -207,8 +207,13 @@
     var Mapael = function(container, options) {
         var self = this;
 
+        // the global container (DOM element object)
         self.container = container;
+
+        // the global container (jQuery object)
         self.$container = $(container);
+        
+        // the global options
         self.options = options;
 
         // Version number 
@@ -219,12 +224,14 @@
 
         // Panning: tell if panning action is in progress 
         self.panning = false;
+
         // Panning TimeOut handler (used to set and clear) 
         self.panningTO = 0;
 
         // Animate view box Interval handler (used to set and clear) 
         self.animationIntervalID = null;
 
+        // Let's start the initialization
         self.init();
     };
 
