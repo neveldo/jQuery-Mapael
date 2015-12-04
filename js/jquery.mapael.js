@@ -246,9 +246,8 @@
          * Called by the constructor
          */
         init: function() {
-
-            var self = this
-                , $tooltip = {} // the tooltip container
+            var self = this;
+            var $tooltip = {} // the tooltip container
                 , $map = {} // the map container
                 , mapConf = {} // the map configuration from the user
                 , paper = {}
@@ -712,7 +711,8 @@
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
         initElem: function(paper, elem, elemOptions, $tooltip, id) {
-            var bbox = {}, textPosition = {}, self=this;
+            var self = this;
+            var bbox = {}, textPosition = {};
             if (elemOptions.value !== undefined)
                 elem.value = elemOptions.value;
 
@@ -766,6 +766,7 @@
          * Draw all links between plots on the paper
          */
         drawLinksCollection: function(paper, linksCollection, getCoords, $tooltip) {
+            var self = this;
             var p1 = {}
                 , p2 = {}
                 , elemOptions = {}
@@ -810,8 +811,8 @@
          * Draw a curved link between two couples of coordinates a(xa,ya) and b(xb, yb) on the paper
          */
         drawLink: function(id, paper, xa, ya, xb, yb, elemOptions, $tooltip) {
+            var self = this;
             var elem = {}
-                , self = this
                 // Compute the "curveto" SVG point, d(x,y)
                 // c(xc, yc) is the center of (xa,ya) and (xb, yb)
                 , xc = (xa + xb) / 2
@@ -856,7 +857,8 @@
          * Update the element "elem" on the map with the new elemOptions options
          */
         updateElem: function(elemOptions, elem, $tooltip, animDuration) {
-            var bbox, textPosition, plotOffsetX, plotOffsetY, self=this;
+            var self = this;
+            var bbox, textPosition, plotOffsetX, plotOffsetY;
             if (elemOptions.value !== undefined)
                 elem.value = elemOptions.value;
 
@@ -938,8 +940,8 @@
          * Draw the plot
          */
         drawPlot: function(id, mapConf, paper, $tooltip) {
-            var self=this
-                , plot = {}
+            var self = this;
+            var plot = {}
                 , coords = {}
                 , elemOptions = self.getElemOptions(
                     self.options.map.defaultPlot
@@ -986,6 +988,7 @@
          * Set target link on elem
          */
         setHref: function(elem) {
+            var self = this;
             elem.attr({cursor : "pointer"});
             $(elem.node).on("click." + pluginName, function() {
                 if (!self.panning && elem.href)
@@ -1000,8 +1003,8 @@
          * @param content the content to set in the tooltip
          */
         setTooltip: function(elem, $tooltip) {
-            var self = this
-                , tooltipTO = 0
+            var self = this;
+            var tooltipTO = 0
                 , cssClass = $tooltip.attr('class')
                 , updateTooltipPosition = function(x, y) {
                     var tooltipPosition = {
@@ -1079,13 +1082,13 @@
         * @param zoom_options
          */
         initZoom: function($map, paper, mapWidth, mapHeight, zoomOptions) {
+            var self = this;
             var $parentContainer = $map.parent()
                 , $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+")
                 , $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;")
                 , mousedown = false
                 , previousX = 0
-                , previousY = 0
-                , self = this;
+                , previousY = 0;
 
             // Zoom
             $parentContainer.data("zoomLevel", 0).data({"panX" : 0, "panY" : 0});
@@ -1160,8 +1163,8 @@
          * @param legendIndex index of the legend in the conf array
          */
         drawLegend: function (legendOptions, legendType, elems, scale, legendIndex) {
-            var self = this
-                , $legend = {}
+            var self = this;
+            var $legend = {}
                 , paper = {}
                 , width = 0
                 , height = 0
@@ -1368,6 +1371,7 @@
          * @param legendIndex index of the legend in the conf array
          */
         handleClickOnLegendElem: function(legendOptions, sliceOptions, label, elem, elems, legendIndex) {
+            var self = this;
             var hideMapElems = function(e, hideOtherElems, animDuration) {
                 var elemValue = 0
                     , hidden = $(label.node).attr('data-hidden')
@@ -1475,7 +1479,8 @@
          * @param scale scale ratio of the map
          */
         createLegends: function (legendType, elems, scale) {
-            var self = this, legendsOptions = self.options.legend[legendType], legends = [];
+            var self = this;
+            var legendsOptions = self.options.legend[legendType], legends = [];
 
             if (!$.isArray(self.options.legend[legendType])) {
                 legendsOptions = [self.options.legend[legendType]];
@@ -1515,8 +1520,8 @@
          * @param textElem the optional text element (within the map element)
          */
         setHover: function (paper, mapElem, textElem) {
-            var self = this
-                , $mapElem = {}
+            var self = this;
+            var $mapElem = {}
                 , $textElem = {}
                 , hoverTO = 0
                 , overBehaviour = function() {hoverTO = setTimeout(function () {self.elemHover(paper, mapElem, textElem);}, 120);}
@@ -1589,7 +1594,8 @@
          * @param legendOptions
          */
         getElemOptions: function(defaultOptions, elemOptions, legendOptions) {
-            var self = this, options = $.extend(true, {}, defaultOptions, elemOptions);
+            var self = this;
+            var options = $.extend(true, {}, defaultOptions, elemOptions);
             if (options.value !== undefined) {
                 if ($.isArray(legendOptions)) {
                     for (var i = 0, length = legendOptions.length;i<length;++i) {
@@ -1676,6 +1682,7 @@
           * @param callback method when animated action is complete
           */
         animateViewBox: function ($map, paper, x, y, w, h, duration, easingFunction ) {
+            var self = this;
             var cx = paper._viewBox ? paper._viewBox[0] : 0
                 , dx = x - cx
                 , cy = paper._viewBox ? paper._viewBox[1] : 0
@@ -1687,9 +1694,8 @@
                 , interval = 25
                 , steps = duration / interval
                 , current_step = 0
-                , easingFormula
-                , self = this;
-
+                , easingFormula;
+            
             easingFunction = easingFunction || "linear";
             easingFormula = Raphael.easing_formulas[easingFunction];
 
