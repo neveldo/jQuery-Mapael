@@ -239,6 +239,9 @@
         
         // The paper Raphael object
         self.paper = {};
+        
+        // The areas object list
+        self.areas = {};
 
         // Let's start the initialization
         self.init();
@@ -258,7 +261,6 @@
             var self = this;
             var mapConf = {} // the map configuration from the user
                 , resizeTO = 0
-                , areas = {}
                 , plots = {}
                 , links = {}
                 , zoomCenterX = 0
@@ -306,7 +308,7 @@
                     , (self.options.areas[id] ? self.options.areas[id] : {})
                     , self.options.legend.area
                 );
-                areas[id] = {"mapElem" : self.paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
+                self.areas[id] = {"mapElem" : self.paper.path(mapConf.elems[id]).attr(elemOptions.attrs)};
             });
 
             // Hook that allows to add custom processing on the map
@@ -319,7 +321,7 @@
                     , (self.options.areas[id] ? self.options.areas[id] : {})
                     , self.options.legend.area
                 );
-                self.initElem(areas[id], elemOptions, id);
+                self.initElem(self.areas[id], elemOptions, id);
             });
 
             // Draw links
@@ -456,7 +458,7 @@
             }
 
             // Create the legends for areas
-            self.createLegends("area", areas, 1);
+            self.createLegends("area", self.areas, 1);
 
             /*
              *
@@ -587,14 +589,14 @@
                 }
 
                 // Update areas attributes and tooltips
-                $.each(areas, function(id) {
+                $.each(self.areas, function(id) {
                     var elemOptions = self.getElemOptions(
                         self.options.map.defaultArea
                         , (self.options.areas[id] ? self.options.areas[id] : {})
                         , self.options.legend.area
                     );
 
-                    self.updateElem(elemOptions, areas[id], animDuration);
+                    self.updateElem(elemOptions, self.areas[id], animDuration);
                 });
 
                 // Update plots attributes and tooltips
@@ -634,7 +636,7 @@
 
                 // Update legends
                 if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
-                    self.createLegends("area", areas, 1);
+                    self.createLegends("area", self.areas, 1);
                     if (self.options.map.width) {
                         self.createLegends("plot", plots, (self.options.map.width / mapConf.width));
                     } else {
@@ -675,7 +677,7 @@
                         }
                     });
                 }
-                if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, areas, plots, self.options);
+                if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, plots, self.options);
             });
 
             // Handle resizing of the map
@@ -706,7 +708,7 @@
             }
 
             // Hook that allows to add custom processing on the map
-            if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, areas, plots, self.options);
+            if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, plots, self.options);
 
             $(self.paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
         },
