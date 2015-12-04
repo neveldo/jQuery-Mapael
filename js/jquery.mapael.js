@@ -229,6 +229,15 @@
         // Zoom pinch (set at touchstart and touchmove)
         self.previousPinchDist = 0;
         
+        // Zoom data
+        self.zoomData = {
+            zoomLevel: 0,
+            zoomX: 0,
+            zoomY: 0,
+            panX: 0,
+            panY: 0
+        };
+        
         // resize TimeOut handler (used to set and clear) 
         self.resizeTO = 0;
 
@@ -356,7 +365,7 @@
                 var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel)
                     , panX = 0
                     , panY = 0
-                    , previousZoomLevel = (1 + self.$container.data("zoomLevel") * self.options.map.zoom.step)
+                    , previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step)
                     , zoomLevel = (1 + newLevel * self.options.map.zoom.step)
                     , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration
                     , offsetX = 0
@@ -379,8 +388,8 @@
                     panX = 0;
                     panY = 0;
                 } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
-                    offsetX = self.$container.data("panX") + ((zoomOptions.x - self.$container.data("panX")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                    offsetY = self.$container.data("panY") + ((zoomOptions.y - self.$container.data("panY")) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    offsetX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    offsetY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
 
                     panX = Math.min(Math.max(0, offsetX), (mapConf.width - (mapConf.width / zoomLevel)));
                     panY = Math.min(Math.max(0, offsetY), (mapConf.height - (mapConf.height / zoomLevel)));
@@ -390,7 +399,7 @@
                 }
 
                 // Update zoom level of the map
-                if (zoomLevel == previousZoomLevel && panX == self.$container.data('panX') && panY == self.$container.data('panY')) return;
+                if (zoomLevel == previousZoomLevel && panX == self.zoomData.panX && panY == self.zoomData.panY) return;
 
                 if (animDuration > 0) {
                     self.animateViewBox(panX, panY, mapConf.width / zoomLevel, mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
@@ -400,7 +409,13 @@
                     self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(mapConf.width / zoomLevel)), y2 : (panY+(mapConf.height / zoomLevel))});}, 150);
                 }
 
-                self.$container.data({"zoomLevel" : newLevel, "panX" : panX, "panY" : panY, "zoomX" : panX + self.paper._viewBox[2] / 2, "zoomY" : panY + self.paper._viewBox[3] / 2});
+                $.extend(self.zoomData, {
+                    zoomLevel: newLevel, 
+                    panX: panX, 
+                    panY: panY, 
+                    zoomX: panX + self.paper._viewBox[2] / 2, 
+                    zoomY: panY + self.paper._viewBox[3] / 2
+                });
             });
 
             if (self.options.map.zoom.enabled) {
@@ -412,11 +427,11 @@
                         var offset = self.$map.offset(),
                             initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / self.$map.width())
                             , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                            , zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * self.options.map.zoom.step)
-                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.$container.data("panX")
-                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
+                            , zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step)
+                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX
+                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
 
-                        self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.$container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                        self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
 
                         return false;
                     });
@@ -443,12 +458,12 @@
                             if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
                                 offset = self.$map.offset();
                                 initFactor = (self.options.map.width) ? (mapConf.width / self.options.map.width) : (mapConf.width / self.$map.width());
-                                zoomFactor = 1 / (1 + (self.$container.data("zoomLevel")) * self.options.map.zoom.step);
-                                x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.$container.data("panX");
-                                y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.$container.data("panY");
+                                zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
+                                x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
+                                y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
 
                                 zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
-                                self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.$container.data("zoomLevel") + zoomLevel, "x" : x, "y" : y});
+                                self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
                                 self.previousPinchDist = pinchDist;
                             }
                             return false;
@@ -1103,11 +1118,16 @@
                 , previousY = 0;
 
             // Zoom
-            $parentContainer.data("zoomLevel", 0).data({"panX" : 0, "panY" : 0});
+            $.extend(self.zoomData, {
+                zoomLevel: 0, 
+                panX: 0, 
+                panY: 0
+            });
+
             self.$map.append($zoomIn).append($zoomOut);
 
-            $zoomIn.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : $parentContainer.data("zoomLevel") + 1});});
-            $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : $parentContainer.data("zoomLevel") - 1});});
+            $zoomIn.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel + 1});});
+            $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel - 1});});
 
             // Panning
             $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function() {
@@ -1128,7 +1148,7 @@
                     }
                 }
             }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove" : ""), function(e) {
-                var currentLevel = $parentContainer.data("zoomLevel")
+                var currentLevel = self.zoomData.zoomLevel
                     , pageX = 0
                     , pageY = 0;
 
@@ -1151,8 +1171,12 @@
                         , panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
 
                     if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
-                        $parentContainer.data({"panX" : panX, "panY" : panY, "zoomX" : panX + self.paper._viewBox[2] / 2, "zoomY" : panY + self.paper._viewBox[3] / 2});
-
+                        $.extend(self.zoomData, {
+                            panX: panX, 
+                            panY: panY, 
+                            zoomX: panX + self.paper._viewBox[2] / 2, 
+                            zoomY: panY + self.paper._viewBox[3] / 2
+                        });
                         self.paper.setViewBox(panX, panY, self.paper._viewBox[2], self.paper._viewBox[3]);
 
                         clearTimeout(self.panningTO);
