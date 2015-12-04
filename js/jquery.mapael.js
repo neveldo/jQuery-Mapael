@@ -245,6 +245,9 @@
         
         // The plots object list
         self.plots = {};
+        
+        // The links object list
+        self.links = {};
 
         // Let's start the initialization
         self.init();
@@ -264,7 +267,6 @@
             var self = this;
             var mapConf = {} // the map configuration from the user
                 , resizeTO = 0
-                , links = {}
                 , zoomCenterX = 0
                 , zoomCenterY = 0
                 , previousPinchDist = 0;
@@ -327,7 +329,7 @@
             });
 
             // Draw links
-            links = self.drawLinksCollection(self.options.links, mapConf.getCoords);
+            self.links = self.drawLinksCollection(self.options.links, mapConf.getCoords);
 
             // Draw plots
             $.each(self.options.plots, function(id) {
@@ -551,18 +553,18 @@
                 // Delete links by name if deleteLinkKeys is array
                 if (typeof opt.deleteLinkKeys === "object") {
                     for (i = 0;i < opt.deleteLinkKeys.length; i++) {
-                        if (links[opt.deleteLinkKeys[i]] !== undefined) {
-                            fnRemoveElement(links[opt.deleteLinkKeys[i]]);
-                            delete links[opt.deleteLinkKeys[i]];
+                        if (self.links[opt.deleteLinkKeys[i]] !== undefined) {
+                            fnRemoveElement(self.links[opt.deleteLinkKeys[i]]);
+                            delete self.links[opt.deleteLinkKeys[i]];
                         }
                     }
                 // Delete ALL links if deleteLinkKeys is set to "all"
                 } else if (opt.deleteLinkKeys === "all") {
-                    $.each(links, function(id, elem) {
+                    $.each(self.links, function(id, elem) {
                         fnRemoveElement(elem);
                     });
                     // Empty links object
-                    links = {};
+                    self.links = {};
                 }
 
                 // New plots
@@ -581,7 +583,7 @@
                 // New links
                 if (typeof opt.newLinks === "object") {
                     var newLinks = self.drawLinksCollection(opt.newLinks, mapConf.getCoords);
-                    $.extend(links, newLinks);
+                    $.extend(self.links, newLinks);
                     $.extend(self.options.links, opt.newLinks);
                     if (animDuration > 0) {
                         $.each(newLinks, function(id) {
@@ -626,14 +628,14 @@
                 });
 
                 // Update links attributes and tooltips
-                $.each(links, function(id) {
+                $.each(self.links, function(id) {
                     var elemOptions = self.getElemOptions(
                         self.options.map.defaultLink
                         , (self.options.links[id] ? self.options.links[id] : {})
                         , {}
                     );
 
-                    self.updateElem(elemOptions, links[id], animDuration);
+                    self.updateElem(elemOptions, self.links[id], animDuration);
                 });
 
                 // Update legends
