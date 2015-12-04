@@ -233,6 +233,9 @@
         
         // Map subcontainer jQuery object
         self.$map = {};
+        
+        // The tooltip jQuery object
+        self.$tooltip = {};
 
         // Let's start the initialization
         self.init();
@@ -250,8 +253,7 @@
          */
         init: function() {
             var self = this;
-            var $tooltip = {} // the tooltip container
-                , mapConf = {} // the map configuration from the user
+            var mapConf = {} // the map configuration from the user
                 , paper = {}
                 , elemOptions = {}
                 , resizeTO = 0
@@ -268,10 +270,10 @@
             }
 
             // Create the tooltip container
-            $tooltip = $("<div>").addClass(self.options.map.tooltip.cssClass).css("display", "none");
+            self.$tooltip = $("<div>").addClass(self.options.map.tooltip.cssClass).css("display", "none");
 
             // Get the map container, empty it then append tooltip
-            self.$map = $("." + self.options.map.cssClass, self.container).empty().append($tooltip);
+            self.$map = $("." + self.options.map.cssClass, self.container).empty().append(self.$tooltip);
 
             // Get the map from $.mapael or $.fn.mapael (backward compatibility)
             if ($[pluginName] && $[pluginName].maps && $[pluginName].maps[self.options.map.name]) {
@@ -293,7 +295,7 @@
             // add plugin class name on element
             self.$container.addClass(pluginName);
 
-            if (self.options.map.tooltip.css) $tooltip.css(self.options.map.tooltip.css);
+            if (self.options.map.tooltip.css) self.$tooltip.css(self.options.map.tooltip.css);
             paper.setViewBox(0, 0, mapConf.width, mapConf.height, false);
 
             // Draw map areas
@@ -316,15 +318,15 @@
                     , (self.options.areas[id] ? self.options.areas[id] : {})
                     , self.options.legend.area
                 );
-                self.initElem(paper, areas[id], elemOptions, $tooltip, id);
+                self.initElem(paper, areas[id], elemOptions, id);
             });
 
             // Draw links
-            links = self.drawLinksCollection(paper, self.options.links, mapConf.getCoords, $tooltip);
+            links = self.drawLinksCollection(paper, self.options.links, mapConf.getCoords);
 
             // Draw plots
             $.each(self.options.plots, function(id) {
-                plots[id] = self.drawPlot(id, mapConf, paper, $tooltip);
+                plots[id] = self.drawPlot(id, mapConf, paper);
             });
 
             /*
@@ -564,7 +566,7 @@
                     $.each(opt.newPlots, function(id) {
                         if (plots[id] === undefined) {
                             self.options.plots[id] = opt.newPlots[id];
-                            plots[id] = self.drawPlot(id, mapConf, paper, $tooltip);
+                            plots[id] = self.drawPlot(id, mapConf, paper);
                             if (animDuration > 0) {
                                 fnShowElement(plots[id]);
                             }
@@ -574,7 +576,7 @@
 
                 // New links
                 if (typeof opt.newLinks === "object") {
-                    var newLinks = self.drawLinksCollection(paper, opt.newLinks, mapConf.getCoords, $tooltip);
+                    var newLinks = self.drawLinksCollection(paper, opt.newLinks, mapConf.getCoords);
                     $.extend(links, newLinks);
                     $.extend(self.options.links, opt.newLinks);
                     if (animDuration > 0) {
@@ -592,7 +594,7 @@
                         , self.options.legend.area
                     );
 
-                    self.updateElem(elemOptions, areas[id], $tooltip, animDuration);
+                    self.updateElem(elemOptions, areas[id], animDuration);
                 });
 
                 // Update plots attributes and tooltips
@@ -616,7 +618,7 @@
                         elemOptions.attrs.r = elemOptions.size / 2;
                     }
 
-                    self.updateElem(elemOptions, plots[id], $tooltip, animDuration);
+                    self.updateElem(elemOptions, plots[id], animDuration);
                 });
 
                 // Update links attributes and tooltips
@@ -627,7 +629,7 @@
                         , {}
                     );
 
-                    self.updateElem(elemOptions, links[id], $tooltip, animDuration);
+                    self.updateElem(elemOptions, links[id], animDuration);
                 });
 
                 // Update legends
@@ -712,7 +714,7 @@
         /*
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
-        initElem: function(paper, elem, elemOptions, $tooltip, id) {
+        initElem: function(paper, elem, elemOptions, id) {
             var self = this;
             var bbox = {}, textPosition = {};
             if (elemOptions.value !== undefined)
@@ -740,11 +742,11 @@
             // Init the tooltip
             if (elemOptions.tooltip) {
                 elem.mapElem.tooltip = elemOptions.tooltip;
-                self.setTooltip(elem.mapElem, $tooltip);
+                self.setTooltip(elem.mapElem);
 
                 if (elemOptions.text && elemOptions.text.content !== undefined) {
                     elem.textElem.tooltip = elemOptions.tooltip;
-                    self.setTooltip(elem.textElem, $tooltip);
+                    self.setTooltip(elem.textElem);
                 }
             }
 
@@ -767,7 +769,7 @@
         /*
          * Draw all links between plots on the paper
          */
-        drawLinksCollection: function(paper, linksCollection, getCoords, $tooltip) {
+        drawLinksCollection: function(paper, linksCollection, getCoords) {
             var self = this;
             var p1 = {}
                 , p2 = {}
@@ -804,7 +806,7 @@
                     coordsP2.x = p2.x;
                     coordsP2.y = p2.y;
                 }
-                links[id] = self.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions, $tooltip);
+                links[id] = self.drawLink(id, paper, coordsP1.x, coordsP1.y, coordsP2.x, coordsP2.y, elemOptions);
             });
             return links;
         },
@@ -812,7 +814,7 @@
         /*
          * Draw a curved link between two couples of coordinates a(xa,ya) and b(xb, yb) on the paper
          */
-        drawLink: function(id, paper, xa, ya, xb, yb, elemOptions, $tooltip) {
+        drawLink: function(id, paper, xa, ya, xb, yb, elemOptions) {
             var self = this;
             var elem = {}
                 // Compute the "curveto" SVG point, d(x,y)
@@ -850,7 +852,7 @@
             }
 
             elem.mapElem = paper.path("m "+xa+","+ya+" C "+x+","+y+" "+xb+","+yb+" "+xb+","+yb+"").attr(elemOptions.attrs);
-            self.initElem(paper, elem, elemOptions, $tooltip, id);
+            self.initElem(paper, elem, elemOptions, id);
 
             return elem;
         },
@@ -858,7 +860,7 @@
         /*
          * Update the element "elem" on the map with the new elemOptions options
          */
-        updateElem: function(elemOptions, elem, $tooltip, animDuration) {
+        updateElem: function(elemOptions, elem, animDuration) {
             var self = this;
             var bbox, textPosition, plotOffsetX, plotOffsetY;
             if (elemOptions.value !== undefined)
@@ -916,8 +918,8 @@
             // Update the tooltip
             if (elemOptions.tooltip) {
                 if (elem.mapElem.tooltip === undefined) {
-                    self.setTooltip(elem.mapElem, $tooltip);
-                    if (elem.textElem) self.setTooltip(elem.textElem, $tooltip);
+                    self.setTooltip(elem.mapElem);
+                    if (elem.textElem) self.setTooltip(elem.textElem);
                 }
                 elem.mapElem.tooltip = elemOptions.tooltip;
                 if (elem.textElem) elem.textElem.tooltip = elemOptions.tooltip;
@@ -941,7 +943,7 @@
         /*
          * Draw the plot
          */
-        drawPlot: function(id, mapConf, paper, $tooltip) {
+        drawPlot: function(id, mapConf, paper) {
             var self = this;
             var plot = {}
                 , coords = {}
@@ -982,7 +984,7 @@
                 plot = {"mapElem" : paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
             }
 
-            self.initElem(paper, plot, elemOptions, $tooltip, id);
+            self.initElem(paper, plot, elemOptions, id);
             return plot;
         },
 
@@ -1001,17 +1003,16 @@
         /*
          * Set a tooltip for the areas and plots
          * @param elem area or plot element
-         * @param $tooltip the tooltip container
          * @param content the content to set in the tooltip
          */
-        setTooltip: function(elem, $tooltip) {
+        setTooltip: function(elem) {
             var self = this;
             var tooltipTO = 0
-                , cssClass = $tooltip.attr('class')
+                , cssClass = self.$tooltip.attr('class')
                 , updateTooltipPosition = function(x, y) {
                     var tooltipPosition = {
-                        "left" : Math.min(self.$map.width() - $tooltip.outerWidth() - 5, x - self.$map.offset().left + 10),
-                        "top" : Math.min(self.$map.height() - $tooltip.outerHeight() - 5, y - self.$map.offset().top + 20)
+                        "left" : Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5, x - self.$map.offset().left + 10),
+                        "top" : Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5, y - self.$map.offset().top + 20)
                     };
 
                     if (elem.tooltip.overflow !== undefined) {
@@ -1023,21 +1024,21 @@
                         }
                     }
 
-                    $tooltip.css(tooltipPosition);
+                    self.$tooltip.css(tooltipPosition);
                 };
 
             $(elem.node).on("mouseover." + pluginName, function(e) {
                 tooltipTO = setTimeout(
                     function() {
-                        $tooltip.attr("class", cssClass);
+                        self.$tooltip.attr("class", cssClass);
                         if (elem.tooltip !== undefined) {
                             if (elem.tooltip.content !== undefined) {
                                 // if tooltip.content is function, call it. Otherwise, assign it directly.
                                 var content = (typeof elem.tooltip.content === "function")? elem.tooltip.content(elem) : elem.tooltip.content;
-                                $tooltip.html(content).css("display", "block");
+                                self.$tooltip.html(content).css("display", "block");
                             }
                             if (elem.tooltip.cssClass !== undefined) {
-                                $tooltip.addClass(elem.tooltip.cssClass);
+                                self.$tooltip.addClass(elem.tooltip.cssClass);
                             }
                         }
                         updateTooltipPosition(e.pageX, e.pageY);
@@ -1046,7 +1047,7 @@
                 );
             }).on("mouseout." + pluginName, function() {
                 clearTimeout(tooltipTO);
-                $tooltip.css("display", "none");
+                self.$tooltip.css("display", "none");
             }).on("mousemove." + pluginName, function(e) {
                 updateTooltipPosition(e.pageX, e.pageY);
             });
