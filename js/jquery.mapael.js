@@ -353,125 +353,12 @@
                 self.plots[id] = self.drawPlot(id);
             });
 
-            /*
-             * Zoom on the map at a specific level focused on specific coordinates
-             * If no coordinates are specified, the zoom will be focused on the center of the map
-             * options :
-             *    "level" : level of the zoom between 0 and maxLevel
-             *    "x" or "latitude" : x coordinate or latitude of the point to focus on
-             *    "y" or "longitude" : y coordinate or longitude of the point to focus on
-             *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
-             *    "animDuration" : zoom duration
-             */
+            // Attach zoom event
             self.$container.on("zoom." + pluginName, function(e, zoomOptions) {
-                var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel)
-                    , panX = 0
-                    , panY = 0
-                    , previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step)
-                    , zoomLevel = (1 + newLevel * self.options.map.zoom.step)
-                    , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration
-                    , offsetX = 0
-                    , offsetY = 0
-                    , coords = {};
-
-                if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
-                    coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
-                    zoomOptions.x = coords.x;
-                    zoomOptions.y = coords.y;
-                }
-
-                if (zoomOptions.x === undefined)
-                    zoomOptions.x = self.paper._viewBox[0] + self.paper._viewBox[2] / 2;
-
-                if (zoomOptions.y === undefined)
-                    zoomOptions.y = (self.paper._viewBox[1] + self.paper._viewBox[3] / 2);
-
-                if (newLevel === 0) {
-                    panX = 0;
-                    panY = 0;
-                } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
-                    offsetX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                    offsetY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-
-                    panX = Math.min(Math.max(0, offsetX), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                    panY = Math.min(Math.max(0, offsetY), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
-                } else {
-                    panX = Math.min(Math.max(0, zoomOptions.x - (self.mapConf.width / zoomLevel)/2), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                    panY = Math.min(Math.max(0, zoomOptions.y - (self.mapConf.height / zoomLevel)/2), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
-                }
-
-                // Update zoom level of the map
-                if (zoomLevel == previousZoomLevel && panX == self.zoomData.panX && panY == self.zoomData.panY) return;
-
-                if (animDuration > 0) {
-                    self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
-                } else {
-                    self.paper.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
-                    clearTimeout(self.zoomTO);
-                    self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(self.mapConf.width / zoomLevel)), y2 : (panY+(self.mapConf.height / zoomLevel))});}, 150);
-                }
-
-                $.extend(self.zoomData, {
-                    zoomLevel: newLevel,
-                    panX: panX,
-                    panY: panY,
-                    zoomX: panX + self.paper._viewBox[2] / 2,
-                    zoomY: panY + self.paper._viewBox[3] / 2
-                });
+                self.onZoomEvent(e, zoomOptions);
             });
 
             if (self.options.map.zoom.enabled) {
-            /*
-            * Update the zoom level of the map on mousewheel
-            */
-                if (self.options.map.zoom.mousewheel) {
-                    self.$map.on("mousewheel." + pluginName, function(e) {
-                        var offset = self.$map.offset(),
-                            initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width())
-                            , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                            , zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step)
-                            , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX
-                            , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
-
-                        self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
-
-                        return false;
-                    });
-                }
-
-                /*
-                 * Update the zoom level of the map on touch pinch
-                 */
-                if (self.options.map.zoom.touch) {
-                    self.$map.on("touchstart." + pluginName, function(e) {
-                        if (e.originalEvent.touches.length === 2) {
-                            self.zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
-                            self.zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
-                            self.previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
-                        }
-                    });
-
-                    self.$map.on("touchmove." + pluginName, function(e) {
-                        var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
-
-                        if (e.originalEvent.touches.length === 2) {
-                            pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
-
-                            if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
-                                offset = self.$map.offset();
-                                initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
-                                zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
-                                x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
-                                y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
-
-                                zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
-                                self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
-                                self.previousPinchDist = pinchDist;
-                            }
-                            return false;
-                        }
-                    });
-                }
                 // Enable zoom
                 self.initZoom(self.mapConf.width, self.mapConf.height, self.options.map.zoom);
             }
@@ -487,224 +374,9 @@
             // Create the legends for areas
             self.createLegends("area", self.areas, 1);
 
-            /*
-             *
-             * Update the current map
-             * Refresh attributes and tooltips for areas and plots
-             * @param opt option for the refresh :
-             *  opt.mapOptions: options to update for plots and areas
-             *  opt.replaceOptions: whether mapsOptions should entirely replace current map options, or just extend it
-             *  opt.opt.newPlots new plots to add to the map
-             *  opt.newLinks new links to add to the map
-             *  opt.deletePlotKeys plots to delete from the map (array, or "all" to remove all plots)
-             *  opt.deleteLinkKeys links to remove from the map (array, or "all" to remove all links)
-             *  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
-             *  opt.animDuration animation duration in ms (default = 0)
-             *  opt.afterUpdate Hook that allows to add custom processing on the map
-             */
+            // Attach update event
             self.$container.on("update." + pluginName, function(e, opt) {
-                // Abort if opt is undefined
-                if (typeof opt !== "object")  return;
-
-                var i = 0
-                    , animDuration = (opt.animDuration) ? opt.animDuration : 0
-                    // This function remove an element using animation (or not, depending on animDuration)
-                    // Used for deletePlotKeys and deleteLinkKeys
-                    , fnRemoveElement = function(elem) {
-                        // Unset all event handlers
-                        self.unsetHover(elem.mapElem, elem.textElem);
-                        if (animDuration > 0) {
-                            elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
-                                elem.mapElem.remove();
-                            });
-                            if (elem.textElem) {
-                                elem.textElem.animate({"opacity":0}, animDuration, "linear", function() {
-                                    elem.textElem.remove();
-                                });
-                            }
-                        } else {
-                            elem.mapElem.remove();
-                            if (elem.textElem) {
-                                elem.textElem.remove();
-                            }
-                        }
-                    }
-                    // This function show an element using animation
-                    // Used for newPlots and newLinks
-                    , fnShowElement = function(elem) {
-                        elem.mapElem.attr({opacity : 0});
-                        elem.mapElem.animate({"opacity": (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
-
-                        if (elem.textElem) {
-                            elem.textElem.attr({opacity : 0});
-                            elem.textElem.animate({"opacity": (elem.textElem.originalAttrs.opacity !== undefined) ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
-                        }
-                    };
-
-                if (typeof opt.mapOptions === "object") {
-                    if (opt.replaceOptions === true) self.options = $.extend(true, {}, defaultOptions, opt.mapOptions);
-                    else $.extend(true, self.options, opt.mapOptions);
-
-                    // IF we update areas, plots or legend, then reset all legend state to "show"
-                    if (opt.mapOptions.areas !== undefined || opt.mapOptions.plots !== undefined || opt.mapOptions.legend !== undefined) {
-                        $("[data-type='elem']", self.$container).each(function (id, elem) {
-                            if ($(elem).attr('data-hidden') === "1") {
-                                // Toggle state of element by clicking
-                                $(elem).trigger("click." + pluginName, [false, animDuration]);
-                            }
-                        });
-                    }
-                }
-
-                // Delete plots by name if deletePlotKeys is array
-                if (typeof opt.deletePlotKeys === "object") {
-                    for (;i < opt.deletePlotKeys.length; i++) {
-                        if (self.plots[opt.deletePlotKeys[i]] !== undefined) {
-                            fnRemoveElement(self.plots[opt.deletePlotKeys[i]]);
-                            delete self.plots[opt.deletePlotKeys[i]];
-                        }
-                    }
-                // Delete ALL plots if deletePlotKeys is set to "all"
-                } else if (opt.deletePlotKeys === "all") {
-                    $.each(self.plots, function(id, elem) {
-                        fnRemoveElement(elem);
-                    });
-                    // Empty plots object
-                    self.plots = {};
-                }
-
-                // Delete links by name if deleteLinkKeys is array
-                if (typeof opt.deleteLinkKeys === "object") {
-                    for (i = 0;i < opt.deleteLinkKeys.length; i++) {
-                        if (self.links[opt.deleteLinkKeys[i]] !== undefined) {
-                            fnRemoveElement(self.links[opt.deleteLinkKeys[i]]);
-                            delete self.links[opt.deleteLinkKeys[i]];
-                        }
-                    }
-                // Delete ALL links if deleteLinkKeys is set to "all"
-                } else if (opt.deleteLinkKeys === "all") {
-                    $.each(self.links, function(id, elem) {
-                        fnRemoveElement(elem);
-                    });
-                    // Empty links object
-                    self.links = {};
-                }
-
-                // New plots
-                if (typeof opt.newPlots === "object") {
-                    $.each(opt.newPlots, function(id) {
-                        if (self.plots[id] === undefined) {
-                            self.options.plots[id] = opt.newPlots[id];
-                            self.plots[id] = self.drawPlot(id);
-                            if (animDuration > 0) {
-                                fnShowElement(self.plots[id]);
-                            }
-                        }
-                    });
-                }
-
-                // New links
-                if (typeof opt.newLinks === "object") {
-                    var newLinks = self.drawLinksCollection(opt.newLinks);
-                    $.extend(self.links, newLinks);
-                    $.extend(self.options.links, opt.newLinks);
-                    if (animDuration > 0) {
-                        $.each(newLinks, function(id) {
-                            fnShowElement(newLinks[id]);
-                        });
-                    }
-                }
-
-                // Update areas attributes and tooltips
-                $.each(self.areas, function(id) {
-                    var elemOptions = self.getElemOptions(
-                        self.options.map.defaultArea
-                        , (self.options.areas[id] ? self.options.areas[id] : {})
-                        , self.options.legend.area
-                    );
-
-                    self.updateElem(elemOptions, self.areas[id], animDuration);
-                });
-
-                // Update plots attributes and tooltips
-                $.each(self.plots, function(id) {
-                    var elemOptions = self.getElemOptions(
-                        self.options.map.defaultPlot
-                        , (self.options.plots[id] ? self.options.plots[id] : {})
-                        , self.options.legend.plot
-                    );
-                    if (elemOptions.type == "square") {
-                        elemOptions.attrs.width = elemOptions.size;
-                        elemOptions.attrs.height = elemOptions.size;
-                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.size - self.plots[id].mapElem.attrs.width) / 2;
-                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.size - self.plots[id].mapElem.attrs.height) / 2;
-                    } else if (elemOptions.type == "image") {
-                        elemOptions.attrs.width = elemOptions.width;
-                        elemOptions.attrs.height = elemOptions.height;
-                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
-                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
-                    } else { // Default : circle
-                        elemOptions.attrs.r = elemOptions.size / 2;
-                    }
-
-                    self.updateElem(elemOptions, self.plots[id], animDuration);
-                });
-
-                // Update links attributes and tooltips
-                $.each(self.links, function(id) {
-                    var elemOptions = self.getElemOptions(
-                        self.options.map.defaultLink
-                        , (self.options.links[id] ? self.options.links[id] : {})
-                        , {}
-                    );
-
-                    self.updateElem(elemOptions, self.links[id], animDuration);
-                });
-
-                // Update legends
-                if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
-                    self.createLegends("area", self.areas, 1);
-                    if (self.options.map.width) {
-                        self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
-                    } else {
-                        self.createLegends("plot", self.plots, (self.$map.width() / self.mapConf.width));
-                    }
-                }
-
-                // Hide/Show all elements based on showlegendElems
-                //      Toggle (i.e. click) only if:
-                //          - slice legend is shown AND we want to hide
-                //          - slice legend is hidden AND we want to show
-                if (typeof opt.setLegendElemsState === "object") {
-                    // setLegendElemsState is an object listing the legend we want to hide/show
-                    $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
-                        // Search for the legend
-                        var $legend = self.$container.find("." + legendCSSClass)[0];
-                        if ($legend !== undefined) {
-                            // Select all elem inside this legend
-                            $("[data-type='elem']", $legend).each(function(id, elem) {
-                                if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
-                                    ($(elem).attr('data-hidden') === "1" && action === "show")) {
-                                    // Toggle state of element by clicking
-                                    $(elem).trigger("click." + pluginName, [false, animDuration]);
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    // setLegendElemsState is a string, or is undefined
-                    // Default : "show"
-                    var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
-
-                    $("[data-type='elem']", self.$container).each(function(id, elem) {
-                        if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
-                            ($(elem).attr('data-hidden') === "1" && action === "show")) {
-                            // Toggle state of element by clicking
-                            $(elem).trigger("click." + pluginName, [false, animDuration]);
-                        }
-                    });
-                }
-                if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, plots, self.options);
+                self.onUpdateEvent(e, opt);
             });
 
             // Handle resizing of the map
@@ -793,6 +465,227 @@
             }
 
             $(elem.mapElem.node).attr("data-id", id);
+        },
+
+        /*
+         *
+         * Update the current map
+         * Refresh attributes and tooltips for areas and plots
+         * @param opt option for the refresh :
+         *  opt.mapOptions: options to update for plots and areas
+         *  opt.replaceOptions: whether mapsOptions should entirely replace current map options, or just extend it
+         *  opt.opt.newPlots new plots to add to the map
+         *  opt.newLinks new links to add to the map
+         *  opt.deletePlotKeys plots to delete from the map (array, or "all" to remove all plots)
+         *  opt.deleteLinkKeys links to remove from the map (array, or "all" to remove all links)
+         *  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
+         *  opt.animDuration animation duration in ms (default = 0)
+         *  opt.afterUpdate Hook that allows to add custom processing on the map
+         */
+        onUpdateEvent: function(e, opt) {
+            var self = this;
+            // Abort if opt is undefined
+            if (typeof opt !== "object")  return;
+
+            var i = 0
+                , animDuration = (opt.animDuration) ? opt.animDuration : 0
+                // This function remove an element using animation (or not, depending on animDuration)
+                // Used for deletePlotKeys and deleteLinkKeys
+                , fnRemoveElement = function(elem) {
+                    // Unset all event handlers
+                    self.unsetHover(elem.mapElem, elem.textElem);
+                    if (animDuration > 0) {
+                        elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
+                            elem.mapElem.remove();
+                        });
+                        if (elem.textElem) {
+                            elem.textElem.animate({"opacity":0}, animDuration, "linear", function() {
+                                elem.textElem.remove();
+                            });
+                        }
+                    } else {
+                        elem.mapElem.remove();
+                        if (elem.textElem) {
+                            elem.textElem.remove();
+                        }
+                    }
+                }
+                // This function show an element using animation
+                // Used for newPlots and newLinks
+                , fnShowElement = function(elem) {
+                    elem.mapElem.attr({opacity : 0});
+                    elem.mapElem.animate({"opacity": (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
+
+                    if (elem.textElem) {
+                        elem.textElem.attr({opacity : 0});
+                        elem.textElem.animate({"opacity": (elem.textElem.originalAttrs.opacity !== undefined) ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
+                    }
+                };
+
+            if (typeof opt.mapOptions === "object") {
+                if (opt.replaceOptions === true) self.options = $.extend(true, {}, defaultOptions, opt.mapOptions);
+                else $.extend(true, self.options, opt.mapOptions);
+
+                // IF we update areas, plots or legend, then reset all legend state to "show"
+                if (opt.mapOptions.areas !== undefined || opt.mapOptions.plots !== undefined || opt.mapOptions.legend !== undefined) {
+                    $("[data-type='elem']", self.$container).each(function (id, elem) {
+                        if ($(elem).attr('data-hidden') === "1") {
+                            // Toggle state of element by clicking
+                            $(elem).trigger("click." + pluginName, [false, animDuration]);
+                        }
+                    });
+                }
+            }
+
+            // Delete plots by name if deletePlotKeys is array
+            if (typeof opt.deletePlotKeys === "object") {
+                for (;i < opt.deletePlotKeys.length; i++) {
+                    if (self.plots[opt.deletePlotKeys[i]] !== undefined) {
+                        fnRemoveElement(self.plots[opt.deletePlotKeys[i]]);
+                        delete self.plots[opt.deletePlotKeys[i]];
+                    }
+                }
+            // Delete ALL plots if deletePlotKeys is set to "all"
+            } else if (opt.deletePlotKeys === "all") {
+                $.each(self.plots, function(id, elem) {
+                    fnRemoveElement(elem);
+                });
+                // Empty plots object
+                self.plots = {};
+            }
+
+            // Delete links by name if deleteLinkKeys is array
+            if (typeof opt.deleteLinkKeys === "object") {
+                for (i = 0;i < opt.deleteLinkKeys.length; i++) {
+                    if (self.links[opt.deleteLinkKeys[i]] !== undefined) {
+                        fnRemoveElement(self.links[opt.deleteLinkKeys[i]]);
+                        delete self.links[opt.deleteLinkKeys[i]];
+                    }
+                }
+            // Delete ALL links if deleteLinkKeys is set to "all"
+            } else if (opt.deleteLinkKeys === "all") {
+                $.each(self.links, function(id, elem) {
+                    fnRemoveElement(elem);
+                });
+                // Empty links object
+                self.links = {};
+            }
+
+            // New plots
+            if (typeof opt.newPlots === "object") {
+                $.each(opt.newPlots, function(id) {
+                    if (self.plots[id] === undefined) {
+                        self.options.plots[id] = opt.newPlots[id];
+                        self.plots[id] = self.drawPlot(id);
+                        if (animDuration > 0) {
+                            fnShowElement(self.plots[id]);
+                        }
+                    }
+                });
+            }
+
+            // New links
+            if (typeof opt.newLinks === "object") {
+                var newLinks = self.drawLinksCollection(opt.newLinks);
+                $.extend(self.links, newLinks);
+                $.extend(self.options.links, opt.newLinks);
+                if (animDuration > 0) {
+                    $.each(newLinks, function(id) {
+                        fnShowElement(newLinks[id]);
+                    });
+                }
+            }
+
+            // Update areas attributes and tooltips
+            $.each(self.areas, function(id) {
+                var elemOptions = self.getElemOptions(
+                    self.options.map.defaultArea
+                    , (self.options.areas[id] ? self.options.areas[id] : {})
+                    , self.options.legend.area
+                );
+
+                self.updateElem(elemOptions, self.areas[id], animDuration);
+            });
+
+            // Update plots attributes and tooltips
+            $.each(self.plots, function(id) {
+                var elemOptions = self.getElemOptions(
+                    self.options.map.defaultPlot
+                    , (self.options.plots[id] ? self.options.plots[id] : {})
+                    , self.options.legend.plot
+                );
+                if (elemOptions.type == "square") {
+                    elemOptions.attrs.width = elemOptions.size;
+                    elemOptions.attrs.height = elemOptions.size;
+                    elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.size - self.plots[id].mapElem.attrs.width) / 2;
+                    elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.size - self.plots[id].mapElem.attrs.height) / 2;
+                } else if (elemOptions.type == "image") {
+                    elemOptions.attrs.width = elemOptions.width;
+                    elemOptions.attrs.height = elemOptions.height;
+                    elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
+                    elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
+                } else { // Default : circle
+                    elemOptions.attrs.r = elemOptions.size / 2;
+                }
+
+                self.updateElem(elemOptions, self.plots[id], animDuration);
+            });
+
+            // Update links attributes and tooltips
+            $.each(self.links, function(id) {
+                var elemOptions = self.getElemOptions(
+                    self.options.map.defaultLink
+                    , (self.options.links[id] ? self.options.links[id] : {})
+                    , {}
+                );
+
+                self.updateElem(elemOptions, self.links[id], animDuration);
+            });
+
+            // Update legends
+            if (opt.mapOptions && typeof opt.mapOptions.legend === "object") {
+                self.createLegends("area", self.areas, 1);
+                if (self.options.map.width) {
+                    self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
+                } else {
+                    self.createLegends("plot", self.plots, (self.$map.width() / self.mapConf.width));
+                }
+            }
+
+            // Hide/Show all elements based on showlegendElems
+            //      Toggle (i.e. click) only if:
+            //          - slice legend is shown AND we want to hide
+            //          - slice legend is hidden AND we want to show
+            if (typeof opt.setLegendElemsState === "object") {
+                // setLegendElemsState is an object listing the legend we want to hide/show
+                $.each(opt.setLegendElemsState, function (legendCSSClass, action) {
+                    // Search for the legend
+                    var $legend = self.$container.find("." + legendCSSClass)[0];
+                    if ($legend !== undefined) {
+                        // Select all elem inside this legend
+                        $("[data-type='elem']", $legend).each(function(id, elem) {
+                            if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
+                                ($(elem).attr('data-hidden') === "1" && action === "show")) {
+                                // Toggle state of element by clicking
+                                $(elem).trigger("click." + pluginName, [false, animDuration]);
+                            }
+                        });
+                    }
+                });
+            } else {
+                // setLegendElemsState is a string, or is undefined
+                // Default : "show"
+                var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
+
+                $("[data-type='elem']", self.$container).each(function(id, elem) {
+                    if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
+                        ($(elem).attr('data-hidden') === "1" && action === "show")) {
+                        // Toggle state of element by clicking
+                        $(elem).trigger("click." + pluginName, [false, animDuration]);
+                    }
+                });
+            }
+            if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, plots, self.options);
         },
 
         /*
@@ -1105,6 +998,74 @@
         },
 
         /*
+         * Zoom on the map at a specific level focused on specific coordinates
+         * If no coordinates are specified, the zoom will be focused on the center of the map
+         * options :
+         *    "level" : level of the zoom between 0 and maxLevel
+         *    "x" or "latitude" : x coordinate or latitude of the point to focus on
+         *    "y" or "longitude" : y coordinate or longitude of the point to focus on
+         *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
+         *    "animDuration" : zoom duration
+         */
+        onZoomEvent: function(e, zoomOptions) {
+            var self = this;
+            var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel)
+                , panX = 0
+                , panY = 0
+                , previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step)
+                , zoomLevel = (1 + newLevel * self.options.map.zoom.step)
+                , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration
+                , offsetX = 0
+                , offsetY = 0
+                , coords = {};
+
+            if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
+                coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
+                zoomOptions.x = coords.x;
+                zoomOptions.y = coords.y;
+            }
+
+            if (zoomOptions.x === undefined)
+                zoomOptions.x = self.paper._viewBox[0] + self.paper._viewBox[2] / 2;
+
+            if (zoomOptions.y === undefined)
+                zoomOptions.y = (self.paper._viewBox[1] + self.paper._viewBox[3] / 2);
+
+            if (newLevel === 0) {
+                panX = 0;
+                panY = 0;
+            } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
+                offsetX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                offsetY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+
+                panX = Math.min(Math.max(0, offsetX), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
+                panY = Math.min(Math.max(0, offsetY), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
+            } else {
+                panX = Math.min(Math.max(0, zoomOptions.x - (self.mapConf.width / zoomLevel)/2), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
+                panY = Math.min(Math.max(0, zoomOptions.y - (self.mapConf.height / zoomLevel)/2), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
+            }
+
+            // Update zoom level of the map
+            if (zoomLevel == previousZoomLevel && panX == self.zoomData.panX && panY == self.zoomData.panY) return;
+
+            if (animDuration > 0) {
+                self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
+            } else {
+                self.paper.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
+                clearTimeout(self.zoomTO);
+                self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(self.mapConf.width / zoomLevel)), y2 : (panY+(self.mapConf.height / zoomLevel))});}, 150);
+            }
+
+            $.extend(self.zoomData, {
+                zoomLevel: newLevel,
+                panX: panX,
+                panY: panY,
+                zoomX: panX + self.paper._viewBox[2] / 2,
+                zoomY: panY + self.paper._viewBox[3] / 2
+            });
+        },
+
+        /*
          * Init zoom and panning for the map
          * @param mapWidth
          * @param mapHeight
@@ -1112,23 +1073,74 @@
          */
         initZoom: function(mapWidth, mapHeight, zoomOptions) {
             var self = this;
-            var $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+")
-                , $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;")
+            var $zoomIn
+                , $zoomOut
                 , mousedown = false
                 , previousX = 0
                 , previousY = 0;
 
-            // Zoom
+            // init Zoom data
             $.extend(self.zoomData, {
                 zoomLevel: 0,
                 panX: 0,
                 panY: 0
             });
 
+            // init zoom button
+            $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+");
+            $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;");
             self.$map.append($zoomIn).append($zoomOut);
 
             $zoomIn.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel + 1});});
             $zoomOut.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel - 1});});
+
+            // Update the zoom level of the map on mousewheel
+            if (self.options.map.zoom.mousewheel) {
+                self.$map.on("mousewheel." + pluginName, function(e) {
+                    var offset = self.$map.offset(),
+                        initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width())
+                        , zoomLevel = (e.deltaY > 0) ? 1 : -1
+                        , zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step)
+                        , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX
+                        , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
+
+                    self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
+
+                    return false;
+                });
+            }
+
+            // Update the zoom level of the map on touch pinch
+            if (self.options.map.zoom.touch) {
+                self.$map.on("touchstart." + pluginName, function(e) {
+                    if (e.originalEvent.touches.length === 2) {
+                        self.zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
+                        self.zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
+                        self.previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+                    }
+                });
+
+                self.$map.on("touchmove." + pluginName, function(e) {
+                    var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
+
+                    if (e.originalEvent.touches.length === 2) {
+                        pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+
+                        if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
+                            offset = self.$map.offset();
+                            initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
+                            zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
+                            x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
+                            y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
+
+                            zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
+                            self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
+                            self.previousPinchDist = pinchDist;
+                        }
+                        return false;
+                    }
+                });
+            }
 
             // Panning
             $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function() {
