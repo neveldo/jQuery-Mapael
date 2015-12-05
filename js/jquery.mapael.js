@@ -468,6 +468,213 @@
         },
 
         /*
+         * Init zoom and panning for the map
+         * @param mapWidth
+         * @param mapHeight
+        * @param zoom_options
+         */
+        initZoom: function(mapWidth, mapHeight, zoomOptions) {
+            var self = this;
+            var $zoomIn
+                , $zoomOut
+                , mousedown = false
+                , previousX = 0
+                , previousY = 0;
+
+            // init Zoom data
+            $.extend(self.zoomData, {
+                zoomLevel: 0,
+                panX: 0,
+                panY: 0
+            });
+
+            // init zoom button
+            $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+");
+            $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;");
+            self.$map.append($zoomIn).append($zoomOut);
+
+            $zoomIn.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel + 1});});
+            $zoomOut.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel - 1});});
+
+            // Update the zoom level of the map on mousewheel
+            if (self.options.map.zoom.mousewheel) {
+                self.$map.on("mousewheel." + pluginName, function(e) {
+                    var offset = self.$map.offset(),
+                        initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width())
+                        , zoomLevel = (e.deltaY > 0) ? 1 : -1
+                        , zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step)
+                        , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX
+                        , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
+
+                    self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
+
+                    return false;
+                });
+            }
+
+            // Update the zoom level of the map on touch pinch
+            if (self.options.map.zoom.touch) {
+                self.$map.on("touchstart." + pluginName, function(e) {
+                    if (e.originalEvent.touches.length === 2) {
+                        self.zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
+                        self.zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
+                        self.previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+                    }
+                });
+
+                self.$map.on("touchmove." + pluginName, function(e) {
+                    var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
+
+                    if (e.originalEvent.touches.length === 2) {
+                        pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+
+                        if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
+                            offset = self.$map.offset();
+                            initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
+                            zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
+                            x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
+                            y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
+
+                            zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
+                            self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
+                            self.previousPinchDist = pinchDist;
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            // Panning
+            $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function() {
+                mousedown = false;
+                setTimeout(function () {self.panning = false;}, 50);
+            });
+
+            self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart" : ""), function(e) {
+                if (e.pageX !== undefined) {
+                    mousedown = true;
+                    previousX = e.pageX;
+                    previousY = e.pageY;
+                } else {
+                    if (e.originalEvent.touches.length === 1) {
+                        mousedown = true;
+                        previousX = e.originalEvent.touches[0].pageX;
+                        previousY = e.originalEvent.touches[0].pageY;
+                    }
+                }
+            }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove" : ""), function(e) {
+                var currentLevel = self.zoomData.zoomLevel
+                    , pageX = 0
+                    , pageY = 0;
+
+                if (e.pageX !== undefined) {
+                    pageX = e.pageX;
+                    pageY = e.pageY;
+                } else {
+                    if (e.originalEvent.touches.length === 1) {
+                        pageX = e.originalEvent.touches[0].pageX;
+                        pageY = e.originalEvent.touches[0].pageY;
+                    } else {
+                        mousedown = false;
+                    }
+                }
+
+                if (mousedown && currentLevel !== 0) {
+                    var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / self.paper.width)
+                        , offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / self.paper.height)
+                        , panX = Math.min(Math.max(0, self.paper._viewBox[0] + offsetX), (mapWidth - self.paper._viewBox[2]))
+                        , panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
+
+                    if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
+                        $.extend(self.zoomData, {
+                            panX: panX,
+                            panY: panY,
+                            zoomX: panX + self.paper._viewBox[2] / 2,
+                            zoomY: panY + self.paper._viewBox[3] / 2
+                        });
+                        self.paper.setViewBox(panX, panY, self.paper._viewBox[2], self.paper._viewBox[3]);
+
+                        clearTimeout(self.panningTO);
+                        self.panningTO = setTimeout(function(){self.$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+self.paper._viewBox[2]), y2 : (panY+self.paper._viewBox[3])});}, 150);
+
+                        previousX = pageX;
+                        previousY = pageY;
+                        self.panning = true;
+                    }
+                    return false;
+                }
+            });
+        },
+
+        /*
+         * Zoom on the map at a specific level focused on specific coordinates
+         * If no coordinates are specified, the zoom will be focused on the center of the map
+         * options :
+         *    "level" : level of the zoom between 0 and maxLevel
+         *    "x" or "latitude" : x coordinate or latitude of the point to focus on
+         *    "y" or "longitude" : y coordinate or longitude of the point to focus on
+         *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
+         *    "animDuration" : zoom duration
+         */
+        onZoomEvent: function(e, zoomOptions) {
+            var self = this;
+            var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel)
+                , panX = 0
+                , panY = 0
+                , previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step)
+                , zoomLevel = (1 + newLevel * self.options.map.zoom.step)
+                , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration
+                , offsetX = 0
+                , offsetY = 0
+                , coords = {};
+
+            if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
+                coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
+                zoomOptions.x = coords.x;
+                zoomOptions.y = coords.y;
+            }
+
+            if (zoomOptions.x === undefined)
+                zoomOptions.x = self.paper._viewBox[0] + self.paper._viewBox[2] / 2;
+
+            if (zoomOptions.y === undefined)
+                zoomOptions.y = (self.paper._viewBox[1] + self.paper._viewBox[3] / 2);
+
+            if (newLevel === 0) {
+                panX = 0;
+                panY = 0;
+            } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
+                offsetX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                offsetY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+
+                panX = Math.min(Math.max(0, offsetX), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
+                panY = Math.min(Math.max(0, offsetY), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
+            } else {
+                panX = Math.min(Math.max(0, zoomOptions.x - (self.mapConf.width / zoomLevel)/2), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
+                panY = Math.min(Math.max(0, zoomOptions.y - (self.mapConf.height / zoomLevel)/2), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
+            }
+
+            // Update zoom level of the map
+            if (zoomLevel == previousZoomLevel && panX == self.zoomData.panX && panY == self.zoomData.panY) return;
+
+            if (animDuration > 0) {
+                self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
+            } else {
+                self.paper.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
+                clearTimeout(self.zoomTO);
+                self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(self.mapConf.width / zoomLevel)), y2 : (panY+(self.mapConf.height / zoomLevel))});}, 150);
+            }
+
+            $.extend(self.zoomData, {
+                zoomLevel: newLevel,
+                panX: panX,
+                panY: panY,
+                zoomX: panX + self.paper._viewBox[2] / 2,
+                zoomY: panY + self.paper._viewBox[3] / 2
+            });
+        },
+
+        /*
          *
          * Update the current map
          * Refresh attributes and tooltips for areas and plots
@@ -994,213 +1201,6 @@
                         });
                     }
                 })(event);
-            });
-        },
-
-        /*
-         * Zoom on the map at a specific level focused on specific coordinates
-         * If no coordinates are specified, the zoom will be focused on the center of the map
-         * options :
-         *    "level" : level of the zoom between 0 and maxLevel
-         *    "x" or "latitude" : x coordinate or latitude of the point to focus on
-         *    "y" or "longitude" : y coordinate or longitude of the point to focus on
-         *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
-         *    "animDuration" : zoom duration
-         */
-        onZoomEvent: function(e, zoomOptions) {
-            var self = this;
-            var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel)
-                , panX = 0
-                , panY = 0
-                , previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step)
-                , zoomLevel = (1 + newLevel * self.options.map.zoom.step)
-                , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration
-                , offsetX = 0
-                , offsetY = 0
-                , coords = {};
-
-            if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
-                coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
-                zoomOptions.x = coords.x;
-                zoomOptions.y = coords.y;
-            }
-
-            if (zoomOptions.x === undefined)
-                zoomOptions.x = self.paper._viewBox[0] + self.paper._viewBox[2] / 2;
-
-            if (zoomOptions.y === undefined)
-                zoomOptions.y = (self.paper._viewBox[1] + self.paper._viewBox[3] / 2);
-
-            if (newLevel === 0) {
-                panX = 0;
-                panY = 0;
-            } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
-                offsetX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                offsetY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-
-                panX = Math.min(Math.max(0, offsetX), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                panY = Math.min(Math.max(0, offsetY), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
-            } else {
-                panX = Math.min(Math.max(0, zoomOptions.x - (self.mapConf.width / zoomLevel)/2), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                panY = Math.min(Math.max(0, zoomOptions.y - (self.mapConf.height / zoomLevel)/2), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
-            }
-
-            // Update zoom level of the map
-            if (zoomLevel == previousZoomLevel && panX == self.zoomData.panX && panY == self.zoomData.panY) return;
-
-            if (animDuration > 0) {
-                self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
-            } else {
-                self.paper.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
-                clearTimeout(self.zoomTO);
-                self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : panX, y1 : panY, x2 : (panX+(self.mapConf.width / zoomLevel)), y2 : (panY+(self.mapConf.height / zoomLevel))});}, 150);
-            }
-
-            $.extend(self.zoomData, {
-                zoomLevel: newLevel,
-                panX: panX,
-                panY: panY,
-                zoomX: panX + self.paper._viewBox[2] / 2,
-                zoomY: panY + self.paper._viewBox[3] / 2
-            });
-        },
-
-        /*
-         * Init zoom and panning for the map
-         * @param mapWidth
-         * @param mapHeight
-        * @param zoom_options
-         */
-        initZoom: function(mapWidth, mapHeight, zoomOptions) {
-            var self = this;
-            var $zoomIn
-                , $zoomOut
-                , mousedown = false
-                , previousX = 0
-                , previousY = 0;
-
-            // init Zoom data
-            $.extend(self.zoomData, {
-                zoomLevel: 0,
-                panX: 0,
-                panY: 0
-            });
-
-            // init zoom button
-            $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+");
-            $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;");
-            self.$map.append($zoomIn).append($zoomOut);
-
-            $zoomIn.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel + 1});});
-            $zoomOut.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel - 1});});
-
-            // Update the zoom level of the map on mousewheel
-            if (self.options.map.zoom.mousewheel) {
-                self.$map.on("mousewheel." + pluginName, function(e) {
-                    var offset = self.$map.offset(),
-                        initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width())
-                        , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                        , zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step)
-                        , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX
-                        , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
-
-                    self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
-
-                    return false;
-                });
-            }
-
-            // Update the zoom level of the map on touch pinch
-            if (self.options.map.zoom.touch) {
-                self.$map.on("touchstart." + pluginName, function(e) {
-                    if (e.originalEvent.touches.length === 2) {
-                        self.zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
-                        self.zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
-                        self.previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
-                    }
-                });
-
-                self.$map.on("touchmove." + pluginName, function(e) {
-                    var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
-
-                    if (e.originalEvent.touches.length === 2) {
-                        pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
-
-                        if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
-                            offset = self.$map.offset();
-                            initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
-                            zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
-                            x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
-                            y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
-
-                            zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
-                            self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
-                            self.previousPinchDist = pinchDist;
-                        }
-                        return false;
-                    }
-                });
-            }
-
-            // Panning
-            $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function() {
-                mousedown = false;
-                setTimeout(function () {self.panning = false;}, 50);
-            });
-
-            self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart" : ""), function(e) {
-                if (e.pageX !== undefined) {
-                    mousedown = true;
-                    previousX = e.pageX;
-                    previousY = e.pageY;
-                } else {
-                    if (e.originalEvent.touches.length === 1) {
-                        mousedown = true;
-                        previousX = e.originalEvent.touches[0].pageX;
-                        previousY = e.originalEvent.touches[0].pageY;
-                    }
-                }
-            }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove" : ""), function(e) {
-                var currentLevel = self.zoomData.zoomLevel
-                    , pageX = 0
-                    , pageY = 0;
-
-                if (e.pageX !== undefined) {
-                    pageX = e.pageX;
-                    pageY = e.pageY;
-                } else {
-                    if (e.originalEvent.touches.length === 1) {
-                        pageX = e.originalEvent.touches[0].pageX;
-                        pageY = e.originalEvent.touches[0].pageY;
-                    } else {
-                        mousedown = false;
-                    }
-                }
-
-                if (mousedown && currentLevel !== 0) {
-                    var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / self.paper.width)
-                        , offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / self.paper.height)
-                        , panX = Math.min(Math.max(0, self.paper._viewBox[0] + offsetX), (mapWidth - self.paper._viewBox[2]))
-                        , panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
-
-                    if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
-                        $.extend(self.zoomData, {
-                            panX: panX,
-                            panY: panY,
-                            zoomX: panX + self.paper._viewBox[2] / 2,
-                            zoomY: panY + self.paper._viewBox[3] / 2
-                        });
-                        self.paper.setViewBox(panX, panY, self.paper._viewBox[2], self.paper._viewBox[3]);
-
-                        clearTimeout(self.panningTO);
-                        self.panningTO = setTimeout(function(){self.$map.trigger("afterPanning", {x1 : panX, y1 : panY, x2 : (panX+self.paper._viewBox[2]), y2 : (panY+self.paper._viewBox[3])});}, 150);
-
-                        previousX = pageX;
-                        previousY = pageY;
-                        self.panning = true;
-                    }
-                    return false;
-                }
             });
         },
 
