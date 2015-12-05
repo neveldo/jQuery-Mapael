@@ -1112,8 +1112,7 @@
          */
         initZoom: function(mapWidth, mapHeight, zoomOptions) {
             var self = this;
-            var $parentContainer = self.$map.parent() // TODO: use self.$container
-                , $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+")
+            var $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+")
                 , $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;")
                 , mousedown = false
                 , previousX = 0
@@ -1128,8 +1127,8 @@
 
             self.$map.append($zoomIn).append($zoomOut);
 
-            $zoomIn.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel + 1});});
-            $zoomOut.on("click." + pluginName, function() {$parentContainer.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel - 1});});
+            $zoomIn.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel + 1});});
+            $zoomOut.on("click." + pluginName, function() {self.$container.trigger("zoom." + pluginName, {"level" : self.zoomData.zoomLevel - 1});});
 
             // Panning
             $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function() {
