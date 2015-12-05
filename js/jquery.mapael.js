@@ -25,14 +25,14 @@
 }(function ($, Raphael, mousewheel, undefined) {
 
     "use strict";
-    
-    // The plugin name (used on several places) 
+
+    // The plugin name (used on several places)
     var pluginName = "mapael";
 
-    // Version number of jQuery Mapael. See http://semver.org/ for more information. 
+    // Version number of jQuery Mapael. See http://semver.org/ for more information.
     var version = "2.0.0-dev";
 
-    // Default map options 
+    // Default map options
     var defaultOptions = {
         map : {
             cssClass : "map"
@@ -135,7 +135,7 @@
         , links : {}
     };
 
-    // Default legends option 
+    // Default legends option
     var legendDefaultOptions = {
         area : {
             cssClass : "areaLegend"
@@ -212,23 +212,23 @@
 
         // the global container (jQuery object)
         self.$container = $(container);
-        
+
         // the global options
         self.options = options;
 
-        // Version number 
+        // Version number
         self.version = version;
-        
-        // zoom TimeOut handler (used to set and clear) 
+
+        // zoom TimeOut handler (used to set and clear)
         self.zoomTO = 0;
-        
+
         // zoom center coordinate (set at touchstart)
         self.zoomCenterX = 0;
         self.zoomCenterY = 0;
-        
+
         // Zoom pinch (set at touchstart and touchmove)
         self.previousPinchDist = 0;
-        
+
         // Zoom data
         self.zoomData = {
             zoomLevel: 0,
@@ -237,37 +237,37 @@
             panX: 0,
             panY: 0
         };
-        
-        // resize TimeOut handler (used to set and clear) 
+
+        // resize TimeOut handler (used to set and clear)
         self.resizeTO = 0;
 
-        // Panning: tell if panning action is in progress 
+        // Panning: tell if panning action is in progress
         self.panning = false;
 
-        // Panning TimeOut handler (used to set and clear) 
+        // Panning TimeOut handler (used to set and clear)
         self.panningTO = 0;
 
-        // Animate view box Interval handler (used to set and clear) 
+        // Animate view box Interval handler (used to set and clear)
         self.animationIntervalID = null;
-        
+
         // Map subcontainer jQuery object
         self.$map = {};
-        
+
         // The tooltip jQuery object
         self.$tooltip = {};
-        
+
         // The paper Raphael object
         self.paper = {};
-        
+
         // The areas object list
         self.areas = {};
-        
+
         // The plots object list
         self.plots = {};
-        
+
         // The links object list
         self.links = {};
-        
+
         // The map configuration object (taken from map file)
         self.mapConf = {};
 
@@ -301,7 +301,7 @@
 
             // Get the map from $.mapael or $.fn.mapael (backward compatibility)
             if ($[pluginName] && $[pluginName].maps && $[pluginName].maps[self.options.map.name]) {
-                // Mapael version >= 2.x 
+                // Mapael version >= 2.x
                 self.mapConf = $[pluginName].maps[self.options.map.name];
             } else if ($.fn[pluginName] && $.fn[pluginName].maps && $.fn[pluginName].maps[self.options.map.name]) {
                 // Mapael version <= 1.x - DEPRECATED
@@ -312,7 +312,7 @@
             } else {
                 throw new Error("Unknown map '" + self.options.map.name + "'");
             }
-            
+
             // Create Raphael paper
             self.paper = new Raphael(self.$map[0], self.mapConf.width, self.mapConf.height);
 
@@ -412,10 +412,10 @@
                 }
 
                 $.extend(self.zoomData, {
-                    zoomLevel: newLevel, 
-                    panX: panX, 
-                    panY: panY, 
-                    zoomX: panX + self.paper._viewBox[2] / 2, 
+                    zoomLevel: newLevel,
+                    panX: panX,
+                    panY: panY,
+                    zoomX: panX + self.paper._viewBox[2] / 2,
                     zoomY: panY + self.paper._viewBox[3] / 2
                 });
             });
@@ -505,7 +505,7 @@
             self.$container.on("update." + pluginName, function(e, opt) {
                 // Abort if opt is undefined
                 if (typeof opt !== "object")  return;
-            
+
                 var i = 0
                     , animDuration = (opt.animDuration) ? opt.animDuration : 0
                     // This function remove an element using animation (or not, depending on animDuration)
@@ -1121,8 +1121,8 @@
 
             // Zoom
             $.extend(self.zoomData, {
-                zoomLevel: 0, 
-                panX: 0, 
+                zoomLevel: 0,
+                panX: 0,
                 panY: 0
             });
 
@@ -1174,9 +1174,9 @@
 
                     if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
                         $.extend(self.zoomData, {
-                            panX: panX, 
-                            panY: panY, 
-                            zoomX: panX + self.paper._viewBox[2] / 2, 
+                            panX: panX,
+                            panY: panY,
+                            zoomX: panX + self.paper._viewBox[2] / 2,
                             zoomY: panY + self.paper._viewBox[3] / 2
                         });
                         self.paper.setViewBox(panX, panY, self.paper._viewBox[2], self.paper._viewBox[3]);
@@ -1459,7 +1459,7 @@
                                 } else {
                                     if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
                                     else elems[id].mapElem.attr({"opacity":legendOptions.hideElemsOnClick.opacity});
-                                    
+
                                     if (elems[id].textElem) {
                                         if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
                                         else elems[id].textElem.animate({"opacity":legendOptions.hideElemsOnClick.opacity});
@@ -1619,7 +1619,7 @@
                 if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
                 else textElem.attr(textElem.originalAttrs);
             }
-            
+
             // workaround for older version of Raphael
             if (self.paper.safari) self.paper.safari();
         },
