@@ -471,7 +471,7 @@
          * Init zoom and panning for the map
          * @param mapWidth
          * @param mapHeight
-        * @param zoom_options
+        * @param zoomOptions
          */
         initZoom: function(mapWidth, mapHeight, zoomOptions) {
             var self = this;
@@ -1214,7 +1214,7 @@
         drawLegend: function (legendOptions, legendType, elems, scale, legendIndex) {
             var self = this;
             var $legend = {}
-                , legend_paper = {}
+                , legendPaper = {}
                 , width = 0
                 , height = 0
                 , title = null
@@ -1229,12 +1229,12 @@
                 , length = 0;
 
                 $legend = $("." + legendOptions.cssClass, self.$container).empty();
-                legend_paper = new Raphael($legend.get(0));
+                legendPaper = new Raphael($legend.get(0));
                 height = width = 0;
 
                 // Set the title of the legend
                 if(legendOptions.title && legendOptions.title !== "") {
-                    title = legend_paper.text(legendOptions.marginLeftTitle, 0, legendOptions.title).attr(legendOptions.titleAttrs);
+                    title = legendPaper.text(legendOptions.marginLeftTitle, 0, legendOptions.title).attr(legendOptions.titleAttrs);
                     title.attr({y : 0.5 * title.getBBox().height});
 
                     width = legendOptions.marginLeftTitle + title.getBBox().width;
@@ -1243,7 +1243,7 @@
 
                 // Calculate attrs (and width, height and r (radius)) for legend elements, and yCenter for horizontal legends
                 for(i = 0, length = legendOptions.slices.length; i < length; ++i) {
-                    var current_yCenter = 0;
+                    var yCenterCurrent = 0;
 
                     // Check if size is defined. If not, take defaultPlot size
                     if (legendOptions.slices[i].size === undefined)
@@ -1280,18 +1280,18 @@
                     }
 
                     // Compute yCenter for this legend slice
-                    current_yCenter = legendOptions.marginBottomTitle;
+                    yCenterCurrent = legendOptions.marginBottomTitle;
                     // Add title height if it exists
                     if (title) {
-                        current_yCenter += title.getBBox().height;
+                        yCenterCurrent += title.getBBox().height;
                     }
                     if(legendType == "plot" && (legendOptions.slices[i].type === undefined || legendOptions.slices[i].type == "circle")) {
-                        current_yCenter += scale * sliceAttrs[i].r;
+                        yCenterCurrent += scale * sliceAttrs[i].r;
                     } else {
-                        current_yCenter += scale * sliceAttrs[i].height/2;
+                        yCenterCurrent += scale * sliceAttrs[i].height/2;
                     }
                     // Update yCenter if current larger
-                    yCenter = Math.max(yCenter, current_yCenter);
+                    yCenter = Math.max(yCenter, yCenterCurrent);
                 }
 
                 if (legendOptions.mode == "horizontal") {
@@ -1310,7 +1310,7 @@
                                 y = height;
                             }
 
-                            elem = legend_paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
+                            elem = legendPaper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
                         } else if(legendOptions.slices[i].type == "square") {
                             if (legendOptions.mode == "horizontal") {
                                 x = width + legendOptions.marginLeft;
@@ -1320,7 +1320,7 @@
                                 y = height;
                             }
 
-                            elem = legend_paper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
+                            elem = legendPaper.rect(x, y, scale * (sliceAttrs[i].width), scale * (sliceAttrs[i].height));
 
                         } else if(legendOptions.slices[i].type == "image" || legendOptions.slices[i].type == "svg") {
                             if (legendOptions.mode == "horizontal") {
@@ -1332,10 +1332,10 @@
                             }
 
                             if (legendOptions.slices[i].type == "image") {
-                                elem = legend_paper.image(
+                                elem = legendPaper.image(
                                     legendOptions.slices[i].url, x, y, scale * sliceAttrs[i].width, scale * sliceAttrs[i].height);
                             } else {
-                                elem = legend_paper.path(legendOptions.slices[i].path);
+                                elem = legendPaper.path(legendOptions.slices[i].path);
                                 elem.transform("m"+((scale*legendOptions.slices[i].width) / elem.getBBox().width)+",0,0,"+((scale*legendOptions.slices[i].height) / elem.getBBox().height)+","+x+","+y);
                             }
                         } else {
@@ -1346,7 +1346,7 @@
                                 x = legendOptions.marginLeft + scale * (sliceAttrs[i].r);
                                 y = height + scale * (sliceAttrs[i].r);
                             }
-                            elem = legend_paper.circle(x, y, scale * (sliceAttrs[i].r));
+                            elem = legendPaper.circle(x, y, scale * (sliceAttrs[i].r));
                         }
 
                         // Set attrs to the element drawn above
@@ -1365,20 +1365,20 @@
                             y = height + (elemBBox.height / 2);
                         }
 
-                        label = legend_paper.text(x, y, legendOptions.slices[i].label).attr(legendOptions.labelAttrs);
+                        label = legendPaper.text(x, y, legendOptions.slices[i].label).attr(legendOptions.labelAttrs);
 
                         // Update the width and height for the paper
                         if (legendOptions.mode == "horizontal") {
-                            var current_height = legendOptions.marginBottom + elemBBox.height;
+                            var currentHeight = legendOptions.marginBottom + elemBBox.height;
                             width += legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width;
                             if(legendOptions.slices[i].type != "image" && legendType != "area") {
-                                current_height += legendOptions.marginBottomTitle;
+                                currentHeight += legendOptions.marginBottomTitle;
                             }
                             // Add title height if it exists
                             if (title) {
-                                current_height += title.getBBox().height;
+                                currentHeight += title.getBBox().height;
                             }
-                            height = Math.max(height, current_height);
+                            height = Math.max(height, currentHeight);
                         } else {
                             width = Math.max(width, legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width);
                             height += legendOptions.marginBottom + elemBBox.height;
@@ -1406,8 +1406,8 @@
                 if (Raphael.type != "SVG" && legendOptions.VMLWidth)
                     width = legendOptions.VMLWidth;
 
-                legend_paper.setSize(width, height);
-                return legend_paper;
+                legendPaper.setSize(width, height);
+                return legendPaper;
         },
 
         /*
@@ -1724,7 +1724,7 @@
           * @param w map defined width
           * @param h map defined height
           * @param duration defined length of time for animation
-          * @param easying_function defined Raphael supported easing_formula to use
+          * @param easingFunction defined Raphael supported easing_formula to use
           * @param callback method when animated action is complete
           */
         animateViewBox: function (x, y, w, h, duration, easingFunction ) {
@@ -1739,7 +1739,7 @@
                 , dh = h - ch
                 , interval = 25
                 , steps = duration / interval
-                , current_step = 0
+                , currentStep = 0
                 , easingFormula;
 
             easingFunction = easingFunction || "linear";
@@ -1748,12 +1748,12 @@
             clearInterval(self.animationIntervalID);
 
             self.animationIntervalID = setInterval(function() {
-                    var ratio = current_step / steps;
+                    var ratio = currentStep / steps;
                     self.paper.setViewBox(cx + dx * easingFormula(ratio),
                                           cy + dy * easingFormula(ratio),
                                           cw + dw * easingFormula(ratio),
                                           ch + dh * easingFormula(ratio), false);
-                    if (current_step++ >= steps) {
+                    if (currentStep++ >= steps) {
                         clearInterval(self.animationIntervalID);
                         clearTimeout(self.zoomTO);
                         self.zoomTO = setTimeout(function(){self.$map.trigger("afterZoom", {x1 : x, y1 : y, x2 : (x+w), y2 : (y+h)});}, 150);
