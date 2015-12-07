@@ -8,9 +8,9 @@
  */
 $(function() {
     
-    module("Areas");
+    QUnit.module("Areas");
     
-    test("defaultArea option override", function(assert) {
+    QUnit.test("defaultArea option override", function(assert) {
         var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
         
         var CST_DEFAULTAREA = {
@@ -63,7 +63,7 @@ $(function() {
         });
     });
     
-    test("Area custom option override", function(assert) {
+    QUnit.test("Area custom option override", function(assert) {
         var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
         var text_mouseover_async_done = assert.async();
         
