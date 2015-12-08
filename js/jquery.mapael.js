@@ -417,7 +417,9 @@
          */
         initElem: function(elem, elemOptions, id) {
             var self = this;
-            var bbox = {}, textPosition = {};
+            var bbox = {};
+            var textPosition = {};
+
             if (elemOptions.value !== undefined)
                 elem.value = elemOptions.value;
 
@@ -475,11 +477,11 @@
          */
         initZoom: function(mapWidth, mapHeight, zoomOptions) {
             var self = this;
-            var $zoomIn
-                , $zoomOut
-                , mousedown = false
-                , previousX = 0
-                , previousY = 0;
+            var $zoomIn;
+            var $zoomOut;
+            var mousedown = false;
+            var previousX = 0;
+            var previousY = 0;
 
             // init Zoom data
             $.extend(self.zoomData, {
@@ -499,12 +501,12 @@
             // Update the zoom level of the map on mousewheel
             if (self.options.map.zoom.mousewheel) {
                 self.$map.on("mousewheel." + pluginName, function(e) {
-                    var offset = self.$map.offset(),
-                        initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width())
-                        , zoomLevel = (e.deltaY > 0) ? 1 : -1
-                        , zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step)
-                        , x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX
-                        , y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
+                    var offset = self.$map.offset();
+                    var initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
+                    var zoomLevel = (e.deltaY > 0) ? 1 : -1;
+                    var zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
+                    var x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
+                    var y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
 
                     self.$container.trigger("zoom." + pluginName, {"fixedCenter" : true, "level" : self.zoomData.zoomLevel + zoomLevel, "x" : x, "y" : y});
 
@@ -523,7 +525,13 @@
                 });
 
                 self.$map.on("touchmove." + pluginName, function(e) {
-                    var offset = 0, initFactor = 0, zoomFactor = 0, x = 0, y = 0, pinchDist = 0, zoomLevel = 0;
+                    var offset = 0;
+                    var initFactor = 0;
+                    var zoomFactor = 0;
+                    var x = 0;
+                    var y = 0;
+                    var pinchDist = 0;
+                    var zoomLevel = 0;
 
                     if (e.originalEvent.touches.length === 2) {
                         pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
@@ -563,9 +571,9 @@
                     }
                 }
             }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove" : ""), function(e) {
-                var currentLevel = self.zoomData.zoomLevel
-                    , pageX = 0
-                    , pageY = 0;
+                var currentLevel = self.zoomData.zoomLevel;
+                var pageX = 0;
+                var pageY = 0;
 
                 if (e.pageX !== undefined) {
                     pageX = e.pageX;
@@ -580,10 +588,10 @@
                 }
 
                 if (mousedown && currentLevel !== 0) {
-                    var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / self.paper.width)
-                        , offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / self.paper.height)
-                        , panX = Math.min(Math.max(0, self.paper._viewBox[0] + offsetX), (mapWidth - self.paper._viewBox[2]))
-                        , panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
+                    var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / self.paper.width);
+                    var offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / self.paper.height);
+                    var panX = Math.min(Math.max(0, self.paper._viewBox[0] + offsetX), (mapWidth - self.paper._viewBox[2]));
+                    var panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
 
                     if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
                         $.extend(self.zoomData, {
@@ -618,15 +626,15 @@
          */
         onZoomEvent: function(e, zoomOptions) {
             var self = this;
-            var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel)
-                , panX = 0
-                , panY = 0
-                , previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step)
-                , zoomLevel = (1 + newLevel * self.options.map.zoom.step)
-                , animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration
-                , offsetX = 0
-                , offsetY = 0
-                , coords = {};
+            var newLevel = Math.min(Math.max(zoomOptions.level, 0), self.options.map.zoom.maxLevel);
+            var panX = 0;
+            var panY = 0;
+            var previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
+            var zoomLevel = (1 + newLevel * self.options.map.zoom.step);
+            var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
+            var offsetX = 0;
+            var offsetY = 0;
+            var coords = {};
 
             if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
                 coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
@@ -694,40 +702,42 @@
             // Abort if opt is undefined
             if (typeof opt !== "object")  return;
 
-            var i = 0
-                , animDuration = (opt.animDuration) ? opt.animDuration : 0
-                // This function remove an element using animation (or not, depending on animDuration)
-                // Used for deletePlotKeys and deleteLinkKeys
-                , fnRemoveElement = function(elem) {
-                    // Unset all event handlers
-                    self.unsetHover(elem.mapElem, elem.textElem);
-                    if (animDuration > 0) {
-                        elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
-                            elem.mapElem.remove();
-                        });
-                        if (elem.textElem) {
-                            elem.textElem.animate({"opacity":0}, animDuration, "linear", function() {
-                                elem.textElem.remove();
-                            });
-                        }
-                    } else {
+            var i = 0;
+            var animDuration = (opt.animDuration) ? opt.animDuration : 0;
+
+            // This function remove an element using animation (or not, depending on animDuration)
+            // Used for deletePlotKeys and deleteLinkKeys
+            var fnRemoveElement = function(elem) {
+                // Unset all event handlers
+                self.unsetHover(elem.mapElem, elem.textElem);
+                if (animDuration > 0) {
+                    elem.mapElem.animate({"opacity":0}, animDuration, "linear", function() {
                         elem.mapElem.remove();
-                        if (elem.textElem) {
+                    });
+                    if (elem.textElem) {
+                        elem.textElem.animate({"opacity":0}, animDuration, "linear", function() {
                             elem.textElem.remove();
-                        }
+                        });
+                    }
+                } else {
+                    elem.mapElem.remove();
+                    if (elem.textElem) {
+                        elem.textElem.remove();
                     }
                 }
-                // This function show an element using animation
-                // Used for newPlots and newLinks
-                , fnShowElement = function(elem) {
-                    elem.mapElem.attr({opacity : 0});
-                    elem.mapElem.animate({"opacity": (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
+            };
 
-                    if (elem.textElem) {
-                        elem.textElem.attr({opacity : 0});
-                        elem.textElem.animate({"opacity": (elem.textElem.originalAttrs.opacity !== undefined) ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
-                    }
-                };
+            // This function show an element using animation
+            // Used for newPlots and newLinks
+            var fnShowElement = function(elem) {
+                elem.mapElem.attr({opacity : 0});
+                elem.mapElem.animate({"opacity": (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
+
+                if (elem.textElem) {
+                    elem.textElem.attr({opacity : 0});
+                    elem.textElem.animate({"opacity": (elem.textElem.originalAttrs.opacity !== undefined) ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
+                }
+            };
 
             if (typeof opt.mapOptions === "object") {
                 if (opt.replaceOptions === true) self.options = $.extend(true, {}, defaultOptions, opt.mapOptions);
@@ -900,11 +910,11 @@
          */
         drawLinksCollection: function(linksCollection) {
             var self = this;
-            var p1 = {}
-                , p2 = {}
-                , coordsP1 = {}
-                , coordsP2 ={}
-                , links = {};
+            var p1 = {};
+            var p2 = {};
+            var coordsP1 = {};
+            var coordsP2 ={};
+            var links = {};
 
             $.each(linksCollection, function(id) {
                 var elemOptions = self.getElemOptions(self.options.map.defaultLink, linksCollection[id], {});
@@ -944,31 +954,31 @@
          */
         drawLink: function(id, xa, ya, xb, yb, elemOptions) {
             var self = this;
-            var elem = {}
-                // Compute the "curveto" SVG point, d(x,y)
-                // c(xc, yc) is the center of (xa,ya) and (xb, yb)
-                , xc = (xa + xb) / 2
-                 , yc = (ya + yb) / 2
+            var elem = {};
+            // Compute the "curveto" SVG point, d(x,y)
+            // c(xc, yc) is the center of (xa,ya) and (xb, yb)
+            var xc = (xa + xb) / 2;
+            var yc = (ya + yb) / 2;
 
-                 // Equation for (cd) : y = acd * x + bcd (d is the cure point)
-                 , acd = - 1 / ((yb - ya) / (xb - xa))
-                 , bcd = yc - acd * xc
+             // Equation for (cd) : y = acd * x + bcd (d is the cure point)
+             var acd = - 1 / ((yb - ya) / (xb - xa));
+             var bcd = yc - acd * xc;
 
-                 // dist(c,d) = dist(a,b) (=abDist)
-                 , abDist = Math.sqrt((xb-xa)*(xb-xa) + (yb-ya)*(yb-ya))
+             // dist(c,d) = dist(a,b) (=abDist)
+             var abDist = Math.sqrt((xb-xa)*(xb-xa) + (yb-ya)*(yb-ya));
 
-                 // Solution for equation dist(cd) = sqrt((xd - xc)² + (yd - yc)²)
-                 // dist(c,d)² = (xd - xc)² + (yd - yc)²
-                 // We assume that dist(c,d) = dist(a,b)
-                 // so : (xd - xc)² + (yd - yc)² - dist(a,b)² = 0
-                 // With the factor : (xd - xc)² + (yd - yc)² - (factor*dist(a,b))² = 0
-                 // (xd - xc)² + (acd*xd + bcd - yc)² - (factor*dist(a,b))² = 0
-                 , a = 1 + acd*acd
-                 , b = -2 * xc + 2*acd*bcd - 2 * acd*yc
-                 , c = xc*xc + bcd*bcd - bcd*yc - yc*bcd + yc*yc - ((elemOptions.factor*abDist) * (elemOptions.factor*abDist))
-                 , delta = b*b - 4*a*c
-                 , x = 0
-                 , y = 0;
+             // Solution for equation dist(cd) = sqrt((xd - xc)² + (yd - yc)²)
+             // dist(c,d)² = (xd - xc)² + (yd - yc)²
+             // We assume that dist(c,d) = dist(a,b)
+             // so : (xd - xc)² + (yd - yc)² - dist(a,b)² = 0
+             // With the factor : (xd - xc)² + (yd - yc)² - (factor*dist(a,b))² = 0
+             // (xd - xc)² + (acd*xd + bcd - yc)² - (factor*dist(a,b))² = 0
+             var a = 1 + acd*acd;
+             var b = -2 * xc + 2*acd*bcd - 2 * acd*yc;
+             var c = xc*xc + bcd*bcd - bcd*yc - yc*bcd + yc*yc - ((elemOptions.factor*abDist) * (elemOptions.factor*abDist));
+             var delta = b*b - 4*a*c;
+             var x = 0;
+             var y = 0;
 
             // There are two solutions, we choose one or the other depending on the sign of the factor
             if (elemOptions.factor > 0) {
@@ -990,7 +1000,11 @@
          */
         updateElem: function(elemOptions, elem, animDuration) {
             var self = this;
-            var bbox, textPosition, plotOffsetX, plotOffsetY;
+            var bbox;
+            var textPosition;
+            var plotOffsetX;
+            var plotOffsetY;
+
             if (elemOptions.value !== undefined)
                 elem.value = elemOptions.value;
 
@@ -1073,13 +1087,13 @@
          */
         drawPlot: function(id) {
             var self = this;
-            var plot = {}
-                , coords = {}
-                , elemOptions = self.getElemOptions(
-                    self.options.map.defaultPlot
-                    , (self.options.plots[id] ? self.options.plots[id] : {})
-                    , self.options.legend.plot
-                );
+            var plot = {};
+            var coords = {};
+            var elemOptions = self.getElemOptions(
+                self.options.map.defaultPlot
+                , (self.options.plots[id] ? self.options.plots[id] : {})
+                , self.options.legend.plot
+            );
 
             if (elemOptions.x !== undefined && elemOptions.y !== undefined)
                 coords = {x : elemOptions.x, y : elemOptions.y};
@@ -1135,25 +1149,25 @@
          */
         setTooltip: function(elem) {
             var self = this;
-            var tooltipTO = 0
-                , cssClass = self.$tooltip.attr('class')
-                , updateTooltipPosition = function(x, y) {
-                    var tooltipPosition = {
-                        "left" : Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5, x - self.$map.offset().left + 10),
-                        "top" : Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5, y - self.$map.offset().top + 20)
-                    };
-
-                    if (elem.tooltip.overflow !== undefined) {
-                        if (elem.tooltip.overflow.right !== undefined && elem.tooltip.overflow.right === true) {
-                            tooltipPosition.left = x - self.$map.offset().left + 10;
-                        }
-                        if (elem.tooltip.overflow.bottom !== undefined && elem.tooltip.overflow.bottom === true) {
-                            tooltipPosition.top = y - self.$map.offset().top + 20;
-                        }
-                    }
-
-                    self.$tooltip.css(tooltipPosition);
+            var tooltipTO = 0;
+            var cssClass = self.$tooltip.attr('class');
+            var updateTooltipPosition = function(x, y) {
+                var tooltipPosition = {
+                    "left" : Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5, x - self.$map.offset().left + 10),
+                    "top" : Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5, y - self.$map.offset().top + 20)
                 };
+
+                if (elem.tooltip.overflow !== undefined) {
+                    if (elem.tooltip.overflow.right !== undefined && elem.tooltip.overflow.right === true) {
+                        tooltipPosition.left = x - self.$map.offset().left + 10;
+                    }
+                    if (elem.tooltip.overflow.bottom !== undefined && elem.tooltip.overflow.bottom === true) {
+                        tooltipPosition.top = y - self.$map.offset().top + 20;
+                    }
+                }
+
+                self.$tooltip.css(tooltipPosition);
+            };
 
             $(elem.node).on("mouseover." + pluginName, function(e) {
                 tooltipTO = setTimeout(
@@ -1213,20 +1227,20 @@
          */
         drawLegend: function (legendOptions, legendType, elems, scale, legendIndex) {
             var self = this;
-            var $legend = {}
-                , legendPaper = {}
-                , width = 0
-                , height = 0
-                , title = null
-                , elem = {}
-                , elemBBox = {}
-                , label = {}
-                , i = 0
-                , x = 0
-                , y = 0
-                , yCenter = 0
-                , sliceAttrs = []
-                , length = 0;
+            var $legend = {};
+            var legendPaper = {};
+            var width = 0;
+            var height = 0;
+            var title = null;
+            var elem = {};
+            var elemBBox = {};
+            var label = {};
+            var i = 0;
+            var x = 0;
+            var y = 0;
+            var yCenter = 0;
+            var sliceAttrs = [];
+            var length = 0;
 
                 $legend = $("." + legendOptions.cssClass, self.$container).empty();
                 legendPaper = new Raphael($legend.get(0));
@@ -1422,9 +1436,9 @@
         handleClickOnLegendElem: function(legendOptions, sliceOptions, label, elem, elems, legendIndex) {
             var self = this;
             var hideMapElems = function(e, hideOtherElems, animDuration) {
-                var elemValue = 0
-                    , hidden = $(label.node).attr('data-hidden')
-                    , hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
+                var elemValue = 0;
+                var hidden = $(label.node).attr('data-hidden');
+                var hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
 
                 // Check animDuration: if not set, this is a regular click, use the value specified in options
                 if (animDuration === undefined) animDuration = legendOptions.hideElemsOnClick.animDuration;
@@ -1529,7 +1543,8 @@
          */
         createLegends: function (legendType, elems, scale) {
             var self = this;
-            var legendsOptions = self.options.legend[legendType], legends = [];
+            var legendsOptions = self.options.legend[legendType];
+            var legends = [];
 
             if (!$.isArray(self.options.legend[legendType])) {
                 legendsOptions = [self.options.legend[legendType]];
@@ -1569,11 +1584,18 @@
          */
         setHover: function (mapElem, textElem) {
             var self = this;
-            var $mapElem = {}
-                , $textElem = {}
-                , hoverTO = 0
-                , overBehaviour = function() {hoverTO = setTimeout(function () {self.elemHover(mapElem, textElem);}, 120);}
-                , outBehaviour = function () {clearTimeout(hoverTO);self.elemOut(mapElem, textElem);};
+            var $mapElem = {};
+            var $textElem = {};
+            var hoverTO = 0;
+            var overBehaviour = function() {
+                hoverTO = setTimeout(function () {
+                    self.elemHover(mapElem, textElem);
+                }, 120);
+            };
+            var outBehaviour = function () {
+                clearTimeout(hoverTO);
+                self.elemOut(mapElem, textElem);
+            };
 
             $mapElem = $(mapElem.node);
             $mapElem.on("mouseover." + pluginName, overBehaviour);
@@ -1662,9 +1684,9 @@
          * @param textPosition the wanted text position (inner, right, left, top or bottom)
          */
         getTextPosition: function(bbox, textPosition, margin) {
-            var textX = 0
-                , textY = 0
-                , textAnchor = "";
+            var textX = 0;
+            var textY = 0;
+            var textAnchor = "";
 
             switch (textPosition) {
                 case "bottom" :
@@ -1729,18 +1751,18 @@
           */
         animateViewBox: function (x, y, w, h, duration, easingFunction ) {
             var self = this;
-            var cx = self.paper._viewBox ? self.paper._viewBox[0] : 0
-                , dx = x - cx
-                , cy = self.paper._viewBox ? self.paper._viewBox[1] : 0
-                , dy = y - cy
-                , cw = self.paper._viewBox ? self.paper._viewBox[2] : self.paper.width
-                , dw = w - cw
-                , ch = self.paper._viewBox ? self.paper._viewBox[3] : self.paper.height
-                , dh = h - ch
-                , interval = 25
-                , steps = duration / interval
-                , currentStep = 0
-                , easingFormula;
+            var cx = self.paper._viewBox ? self.paper._viewBox[0] : 0;
+            var dx = x - cx;
+            var cy = self.paper._viewBox ? self.paper._viewBox[1] : 0;
+            var dy = y - cy;
+            var cw = self.paper._viewBox ? self.paper._viewBox[2] : self.paper.width;
+            var dw = w - cw;
+            var ch = self.paper._viewBox ? self.paper._viewBox[3] : self.paper.height;
+            var dh = h - ch;
+            var interval = 25;
+            var steps = duration / interval;
+            var currentStep = 0;
+            var easingFormula;
 
             easingFunction = easingFunction || "linear";
             easingFormula = Raphael.easing_formulas[easingFunction];
