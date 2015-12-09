@@ -159,9 +159,9 @@
             // Draw map areas
             $.each(self.mapConf.elems, function (id) {
                 var elemOptions = self.getElemOptions(
-                    self.options.map.defaultArea
-                    , (self.options.areas[id] ? self.options.areas[id] : {})
-                    , self.options.legend.area
+                    self.options.map.defaultArea,
+                    (self.options.areas[id] ? self.options.areas[id] : {}),
+                    self.options.legend.area
                 );
                 self.areas[id] = {"mapElem": self.paper.path(self.mapConf.elems[id]).attr(elemOptions.attrs)};
             });
@@ -172,9 +172,9 @@
             // Init map areas in a second loop (prevent texts to be hidden by map elements)
             $.each(self.mapConf.elems, function (id) {
                 var elemOptions = self.getElemOptions(
-                    self.options.map.defaultArea
-                    , (self.options.areas[id] ? self.options.areas[id] : {})
-                    , self.options.legend.area
+                    self.options.map.defaultArea,
+                    (self.options.areas[id] ? self.options.areas[id] : {}),
+                    self.options.legend.area
                 );
                 self.initElem(self.areas[id], elemOptions, id);
             });
@@ -705,9 +705,9 @@
             // Update areas attributes and tooltips
             $.each(self.areas, function (id) {
                 var elemOptions = self.getElemOptions(
-                    self.options.map.defaultArea
-                    , (self.options.areas[id] ? self.options.areas[id] : {})
-                    , self.options.legend.area
+                    self.options.map.defaultArea,
+                    (self.options.areas[id] ? self.options.areas[id] : {}),
+                    self.options.legend.area
                 );
 
                 self.updateElem(elemOptions, self.areas[id], animDuration);
@@ -716,9 +716,9 @@
             // Update plots attributes and tooltips
             $.each(self.plots, function (id) {
                 var elemOptions = self.getElemOptions(
-                    self.options.map.defaultPlot
-                    , (self.options.plots[id] ? self.options.plots[id] : {})
-                    , self.options.legend.plot
+                    self.options.map.defaultPlot,
+                    (self.options.plots[id] ? self.options.plots[id] : {}),
+                    self.options.legend.plot
                 );
                 if (elemOptions.type == "square") {
                     elemOptions.attrs.width = elemOptions.size;
@@ -741,8 +741,8 @@
             $.each(self.links, function (id) {
                 var elemOptions = self.getElemOptions(
                     self.options.map.defaultLink
-                    , (self.options.links[id] ? self.options.links[id] : {})
-                    , {}
+                    (self.options.links[id] ? self.options.links[id] : {}),
+                    {}
                 );
 
                 self.updateElem(elemOptions, self.links[id], animDuration);
@@ -983,9 +983,9 @@
             var plot = {};
             var coords = {};
             var elemOptions = self.getElemOptions(
-                self.options.map.defaultPlot
-                , (self.options.plots[id] ? self.options.plots[id] : {})
-                , self.options.legend.plot
+                self.options.map.defaultPlot,
+                (self.options.plots[id] ? self.options.plots[id] : {}),
+                self.options.legend.plot
             );
 
             if (elemOptions.x !== undefined && elemOptions.y !== undefined)
@@ -996,20 +996,20 @@
             if (elemOptions.type == "square") {
                 plot = {
                     "mapElem": self.paper.rect(
-                        coords.x - (elemOptions.size / 2)
-                        , coords.y - (elemOptions.size / 2)
-                        , elemOptions.size
-                        , elemOptions.size
+                        coords.x - (elemOptions.size / 2),
+                        coords.y - (elemOptions.size / 2),
+                        elemOptions.size,
+                        elemOptions.size
                     ).attr(elemOptions.attrs)
                 };
             } else if (elemOptions.type == "image") {
                 plot = {
                     "mapElem": self.paper.image(
-                        elemOptions.url
-                        , coords.x - elemOptions.width / 2
-                        , coords.y - elemOptions.height / 2
-                        , elemOptions.width
-                        , elemOptions.height
+                        elemOptions.url,
+                        coords.x - elemOptions.width / 2,
+                        coords.y - elemOptions.height / 2,
+                        elemOptions.width,
+                        elemOptions.height
                     ).attr(elemOptions.attrs)
                 };
             } else if (elemOptions.type == "svg") {
@@ -1079,8 +1079,7 @@
                             }
                         }
                         updateTooltipPosition(e.pageX, e.pageY);
-                    }
-                    , 120
+                    }, 120
                 );
             }).on("mouseout." + pluginName, function () {
                 clearTimeout(tooltipTO);
@@ -1112,7 +1111,7 @@
                 })(event);
             });
         },
-        
+
         /*
          * Draw a legend for areas and / or plots
          * @param legendOptions options for the legend to draw
@@ -1162,10 +1161,10 @@
                     legendOptions.slices[i].legendSpecificAttrs = {};
 
                 sliceAttrs[i] = $.extend(
-                    {}
-                    , (legendType == "plot") ? self.options.map.defaultPlot.attrs : self.options.map.defaultArea.attrs
-                    , legendOptions.slices[i].attrs
-                    , legendOptions.slices[i].legendSpecificAttrs
+                    {},
+                    (legendType == "plot") ? self.options.map.defaultPlot.attrs : self.options.map.defaultArea.attrs,
+                    legendOptions.slices[i].attrs,
+                    legendOptions.slices[i].legendSpecificAttrs
                 );
 
                 if (legendType == "area") {
@@ -1676,174 +1675,173 @@
                             self.$map.trigger("afterZoom", {x1: x, y1: y, x2: (x + w), y2: (y + h)});
                         }, 150);
                     }
-                }
-                , interval
+                }, interval
             );
         },
 
         // Default map options
         defaultOptions: {
             map: {
-                cssClass: "map"
-                , tooltip: {
+                cssClass: "map",
+                tooltip: {
                     cssClass: "mapTooltip"
-                }
-                , defaultArea: {
+                },
+                defaultArea: {
                     attrs: {
-                        fill: "#343434"
-                        , stroke: "#5d5d5d"
-                        , "stroke-width": 1
-                        , "stroke-linejoin": "round"
-                    }
-                    , attrsHover: {
-                        fill: "#f38a03"
-                        , animDuration: 300
-                    }
-                    , text: {
-                        position: "inner"
-                        , margin: 10
-                        , attrs: {
-                            "font-size": 15
-                            , fill: "#c7c7c7"
-                        }
-                        , attrsHover: {
-                            fill: "#eaeaea"
-                            , "animDuration": 300
-                        }
-                    }
-                    , target: "_self"
-                }
-                , defaultPlot: {
-                    type: "circle"
-                    , size: 15
-                    , attrs: {
-                        fill: "#0088db"
-                        , stroke: "#fff"
-                        , "stroke-width": 0
-                        , "stroke-linejoin": "round"
-                    }
-                    , attrsHover: {
-                        "stroke-width": 3
-                        , animDuration: 300
-                    }
-                    , text: {
-                        position: "right"
-                        , margin: 10
-                        , attrs: {
-                            "font-size": 15
-                            , fill: "#c7c7c7"
-                        }
-                        , attrsHover: {
-                            fill: "#eaeaea"
-                            , animDuration: 300
-                        }
-                    }
-                    , target: "_self"
-                }
-                , defaultLink: {
-                    factor: 0.5
-                    , attrs: {
-                        stroke: "#0088db"
-                        , "stroke-width": 2
-                    }
-                    , attrsHover: {
+                        fill: "#343434",
+                        stroke: "#5d5d5d",
+                        "stroke-width": 1,
+                        "stroke-linejoin": "round"
+                    },
+                    attrsHover: {
+                        fill: "#f38a03",
                         animDuration: 300
-                    }
-                    , text: {
-                        position: "inner"
-                        , margin: 10
-                        , attrs: {
-                            "font-size": 15
-                            , fill: "#c7c7c7"
+                    },
+                    text: {
+                        position: "inner",
+                        margin: 10,
+                        attrs: {
+                            "font-size": 15,
+                            fill: "#c7c7c7"
+                        },
+                        attrsHover: {
+                            fill: "#eaeaea",
+                            "animDuration": 300
                         }
-                        , attrsHover: {
-                            fill: "#eaeaea"
-                            , animDuration: 300
+                    },
+                    target: "_self"
+                },
+                defaultPlot: {
+                    type: "circle",
+                    size: 15,
+                    attrs: {
+                        fill: "#0088db",
+                        stroke: "#fff",
+                        "stroke-width": 0,
+                        "stroke-linejoin": "round"
+                    },
+                    attrsHover: {
+                        "stroke-width": 3,
+                        animDuration: 300
+                    },
+                    text: {
+                        position: "right",
+                        margin: 10,
+                        attrs: {
+                            "font-size": 15,
+                            fill: "#c7c7c7"
+                        },
+                        attrsHover: {
+                            fill: "#eaeaea",
+                            animDuration: 300
                         }
-                    }
-                    , target: "_self"
+                    },
+                    target: "_self"
+                },
+                defaultLink: {
+                    factor: 0.5,
+                    attrs: {
+                        stroke: "#0088db",
+                        "stroke-width": 2
+                    },
+                    attrsHover: {
+                        animDuration: 300
+                    },
+                    text: {
+                        position: "inner",
+                        margin: 10,
+                        attrs: {
+                            "font-size": 15,
+                            fill: "#c7c7c7"
+                        },
+                        attrsHover: {
+                            fill: "#eaeaea",
+                            animDuration: 300
+                        }
+                    },
+                    target: "_self"
+                },
+                zoom: {
+                    enabled: false,
+                    maxLevel: 10,
+                    step: 0.25,
+                    zoomInCssClass: "zoomIn",
+                    zoomOutCssClass: "zoomOut",
+                    mousewheel: true,
+                    touch: true,
+                    animDuration: 200,
+                    animEasing: "linear"
                 }
-                , zoom: {
-                    enabled: false
-                    , maxLevel: 10
-                    , step: 0.25
-                    , zoomInCssClass: "zoomIn"
-                    , zoomOutCssClass: "zoomOut"
-                    , mousewheel: true
-                    , touch: true
-                    , animDuration: 200
-                    , animEasing: "linear"
-                }
-            }
-            , legend: {
-                area: []
-                , plot: []
-            }
-            , areas: {}
-            , plots: {}
-            , links: {}
+            },
+            legend: {
+                area: [],
+                plot: []
+            },
+            areas: {},
+            plots: {},
+            links: {}
         },
 
         // Default legends option
         legendDefaultOptions: {
             area: {
-                cssClass: "areaLegend"
-                , display: true
-                , marginLeft: 10
-                , marginLeftTitle: 5
-                , marginBottomTitle: 10
-                , marginLeftLabel: 10
-                , marginBottom: 10
-                , titleAttrs: {
-                    "font-size": 16
-                    , fill: "#343434"
-                    , "text-anchor": "start"
-                }
-                , labelAttrs: {
-                    "font-size": 12
-                    , fill: "#343434"
-                    , "text-anchor": "start"
-                }
-                , labelAttrsHover: {
-                    fill: "#787878"
-                    , animDuration: 300
-                }
-                , hideElemsOnClick: {
-                    enabled: true
-                    , opacity: 0.2
-                    , animDuration: 300
-                }
-                , slices: []
-                , mode: "vertical"
-            }
-            , plot: {
-                cssClass: "plotLegend"
-                , display: true
-                , marginLeft: 10
-                , marginLeftTitle: 5
-                , marginBottomTitle: 10
-                , marginLeftLabel: 10
-                , marginBottom: 10
-                , titleAttrs: {
-                    "font-size": 16
-                    , fill: "#343434"
-                    , "text-anchor": "start"
-                }
-                , labelAttrs: {
-                    "font-size": 12
-                    , fill: "#343434"
-                    , "text-anchor": "start"
-                }
-                , labelAttrsHover: {
-                    fill: "#787878"
-                    , animDuration: 300
-                }
-                , hideElemsOnClick: {
-                    enabled: true
-                    , opacity: 0.2
-                }
-                , slices: []
-                , mode: "vertical"
+                cssClass: "areaLegend",
+                display: true,
+                marginLeft: 10,
+                marginLeftTitle: 5,
+                marginBottomTitle: 10,
+                marginLeftLabel: 10,
+                marginBottom: 10,
+                titleAttrs: {
+                    "font-size": 16,
+                    fill: "#343434",
+                    "text-anchor": "start"
+                },
+                labelAttrs: {
+                    "font-size": 12,
+                    fill: "#343434",
+                    "text-anchor": "start"
+                },
+                labelAttrsHover: {
+                    fill: "#787878",
+                    animDuration: 300
+                },
+                hideElemsOnClick: {
+                    enabled: true,
+                    opacity: 0.2,
+                    animDuration: 300
+                },
+                slices: [],
+                mode: "vertical"
+            },
+            plot: {
+                cssClass: "plotLegend",
+                display: true,
+                marginLeft: 10,
+                marginLeftTitle: 5,
+                marginBottomTitle: 10,
+                marginLeftLabel: 10,
+                marginBottom: 10,
+                titleAttrs: {
+                    "font-size": 16,
+                    fill: "#343434",
+                    "text-anchor": "start"
+                },
+                labelAttrs: {
+                    "font-size": 12,
+                    fill: "#343434",
+                    "text-anchor": "start"
+                },
+                labelAttrsHover: {
+                    fill: "#787878",
+                    animDuration: 300
+                },
+                hideElemsOnClick: {
+                    enabled: true,
+                    opacity: 0.2
+                },
+                slices: [],
+                mode: "vertical"
             }
         }
 
