@@ -80,6 +80,8 @@ Basically, you need to modify the prototype inside `$.mapael` instead of the old
 - override a method: `$.fn.mapael.tooltip = function() {}`
 
 **After:**
-- override the default options: `$.mapael.defaultOptions = {}`
-- override a method: `$.mapael.tooltip = function() {}`
+- override the default options: `$.mapael.prototype.defaultOptions = {...}`
+- override a method: `$.mapael.prototype.setTooltip = function(...) {...}`
+
+Additional note: use `$.mapael.prototype.setTooltip.call(this, ...)` to call original behavior.
 
