@@ -92,6 +92,33 @@
 
     <script type="text/javascript">
         $(function () {
+
+            /*
+             * Override default option example
+             * Here we override defaultOptions for all instance!
+             * => We want to set the stroke color different for all of our instance
+             */
+            $.mapael.prototype.defaultOptions.map.defaultArea.attrs.stroke = "#550000";
+
+            /*
+             * Override method example
+             * Here we override the setTooltip() method for all instance !
+             * => We want that area having a tooltip appears as red when mouse over
+             */
+            // Save setTooltip function for future use
+            var baseSetTooltip = $.mapael.prototype.setTooltip;
+            $.mapael.prototype.setTooltip = function(elem){
+                // Save ref to Mapael object in self
+                var self = this;
+                // Some special processing for "path" element having a tooltip
+                if (elem.type === "path") {
+                    elem.attrsHover.fill = "#FF0000";
+                }
+                // Call base Mapael function
+                baseSetTooltip.call(self, elem);
+            };
+
+            
             $(".mapcontainer").mapael({
                 map: {
                     name: "france_departments"
@@ -114,7 +141,6 @@
                     , defaultArea: {
                         attrs: {
                             fill: "#f4f4e8"
-                            , stroke: "#ced8d0"
                         }
                         , text: {
                             attrs: {
@@ -265,7 +291,6 @@
                     , defaultArea: {
                         attrs: {
                             fill: "#f4f4e8"
-                            , stroke: "#00a1fe"
                         }
                         , attrsHover: {
                             fill: "#a4e100"
