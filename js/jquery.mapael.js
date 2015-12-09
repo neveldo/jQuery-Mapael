@@ -32,172 +32,6 @@
     // Version number of jQuery Mapael. See http://semver.org/ for more information.
     var version = "2.0.0-dev";
 
-    // Default map options
-    var defaultOptions = {
-        map : {
-            cssClass : "map"
-            , tooltip : {
-                cssClass : "mapTooltip"
-            }
-            , defaultArea : {
-                attrs : {
-                    fill : "#343434"
-                    , stroke : "#5d5d5d"
-                    , "stroke-width" : 1
-                    , "stroke-linejoin" : "round"
-                }
-                , attrsHover : {
-                    fill : "#f38a03"
-                    , animDuration : 300
-                }
-                , text : {
-                    position : "inner"
-                    , margin : 10
-                    , attrs : {
-                        "font-size" : 15
-                        , fill : "#c7c7c7"
-                    }
-                    , attrsHover : {
-                        fill : "#eaeaea"
-                        , "animDuration" : 300
-                    }
-                }
-                , target : "_self"
-            }
-            , defaultPlot : {
-                type : "circle"
-                , size : 15
-                , attrs : {
-                    fill : "#0088db"
-                    , stroke : "#fff"
-                    , "stroke-width" : 0
-                    , "stroke-linejoin" : "round"
-                }
-                , attrsHover : {
-                    "stroke-width" : 3
-                    , animDuration : 300
-                }
-                , text : {
-                    position : "right"
-                    , margin : 10
-                    , attrs : {
-                        "font-size" : 15
-                        , fill : "#c7c7c7"
-                    }
-                    , attrsHover : {
-                        fill : "#eaeaea"
-                        , animDuration : 300
-                    }
-                }
-                , target : "_self"
-            }
-            , defaultLink : {
-                factor : 0.5
-                , attrs : {
-                    stroke : "#0088db"
-                    , "stroke-width" : 2
-                }
-                , attrsHover : {
-                    animDuration : 300
-                }
-                , text : {
-                    position : "inner"
-                    , margin : 10
-                    , attrs : {
-                        "font-size" : 15
-                        , fill : "#c7c7c7"
-                    }
-                    , attrsHover : {
-                        fill : "#eaeaea"
-                        , animDuration : 300
-                    }
-                }
-                , target : "_self"
-            }
-            , zoom : {
-                enabled : false
-                , maxLevel : 10
-                , step : 0.25
-                , zoomInCssClass : "zoomIn"
-                , zoomOutCssClass : "zoomOut"
-                , mousewheel : true
-                , touch : true
-                , animDuration : 200
-                , animEasing : "linear"
-            }
-        }
-        , legend : {
-            area : []
-            , plot : []
-        }
-        , areas : {}
-        , plots : {}
-        , links : {}
-    };
-
-    // Default legends option
-    var legendDefaultOptions = {
-        area : {
-            cssClass : "areaLegend"
-            , display : true
-            , marginLeft : 10
-            , marginLeftTitle : 5
-            , marginBottomTitle: 10
-            , marginLeftLabel : 10
-            , marginBottom : 10
-            , titleAttrs : {
-                "font-size" : 16
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrs : {
-                "font-size" : 12
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrsHover : {
-                fill : "#787878"
-                , animDuration : 300
-            }
-            , hideElemsOnClick : {
-                enabled : true
-                , opacity : 0.2
-                , animDuration : 300
-            }
-            , slices : []
-            , mode : "vertical"
-        }
-        , plot : {
-            cssClass : "plotLegend"
-            , display : true
-            , marginLeft : 10
-            , marginLeftTitle : 5
-            , marginBottomTitle: 10
-            , marginLeftLabel : 10
-            , marginBottom : 10
-            , titleAttrs : {
-                "font-size" : 16
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrs : {
-                "font-size" : 12
-                , fill : "#343434"
-                , "text-anchor" : "start"
-            }
-            , labelAttrsHover : {
-                fill : "#787878"
-                , animDuration : 300
-            }
-            , hideElemsOnClick : {
-                enabled : true
-                , opacity : 0.2
-            }
-            , slices : []
-            , mode : "vertical"
-        }
-    };
-
     /*
      * Mapael constructor
      * Init instance vars and call init()
@@ -214,7 +48,7 @@
         self.$container = $(container);
 
         // the global options
-        self.options = options;
+        self.options = self.extendDefaultOptions(options);
 
         // Version number
         self.version = version;
@@ -410,6 +244,29 @@
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
             $(self.paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
+        },
+
+        /*
+         * Extend the user option with the default one
+         * @param options the user options
+         * @return new options object
+         */
+        extendDefaultOptions: function(options) {
+
+            // Extend default options with user options
+            options = $.extend(true, {}, Mapael.prototype.defaultOptions, options);
+
+            // Extend legend default options
+            $.each(options.legend, function(type) {
+                if ($.isArray(options.legend[type])) {
+                    for (var i = 0; i < options.legend[type].length; ++i)
+                        options.legend[type][i] = $.extend(true, {}, Mapael.prototype.legendDefaultOptions[type], options.legend[type][i]);
+                } else {
+                    options.legend[type] = $.extend(true, {}, Mapael.prototype.legendDefaultOptions[type], options.legend[type]);
+                }
+            });
+
+            return options;
         },
 
         /*
@@ -740,7 +597,7 @@
             };
 
             if (typeof opt.mapOptions === "object") {
-                if (opt.replaceOptions === true) self.options = $.extend(true, {}, defaultOptions, opt.mapOptions);
+                if (opt.replaceOptions === true) self.options = self.extendDefaultOptions(opt.mapOptions);
                 else $.extend(true, self.options, opt.mapOptions);
 
                 // IF we update areas, plots or legend, then reset all legend state to "show"
@@ -1783,6 +1640,172 @@
                 }
                 , interval
             );
+        },
+
+        // Default map options
+        defaultOptions: {
+            map : {
+                cssClass : "map"
+                , tooltip : {
+                    cssClass : "mapTooltip"
+                }
+                , defaultArea : {
+                    attrs : {
+                        fill : "#343434"
+                        , stroke : "#5d5d5d"
+                        , "stroke-width" : 1
+                        , "stroke-linejoin" : "round"
+                    }
+                    , attrsHover : {
+                        fill : "#f38a03"
+                        , animDuration : 300
+                    }
+                    , text : {
+                        position : "inner"
+                        , margin : 10
+                        , attrs : {
+                            "font-size" : 15
+                            , fill : "#c7c7c7"
+                        }
+                        , attrsHover : {
+                            fill : "#eaeaea"
+                            , "animDuration" : 300
+                        }
+                    }
+                    , target : "_self"
+                }
+                , defaultPlot : {
+                    type : "circle"
+                    , size : 15
+                    , attrs : {
+                        fill : "#0088db"
+                        , stroke : "#fff"
+                        , "stroke-width" : 0
+                        , "stroke-linejoin" : "round"
+                    }
+                    , attrsHover : {
+                        "stroke-width" : 3
+                        , animDuration : 300
+                    }
+                    , text : {
+                        position : "right"
+                        , margin : 10
+                        , attrs : {
+                            "font-size" : 15
+                            , fill : "#c7c7c7"
+                        }
+                        , attrsHover : {
+                            fill : "#eaeaea"
+                            , animDuration : 300
+                        }
+                    }
+                    , target : "_self"
+                }
+                , defaultLink : {
+                    factor : 0.5
+                    , attrs : {
+                        stroke : "#0088db"
+                        , "stroke-width" : 2
+                    }
+                    , attrsHover : {
+                        animDuration : 300
+                    }
+                    , text : {
+                        position : "inner"
+                        , margin : 10
+                        , attrs : {
+                            "font-size" : 15
+                            , fill : "#c7c7c7"
+                        }
+                        , attrsHover : {
+                            fill : "#eaeaea"
+                            , animDuration : 300
+                        }
+                    }
+                    , target : "_self"
+                }
+                , zoom : {
+                    enabled : false
+                    , maxLevel : 10
+                    , step : 0.25
+                    , zoomInCssClass : "zoomIn"
+                    , zoomOutCssClass : "zoomOut"
+                    , mousewheel : true
+                    , touch : true
+                    , animDuration : 200
+                    , animEasing : "linear"
+                }
+            }
+            , legend : {
+                area : []
+                , plot : []
+            }
+            , areas : {}
+            , plots : {}
+            , links : {}
+        },
+
+        // Default legends option
+        legendDefaultOptions: {
+            area : {
+                cssClass : "areaLegend"
+                , display : true
+                , marginLeft : 10
+                , marginLeftTitle : 5
+                , marginBottomTitle: 10
+                , marginLeftLabel : 10
+                , marginBottom : 10
+                , titleAttrs : {
+                    "font-size" : 16
+                    , fill : "#343434"
+                    , "text-anchor" : "start"
+                }
+                , labelAttrs : {
+                    "font-size" : 12
+                    , fill : "#343434"
+                    , "text-anchor" : "start"
+                }
+                , labelAttrsHover : {
+                    fill : "#787878"
+                    , animDuration : 300
+                }
+                , hideElemsOnClick : {
+                    enabled : true
+                    , opacity : 0.2
+                    , animDuration : 300
+                }
+                , slices : []
+                , mode : "vertical"
+            }
+            , plot : {
+                cssClass : "plotLegend"
+                , display : true
+                , marginLeft : 10
+                , marginLeftTitle : 5
+                , marginBottomTitle: 10
+                , marginLeftLabel : 10
+                , marginBottom : 10
+                , titleAttrs : {
+                    "font-size" : 16
+                    , fill : "#343434"
+                    , "text-anchor" : "start"
+                }
+                , labelAttrs : {
+                    "font-size" : 12
+                    , fill : "#343434"
+                    , "text-anchor" : "start"
+                }
+                , labelAttrsHover : {
+                    fill : "#787878"
+                    , animDuration : 300
+                }
+                , hideElemsOnClick : {
+                    enabled : true
+                    , opacity : 0.2
+                }
+                , slices : []
+                , mode : "vertical"
+            }
         }
 
     };
@@ -1791,21 +1814,7 @@
     $[pluginName] = Mapael;
     // Add jQuery DOM function
     $.fn[pluginName] = function(options) {
-
-        // Extend default options with user options
-        options = $.extend(true, {}, defaultOptions, options);
-
-        // Extend legend default options
-        $.each(options.legend, function(type) {
-            if ($.isArray(options.legend[type])) {
-                for (var i = 0; i < options.legend[type].length; ++i)
-                    options.legend[type][i] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type][i]);
-            } else {
-                options.legend[type] = $.extend(true, {}, legendDefaultOptions[type], options.legend[type]);
-            }
-        });
-
-        // Now that everything is ready, call Mapael on each element
+        // Call Mapael on each element
         return this.each(function () {
             // Avoid multiple instanciation
             if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
