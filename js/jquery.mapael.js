@@ -287,7 +287,6 @@
             // We create it inside this function (and not in the prototype) in order to have a closure
             // Otherwise, in the prototype, 'this' when triggered is *not* the mapael object but the global window
             self.onResizeEvent = function () {
-                console.log("self.onResizeEvent", self);
                 // Clear any previous setTimeout (avoid too much triggering)
                 clearTimeout(self.resizeTO);
                 // setTimeout to wait for the user to finish its resizing
