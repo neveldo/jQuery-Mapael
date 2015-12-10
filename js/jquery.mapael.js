@@ -1752,6 +1752,7 @@
           *     $.mapael.prototype.isPaperHidden = function() {return false;};
           */
         isPaperHidden: function(){
+            var self = this;
             // Draw text, then get its boundaries
             var text_elem = self.paper.text(-50, -50, "TEST");
             var text_elem_bbox = text_elem.getBBox();
