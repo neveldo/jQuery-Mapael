@@ -49,6 +49,9 @@
 
         // the global options
         self.options = self.extendDefaultOptions(options);
+        
+        // Save initial HTML content (used by destroy method)
+        self.initialHTMLContent = self.$container.html();
 
         // zoom TimeOut handler (used to set and clear)
         self.zoomTO = 0;
@@ -249,6 +252,41 @@
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
             $(self.paper.desc).append(" and Mapael " + self.version + " (http://www.vincentbroute.fr/mapael/)");
+        },
+        
+        /*
+         * Destroy mapael
+         * This function effectively detach mapael from the container
+         *   - Set the container back to the way it was before mapael instanciation
+         *   - Remove all data associated to it (memory can then be free'ed by browser)
+         *   
+         * This method can be call directly by user:
+         *     $(".mapcontainer").data("mapael").destroy();
+         *     
+         * This method is also automatically called if the user try to call mapael
+         * on a container already containing a mapael instance
+         */
+        destroy: function() {
+            var self = this;
+            // Empty the container (this will also detach all event listeners)
+            self.$container.empty();
+            // Replace initial HTML content
+            self.$container.html(self.initialHTMLContent);
+            // Remove mapael class
+            self.$container.removeClass(pluginName);
+            // Remove the data
+            self.$container.removeData(pluginName);
+            // Remove all internal reference
+            self.container = undefined;
+            self.$container = undefined;
+            self.options = undefined;
+            self.paper = undefined;
+            self.$map = undefined;
+            self.$tooltip = undefined;
+            self.mapConf = undefined;
+            self.areas = undefined;
+            self.plots = undefined;
+            self.links = undefined;
         },
 
         /*
@@ -1856,10 +1894,12 @@
     $.fn[pluginName] = function (options) {
         // Call Mapael on each element
         return this.each(function () {
-            // Avoid multiple instanciation
-            if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
+            // Avoid leaking problem on multiple instanciation by removing an old mapael object on a container
+            if ($.data(this, pluginName)) {
+                $.data(this, pluginName).destroy();
+            }
             // Create Mapael and save it as jQuery data
-            // This allow external access to Mapael using $(".mapcontainer").data.mapael
+            // This allow external access to Mapael using $(".mapcontainer").data("mapael")
             $.data(this, pluginName, new Mapael(this, options));
         });
     };
