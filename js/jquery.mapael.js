@@ -50,9 +50,6 @@
         // the global options
         self.options = self.extendDefaultOptions(options);
 
-        // Version number
-        self.version = version;
-
         // zoom TimeOut handler (used to set and clear)
         self.zoomTO = 0;
 
@@ -111,9 +108,15 @@
 
     /*
      * Mapael Prototype
-     * Defines all functions needed by Mapael
+     * Defines all methods and properties needed by Mapael
+     * Each mapael object inherits their properties and methods from this prototype
      */
     Mapael.prototype = {
+        
+        /*
+         * Version number
+         */ 
+        version: version,
 
         /*
          * Initialize the plugin
@@ -245,7 +248,7 @@
             // Hook that allows to add custom processing on the map
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
-            $(self.paper.desc).append(" and Mapael (http://www.vincentbroute.fr/mapael/)");
+            $(self.paper.desc).append(" and Mapael " + self.version + " (http://www.vincentbroute.fr/mapael/)");
         },
 
         /*
