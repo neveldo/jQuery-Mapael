@@ -219,33 +219,16 @@
                 self.onUpdateEvent(e, opt);
             });
 
-            // Handle resizing of the map
+            // Handle map size
             if (self.options.map.width) {
+                // NOT responsive: map has a fixed width
                 self.paper.setSize(self.options.map.width, self.mapConf.height * (self.options.map.width / self.mapConf.width));
 
                 // Create the legends for plots taking into account the scale of the map
                 self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
             } else {
-                $(window).on("resize." + pluginName, function () {
-                    clearTimeout(self.resizeTO);
-                    self.resizeTO = setTimeout(function () {
-                        self.$map.trigger("resizeEnd." + pluginName);
-                    }, 150);
-                });
-
-                // Create the legends for plots taking into account the scale of the map
-                var createPlotLegend = function () {
-                    self.createLegends("plot", self.plots, (self.$map.width() / self.mapConf.width));
-
-                    self.$map.off("resizeEnd." + pluginName, createPlotLegend);
-                };
-
-                self.$map.on("resizeEnd." + pluginName, function () {
-                    var containerWidth = self.$map.width();
-                    if (self.paper.width != containerWidth) {
-                        self.paper.setSize(containerWidth, self.mapConf.height * (containerWidth / self.mapConf.width));
-                    }
-                }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd." + pluginName);
+                // Responsive: handle resizing of the map
+                self.handleMapResizing();
             }
 
             // Hook that allows to add custom processing on the map
@@ -270,6 +253,8 @@
             var self = this;
             // Empty the container (this will also detach all event listeners)
             self.$container.empty();
+            // Detach the global resize event handler
+            if (self.onResizeEvent) $(window).off("resize." + pluginName, self.onResizeEvent);
             // Replace initial HTML content
             self.$container.html(self.initialHTMLContent);
             // Remove mapael class
@@ -287,6 +272,39 @@
             self.areas = undefined;
             self.plots = undefined;
             self.links = undefined;
+        },
+
+        handleMapResizing: function() {
+            var self = this;
+            // Create the legends for plots taking into account the scale of the map
+            var createPlotLegend = function () {
+                self.createLegends("plot", self.plots, (self.$map.width() / self.mapConf.width));
+
+                self.$map.off("resizeEnd." + pluginName, createPlotLegend);
+            };
+            
+            // onResizeEvent: call when the window element trigger the resize event
+            // We create it inside this function (and not in the prototype) in order to have a closure
+            // Otherwise, in the prototype, 'this' when triggered is *not* the mapael object but the global window
+            self.onResizeEvent = function () {
+                console.log("self.onResizeEvent", self);
+                // Clear any previous setTimeout (avoid too much triggering)
+                clearTimeout(self.resizeTO);
+                // setTimeout to wait for the user to finish its resizing
+                self.resizeTO = setTimeout(function () {
+                    self.$map.trigger("resizeEnd." + pluginName);
+                }, 150);
+            };
+
+            // Attach resize handler 
+            $(window).on("resize." + pluginName, self.onResizeEvent);
+
+            self.$map.on("resizeEnd." + pluginName, function () {
+                var containerWidth = self.$map.width();
+                if (self.paper.width != containerWidth) {
+                    self.paper.setSize(containerWidth, self.mapConf.height * (containerWidth / self.mapConf.width));
+                }
+            }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd." + pluginName);
         },
 
         /*
