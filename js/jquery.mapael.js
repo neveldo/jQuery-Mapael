@@ -743,7 +743,7 @@
             // Update links attributes and tooltips
             $.each(self.links, function (id) {
                 var elemOptions = self.getElemOptions(
-                    self.options.map.defaultLink
+                    self.options.map.defaultLink,
                     (self.options.links[id] ? self.options.links[id] : {}),
                     {}
                 );
