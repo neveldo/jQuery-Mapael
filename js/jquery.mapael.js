@@ -159,6 +159,7 @@
             // issue #135: Check if we are drawing on a hidden paper
             // This is known to cause problem for Raphael and text element boundaries
             if (self.isPaperHidden() === true) {
+                self.destroy();
                 throw new Error("Drawing on hidden paper is not supported (see src/doc for workaround)");
             }
 
