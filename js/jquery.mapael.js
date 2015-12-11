@@ -49,6 +49,9 @@
 
         // the global options
         self.options = self.extendDefaultOptions(options);
+        
+        // Save initial HTML content (used by destroy method)
+        self.initialHTMLContent = self.$container.html();
 
         // zoom TimeOut handler (used to set and clear)
         self.zoomTO = 0;
@@ -216,39 +219,91 @@
                 self.onUpdateEvent(e, opt);
             });
 
-            // Handle resizing of the map
+            // Handle map size
             if (self.options.map.width) {
+                // NOT responsive: map has a fixed width
                 self.paper.setSize(self.options.map.width, self.mapConf.height * (self.options.map.width / self.mapConf.width));
 
                 // Create the legends for plots taking into account the scale of the map
                 self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
             } else {
-                $(window).on("resize." + pluginName, function () {
-                    clearTimeout(self.resizeTO);
-                    self.resizeTO = setTimeout(function () {
-                        self.$map.trigger("resizeEnd." + pluginName);
-                    }, 150);
-                });
-
-                // Create the legends for plots taking into account the scale of the map
-                var createPlotLegend = function () {
-                    self.createLegends("plot", self.plots, (self.$map.width() / self.mapConf.width));
-
-                    self.$map.off("resizeEnd." + pluginName, createPlotLegend);
-                };
-
-                self.$map.on("resizeEnd." + pluginName, function () {
-                    var containerWidth = self.$map.width();
-                    if (self.paper.width != containerWidth) {
-                        self.paper.setSize(containerWidth, self.mapConf.height * (containerWidth / self.mapConf.width));
-                    }
-                }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd." + pluginName);
+                // Responsive: handle resizing of the map
+                self.handleMapResizing();
             }
 
             // Hook that allows to add custom processing on the map
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
             $(self.paper.desc).append(" and Mapael " + self.version + " (http://www.vincentbroute.fr/mapael/)");
+        },
+        
+        /*
+         * Destroy mapael
+         * This function effectively detach mapael from the container
+         *   - Set the container back to the way it was before mapael instanciation
+         *   - Remove all data associated to it (memory can then be free'ed by browser)
+         *   
+         * This method can be call directly by user:
+         *     $(".mapcontainer").data("mapael").destroy();
+         *     
+         * This method is also automatically called if the user try to call mapael
+         * on a container already containing a mapael instance
+         */
+        destroy: function() {
+            var self = this;
+            // Empty the container (this will also detach all event listeners)
+            self.$container.empty();
+            // Detach the global resize event handler
+            if (self.onResizeEvent) $(window).off("resize." + pluginName, self.onResizeEvent);
+            // Replace initial HTML content
+            self.$container.html(self.initialHTMLContent);
+            // Remove mapael class
+            self.$container.removeClass(pluginName);
+            // Remove the data
+            self.$container.removeData(pluginName);
+            // Remove all internal reference
+            self.container = undefined;
+            self.$container = undefined;
+            self.options = undefined;
+            self.paper = undefined;
+            self.$map = undefined;
+            self.$tooltip = undefined;
+            self.mapConf = undefined;
+            self.areas = undefined;
+            self.plots = undefined;
+            self.links = undefined;
+        },
+
+        handleMapResizing: function() {
+            var self = this;
+            // Create the legends for plots taking into account the scale of the map
+            var createPlotLegend = function () {
+                self.createLegends("plot", self.plots, (self.$map.width() / self.mapConf.width));
+
+                self.$map.off("resizeEnd." + pluginName, createPlotLegend);
+            };
+            
+            // onResizeEvent: call when the window element trigger the resize event
+            // We create it inside this function (and not in the prototype) in order to have a closure
+            // Otherwise, in the prototype, 'this' when triggered is *not* the mapael object but the global window
+            self.onResizeEvent = function () {
+                // Clear any previous setTimeout (avoid too much triggering)
+                clearTimeout(self.resizeTO);
+                // setTimeout to wait for the user to finish its resizing
+                self.resizeTO = setTimeout(function () {
+                    self.$map.trigger("resizeEnd." + pluginName);
+                }, 150);
+            };
+
+            // Attach resize handler 
+            $(window).on("resize." + pluginName, self.onResizeEvent);
+
+            self.$map.on("resizeEnd." + pluginName, function () {
+                var containerWidth = self.$map.width();
+                if (self.paper.width != containerWidth) {
+                    self.paper.setSize(containerWidth, self.mapConf.height * (containerWidth / self.mapConf.width));
+                }
+            }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd." + pluginName);
         },
 
         /*
@@ -1856,10 +1911,12 @@
     $.fn[pluginName] = function (options) {
         // Call Mapael on each element
         return this.each(function () {
-            // Avoid multiple instanciation
-            if ($.data(this, pluginName)) throw new Error("Mapael already exists on this element.");
+            // Avoid leaking problem on multiple instanciation by removing an old mapael object on a container
+            if ($.data(this, pluginName)) {
+                $.data(this, pluginName).destroy();
+            }
             // Create Mapael and save it as jQuery data
-            // This allow external access to Mapael using $(".mapcontainer").data.mapael
+            // This allow external access to Mapael using $(".mapcontainer").data("mapael")
             $.data(this, pluginName, new Mapael(this, options));
         });
     };

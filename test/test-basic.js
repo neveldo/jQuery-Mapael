@@ -3,7 +3,7 @@
  * Module: Basic
  * 
  * Here are tested:
- *      - Basic map creation
+ *      - Basic map creation/destruction
  *      - Basic map interaction
  *      - options.map.name
  */
@@ -32,6 +32,37 @@ $(function() {
 
     });
     
+    QUnit.test("Instance destruction", function(assert) {
+        
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+            map: { name: "france_departments" }
+        }));
+        
+        assert.ok($(".mapcontainer svg")[0], "Map existing" );
+        
+        $(".mapcontainer").data("mapael").destroy();
+        
+        assert.notOk($(".mapcontainer .map svg")[0], "SVG map not created" );
+        assert.notOk($(".mapcontainer").hasClass("mapael"), "Has not mapael class" );
+        assert.notOk(typeof $(".mapcontainer").data("mapael") === "object", "Has not mapael data" );
+        assert.notOk($(".mapcontainer .map .mapTooltip")[0], "Has not tooltip div" );
+    });
+    
+    QUnit.test("Instance creation: existing map", function(assert) {
+        
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+            map: { name: "france_departments" }
+        }));
+        
+        assert.ok($(".mapcontainer svg")[0], "First map existing" );
+        
+        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+            map: { name: "france_departments" }
+        }));
+        
+        assert.ok($(".mapcontainer svg")[0], "Second map existing" );
+    });
+    
     QUnit.test("Creation fail: wrong map", function(assert) {
 
         /* Error if wrong map name */
@@ -43,17 +74,6 @@ $(function() {
         
         assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
         
-    });
-    
-    QUnit.test("Creation fail: existing map", function(assert) {
-        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
-            map: { name: "france_departments" }
-        }));
-        assert.throws(function(){
-            $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
-                map: { name: "france_departments" }
-            }));
-        }, "Throw error" );
     });
 
     QUnit.test("Mouseover", function(assert) {
