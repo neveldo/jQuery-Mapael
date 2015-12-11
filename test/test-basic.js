@@ -75,6 +75,21 @@ $(function() {
         assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
         
     });
+    
+    QUnit.test("Creation fail: hidden map", function(assert) {
+        
+        $(".container").hide();
+
+        /* Error if map is hidden */
+        assert.throws(function(){
+            $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+                map: { name: "france_departments" }
+            }));
+        }, "Throw error" );
+        
+        assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
+        
+    });
 
     QUnit.test("Mouseover", function(assert) {
         var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
