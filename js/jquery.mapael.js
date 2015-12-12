@@ -1749,7 +1749,7 @@
           * @return true/false
           *
           * Wants to override this behavior? Use prototype overriding:
-          *     $.mapael.prototype.isPaperHidden = function() {return false;};
+          *     $.mapael.prototype.checkForRaphaelBBoxBug = function() {return false;};
           */
         checkForRaphaelBBoxBug: function(){
             var self = this;
