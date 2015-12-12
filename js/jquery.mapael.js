@@ -784,7 +784,7 @@
                 // Handle text elemen
                 if (elem.textElem) {
                     // Set attribute
-                    elem.textElem.animate({"opacity": opacity});
+                    elem.textElem.attr({"opacity": opacity});
                     // For extrem opacity, hide or show
                     if (opacity === 0) elem.textElem.hide();
                     else if (opacity === 1) elem.textElem.show();
