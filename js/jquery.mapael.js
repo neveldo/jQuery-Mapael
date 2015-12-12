@@ -156,11 +156,10 @@
             // Create Raphael paper
             self.paper = new Raphael(self.$map[0], self.mapConf.width, self.mapConf.height);
 
-            // issue #135: Check if we are drawing on a hidden paper
-            // This is known to cause problem for Raphael and text element boundaries
-            if (self.isPaperHidden() === true) {
+            // issue #135: Check for Raphael bug on text element boundaries
+            if (self.checkForRaphaelBBoxBug() === true) {
                 self.destroy();
-                throw new Error("Drawing on hidden paper is not supported (see src/doc for workaround)");
+                throw new Error("Can't get boundary box for text (is your container hidden? See #135)");
             }
 
             // add plugin class name on element
@@ -1752,7 +1751,7 @@
           * Wants to override this behavior? Use prototype overriding:
           *     $.mapael.prototype.isPaperHidden = function() {return false;};
           */
-        isPaperHidden: function(){
+        checkForRaphaelBBoxBug: function(){
             var self = this;
             // Draw text, then get its boundaries
             var text_elem = self.paper.text(-50, -50, "TEST");
