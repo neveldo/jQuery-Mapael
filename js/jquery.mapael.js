@@ -1587,40 +1587,17 @@
                         (function (id) {
                             if (hidden === '0') { // we want to hide this element
                                 hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
-                                if (animDuration > 0) {
-                                    elems[id].mapElem.animate({"opacity": legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function () {
-                                        if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
-                                    });
-                                    if (elems[id].textElem) {
-                                        elems[id].textElem.animate({"opacity": legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function () {
-                                            if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
-                                        });
-                                    }
-                                } else {
-                                    if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
-                                    else elems[id].mapElem.attr({"opacity": legendOptions.hideElemsOnClick.opacity});
-
-                                    if (elems[id].textElem) {
-                                        if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
-                                        else elems[id].textElem.animate({"opacity": legendOptions.hideElemsOnClick.opacity});
-                                    }
-                                }
+                                self.setElementOpacity(elems[id], legendOptions.hideElemsOnClick.opacity, animDuration);
                             } else { // We want to show this element
                                 delete hiddenBy[legendIndex]; // Remove this legendIndex from object
                                 // Check if another legendIndex is defined
                                 // We will show this element only if no legend is no longer hiding it
                                 if ($.isEmptyObject(hiddenBy)) {
-                                    if (legendOptions.hideElemsOnClick.opacity === 0) {
-                                        elems[id].mapElem.show();
-                                        if (elems[id].textElem) elems[id].textElem.show();
-                                    }
-                                    if (animDuration > 0) {
-                                        elems[id].mapElem.animate({"opacity": elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1}, animDuration);
-                                        if (elems[id].textElem) elems[id].textElem.animate({"opacity": elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1}, animDuration);
-                                    } else {
-                                        elems[id].mapElem.attr({"opacity": elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1});
-                                        if (elems[id].textElem) elems[id].textElem.attr({"opacity": elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1});
-                                    }
+                                    self.setElementOpacity(
+                                        elems[id],
+                                        elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1,
+                                        animDuration
+                                    );
                                 }
                             }
                             // Update elem data with new values
