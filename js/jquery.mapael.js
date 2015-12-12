@@ -840,13 +840,15 @@
             // This function show an element using animation
             // Used for newPlots and newLinks
             var fnShowElement = function (elem) {
+                // Starts with hidden elements
                 elem.mapElem.attr({opacity: 0});
-                elem.mapElem.animate({"opacity": (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
-
-                if (elem.textElem) {
-                    elem.textElem.attr({opacity: 0});
-                    elem.textElem.animate({"opacity": (elem.textElem.originalAttrs.opacity !== undefined) ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
-                }
+                if (elem.textElem) elem.textElem.attr({opacity: 0});
+                // Set final element opacity
+                self.setElementOpacity(
+                    elem,
+                    (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1,
+                    animDuration
+                );
             };
 
             if (typeof opt.mapOptions === "object") {
