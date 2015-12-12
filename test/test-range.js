@@ -79,7 +79,7 @@ $(function() {
         // No range
         opt.ranges.plot = {};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") === undefined && $p1.is(":visible"), "No range, p1 visible");
+        assert.ok($p1.attr("opacity") === undefined, "No range, p1 visible");
         assert.ok($p2.attr("opacity") === undefined && $p2.is(":visible"), "No range, p2 visible");
         assert.ok($p3.attr("opacity") === undefined && $p3.is(":visible"), "No range, p3 visible");
         assert.ok($p4.attr("opacity") === undefined && $p4.is(":visible"), "No range, p4 visible");
@@ -88,7 +88,7 @@ $(function() {
         // Check for min = 10000
         opt.ranges.plot = {min: 10000};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 0.1 && $p1.is(":visible"), "Min = 1000, p1 opacity");
+        assert.ok($p1.attr("opacity") == 0.1, "Min = 1000, p1 opacity");
         assert.ok($p2.attr("opacity") == 0.1 && $p2.is(":visible"), "Min = 1000, p2 opacity");
         assert.ok($p3.attr("opacity") == 0.1 && $p3.is(":visible"), "Min = 1000, p3 opacity");
         assert.ok($p4.attr("opacity") == 0.1 && $p4.is(":visible"), "Min = 1000, p4 opacity");
@@ -97,7 +97,7 @@ $(function() {
         // Check for min = 0
         opt.ranges.plot = {min: 0};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 1 && $p1.is(":visible"), "Min = 0, p1 opacity");
+        assert.ok($p1.attr("opacity") == 1, "Min = 0, p1 opacity");
         assert.ok($p2.attr("opacity") == 1 && $p2.is(":visible"), "Min = 0, p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "Min = 0, p3 opacity");
         assert.ok($p4.attr("opacity") == 1 && $p4.is(":visible"), "Min = 0, p4 opacity");
@@ -106,7 +106,7 @@ $(function() {
         // Check for min = 50
         opt.ranges.plot = {min: 50};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 0.1 && $p1.is(":visible"), "Min = 50, p1 opacity");
+        assert.ok($p1.attr("opacity") == 0.1, "Min = 50, p1 opacity");
         assert.ok($p2.attr("opacity") == 0.1 && $p2.is(":visible"), "Min = 50, p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "Min = 50, p3 opacity");
         assert.ok($p4.attr("opacity") == 1 && $p4.is(":visible"), "Min = 50, p4 opacity");
@@ -115,7 +115,7 @@ $(function() {
         // Check for min = 5000
         opt.ranges.plot = {max: 5000};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 1 && $p1.is(":visible"), "Max = 5000, p1 opacity");
+        assert.ok($p1.attr("opacity") == 1, "Max = 5000, p1 opacity");
         assert.ok($p2.attr("opacity") == 1 && $p2.is(":visible"), "Max = 5000, p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "Max = 5000, p3 opacity");
         assert.ok($p4.attr("opacity") == 1 && $p4.is(":visible"), "Max = 5000, p4 opacity");
@@ -124,7 +124,7 @@ $(function() {
         // Check for max = 500000
         opt.ranges.plot = {max: 500000};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 1 && $p1.is(":visible"), "Max = 500000, p1 opacity");
+        assert.ok($p1.attr("opacity") == 1, "Max = 500000, p1 opacity");
         assert.ok($p2.attr("opacity") == 1 && $p2.is(":visible"), "Max = 500000, p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "Max = 500000, p3 opacity");
         assert.ok($p4.attr("opacity") == 1 && $p4.is(":visible"), "Max = 500000, p4 opacity");
@@ -133,7 +133,7 @@ $(function() {
         // Check for max = -49
         opt.ranges.plot = {max: -49};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 0.1 && $p1.is(":visible"), "Max = -49, p1 opacity");
+        assert.ok($p1.attr("opacity") == 0.1, "Max = -49, p1 opacity");
         assert.ok($p2.attr("opacity") == 0.1 && $p2.is(":visible"), "Max = -49, p2 opacity");
         assert.ok($p3.attr("opacity") == 0.1 && $p3.is(":visible"), "Max = -49, p3 opacity");
         assert.ok($p4.attr("opacity") == 0.1 && $p4.is(":visible"), "Max = -49, p4 opacity");
@@ -142,7 +142,7 @@ $(function() {
         // Check for min: 25, max: 65
         opt.ranges.plot = {min: 25, max: 65};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 0.1 && $p1.is(":visible"), "Range(25, 65), p1 opacity");
+        assert.ok($p1.attr("opacity") == 0.1, "Range(25, 65), p1 opacity");
         assert.ok($p2.attr("opacity") == 0.1 && $p2.is(":visible"), "Range(25, 65), p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "Range(25, 65), p3 opacity");
         assert.ok($p4.attr("opacity") == 0.1 && $p4.is(":visible"), "Range(25, 65), p4 opacity");
@@ -151,7 +151,7 @@ $(function() {
         // Check for range with unknown index (no modification of current opacity)
         opt.ranges.plot = {4:{min: 25, max: 65}};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 0.1 && $p1.is(":visible"), "Unknown index, p1 opacity");
+        assert.ok($p1.attr("opacity") == 0.1, "Unknown index, p1 opacity");
         assert.ok($p2.attr("opacity") == 0.1 && $p2.is(":visible"), "Unknown index, p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "Unknown index, p3 opacity");
         assert.ok($p4.attr("opacity") == 0.1 && $p4.is(":visible"), "Unknown index, p4 opacity");
@@ -163,7 +163,7 @@ $(function() {
             1:{min: 11} // hide p3
         };
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 1 && $p1.is(":visible"), "2 differents indexes, p1 opacity");
+        assert.ok($p1.attr("opacity") == 1, "2 differents indexes, p1 opacity");
         assert.ok($p2.attr("opacity") == 1 && $p2.is(":visible"), "2 differents indexes, p2 opacity");
         assert.ok($p3.attr("opacity") == 0.1 && $p3.is(":visible"), "2 differents indexes, p3 opacity");
         assert.ok($p4.attr("opacity") == 1 && $p4.is(":visible"), "2 differents indexes, p4 opacity");
@@ -174,7 +174,7 @@ $(function() {
             1:{min: 0}
         };
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 1 && $p1.is(":visible"), "2nd index set, p1 opacity");
+        assert.ok($p1.attr("opacity") == 1, "2nd index set, p1 opacity");
         assert.ok($p2.attr("opacity") == 1 && $p2.is(":visible"), "2nd index set, p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "2nd index set, p3 opacity");
         assert.ok($p4.attr("opacity") == 1 && $p4.is(":visible"), "2nd index set, p4 opacity");
@@ -185,7 +185,7 @@ $(function() {
         opt.ranges.area = {min:-1000};
         opt.ranges.link = {max:2000};
         $(".mapcontainer").trigger("showElementsInRange", [opt]);
-        assert.ok($p1.attr("opacity") == 1 && $p1.is(":visible"), "No range + area, p1 opacity");
+        assert.ok($p1.attr("opacity") == 1, "No range + area, p1 opacity");
         assert.ok($p2.attr("opacity") == 1 && $p2.is(":visible"), "No range + area, p2 opacity");
         assert.ok($p3.attr("opacity") == 1 && $p3.is(":visible"), "No range + area, p3 opacity");
         assert.ok($p4.attr("opacity") == 1 && $p4.is(":visible"), "No range + area, p4 opacity");
