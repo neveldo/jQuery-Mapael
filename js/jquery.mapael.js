@@ -219,6 +219,11 @@
                 self.onUpdateEvent(e, opt);
             });
 
+            // Attach showElementsInRange event
+            self.$container.on("showElementsInRange." + pluginName, function (e, ranges) {
+                self.onShowElementsInRange(e, ranges);
+            });
+
             // Handle map size
             if (self.options.map.width) {
                 // NOT responsive: map has a fixed width
@@ -627,6 +632,155 @@
                 zoomX: panX + self.paper._viewBox[2] / 2,
                 zoomY: panY + self.paper._viewBox[3] / 2
             });
+        },
+
+        /*
+         * Show some element in range defined by user
+         * Triggered by user $(".mapcontainer").trigger("showElementsInRange", [opt]);
+         *
+         * @param opt the options
+         *  opt.hiddenOpacity opacity for hidden element (default = 0.3)
+         *  opt.animDuration animation duration in ms (default = 0)
+         *  opt.ranges the range to show:
+         *  Example:
+         *  opt.ranges = {
+         *      'plot' : {
+         *          0 : {                        // valueIndex
+         *              'min': 1000,
+         *              'max': 1200
+         *          },
+         *          1 : {                        // valueIndex
+         *              'min': 10,
+         *              'max': 12
+         *          }
+         *      },
+         *      'area' : {
+         *          {'min': 10, 'max': 20}    // No valueIndex, only an object, use 0 as valueIndex (easy case)
+         *      }
+         *  }
+         */
+        onShowElementsInRange: function(e, opt) {
+            var self = this;
+
+            // Check if we have at least some ranges
+            if (opt.ranges === undefined) {
+                return;
+            }
+
+            // set animDuration to default if not defined
+            if (opt.animDuration === undefined) {
+                opt.animDuration = 0;
+            }
+
+            // set hiddenOpacity to default if not defined
+            if (opt.hiddenOpacity === undefined) {
+                opt.hiddenOpacity = 0.3;
+            }
+
+            // handle area
+            if (opt.ranges.area) {
+                self.showElemByRange(opt.ranges.area, self.areas, opt.hiddenOpacity, opt.animDuration);
+            }
+
+            // handle plot
+            if (opt.ranges.plot) {
+                self.showElemByRange(opt.ranges.plot, self.plots, opt.hiddenOpacity, opt.animDuration);
+            }
+
+            // handle link
+            if (opt.ranges.link) {
+                self.showElemByRange(opt.ranges.link, self.links, opt.hiddenOpacity, opt.animDuration);
+            }
+        },
+
+        /*
+         * Show some element in range
+         * @param ranges: the ranges
+         * @param elems: list of element on which to check against previous range
+         * @hiddenOpacity: the opacity when hidden
+         * @animDuration: the animation duration
+         */
+        showElemByRange: function(ranges, elems, hiddenOpacity, animDuration) {
+            var self = this;
+            // Hold the final opacity value for all elements consolidated after applying each ranges
+            // This allow to set the opacity only once for each elements
+            var elemsFinalOpacity = {};
+
+            // set object with one valueIndex to 0 if we have directly the min/max
+            if (ranges.min || ranges.max) {
+                ranges = {0: ranges};
+            }
+
+            // Loop through each valueIndex
+            $.each(ranges, function (valueIndex) {
+                var range = ranges[valueIndex];
+                // Check if user defined at least a min or max value
+                if (range.min === undefined && range.max === undefined) {
+                    throw new Error("No min or max where defined for range " + valueIndex);
+                }
+                // Loop through each elements
+                $.each(elems, function (id) {
+                    var elemValue = elems[id].value;
+                    // set value with one valueIndex to 0 if not object
+                    if (typeof elemValue !== "object") {
+                        elemValue = [elemValue];
+                    }
+                    // Check existence of this value index
+                    if (elemValue[valueIndex] === undefined) {
+                        throw new Error("Value index " + valueIndex + " doesn't exists for element " + id);
+                    }
+                    // Check if in range
+                    if ((range.min && elemValue[valueIndex] < range.min) || (range.max && elemValue[valueIndex] > range.max)) {
+                        // Element not in range
+                        elemsFinalOpacity[id] = hiddenOpacity;
+                    } else {
+                        // Element in range
+                        elemsFinalOpacity[id] = 1;
+                    }
+                });
+            });
+
+            $.each(elemsFinalOpacity, function (id) {
+                self.setElementOpacity(elems[id], elemsFinalOpacity[id], animDuration);
+            });
+        },
+
+        /*
+         * Set element opacity
+         * Handle elem.mapElem and elem.textElem
+         * @param elem the element
+         * @param opacity the opacity to apply
+         * @param animDuration the animation duration to use
+         */
+        setElementOpacity: function(elem, opacity, animDuration) {
+            // Ensure no animation is running
+            elem.mapElem.stop();
+            if (elem.textElem) elem.textElem.stop();
+            // If final opacity is not null, ensure element is shown
+            if (opacity > 0) {
+                elem.mapElem.show();
+                if (elem.textElem) elem.textElem.show();
+            }
+            if (animDuration > 0) {
+                elem.mapElem.animate({"opacity": opacity}, animDuration, "linear", function () {
+                    if (opacity === 0) elem.mapElem.hide();
+                });
+                if (elem.textElem) {
+                    elem.textElem.animate({"opacity": opacity}, animDuration, "linear", function () {
+                        if (opacity === 0) elem.textElem.hide();
+                    });
+                }
+            } else {
+                if (opacity === 0) elem.mapElem.hide();
+                else if (opacity === 1) elem.mapElem.show();
+                else elem.mapElem.attr({"opacity": opacity});
+
+                if (elem.textElem) {
+                    if (opacity === 0) elem.textElem.hide();
+                    else if (opacity === 1) elem.textElem.show();
+                    else elem.textElem.animate({"opacity": opacity});
+                }
+            }
         },
 
         /*
