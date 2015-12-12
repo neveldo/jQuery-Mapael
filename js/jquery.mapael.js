@@ -739,9 +739,8 @@
                     }
                 });
             });
-
+            // Now that we looped through all ranges, we can really assign the final opacity
             $.each(elemsFinalOpacity, function (id) {
-                //console.log(id, elemsFinalOpacity[id]);
                 self.setElementOpacity(elems[id], elemsFinalOpacity[id], animDuration);
             });
         },
