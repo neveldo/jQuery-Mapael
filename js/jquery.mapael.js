@@ -641,6 +641,7 @@
          * @param opt the options
          *  opt.hiddenOpacity opacity for hidden element (default = 0.3)
          *  opt.animDuration animation duration in ms (default = 0)
+         *  opt.afterShowRange callback
          *  opt.ranges the range to show:
          *  Example:
          *  opt.ranges = {
@@ -662,11 +663,6 @@
         onShowElementsInRange: function(e, opt) {
             var self = this;
 
-            // Check if we have at least some ranges
-            if (opt.ranges === undefined) {
-                return;
-            }
-
             // set animDuration to default if not defined
             if (opt.animDuration === undefined) {
                 opt.animDuration = 0;
@@ -678,19 +674,22 @@
             }
 
             // handle area
-            if (opt.ranges.area) {
+            if (opt.ranges && opt.ranges.area) {
                 self.showElemByRange(opt.ranges.area, self.areas, opt.hiddenOpacity, opt.animDuration);
             }
 
             // handle plot
-            if (opt.ranges.plot) {
+            if (opt.ranges && opt.ranges.plot) {
                 self.showElemByRange(opt.ranges.plot, self.plots, opt.hiddenOpacity, opt.animDuration);
             }
 
             // handle link
-            if (opt.ranges.link) {
+            if (opt.ranges && opt.ranges.link) {
                 self.showElemByRange(opt.ranges.link, self.links, opt.hiddenOpacity, opt.animDuration);
             }
+
+            // Call user callback
+            if (opt.afterShowRange) opt.afterShowRange();
         },
 
         /*
@@ -707,7 +706,7 @@
             var elemsFinalOpacity = {};
 
             // set object with one valueIndex to 0 if we have directly the min/max
-            if (ranges.min || ranges.max) {
+            if (ranges.min !== undefined || ranges.max !== undefined) {
                 ranges = {0: ranges};
             }
 
@@ -716,7 +715,7 @@
                 var range = ranges[valueIndex];
                 // Check if user defined at least a min or max value
                 if (range.min === undefined && range.max === undefined) {
-                    throw new Error("No min or max where defined for range " + valueIndex);
+                    return true; // next range
                 }
                 // Loop through each elements
                 $.each(elems, function (id) {
@@ -727,10 +726,11 @@
                     }
                     // Check existence of this value index
                     if (elemValue[valueIndex] === undefined) {
-                        throw new Error("Value index " + valueIndex + " doesn't exists for element " + id);
+                        return true; // next element
                     }
                     // Check if in range
-                    if ((range.min && elemValue[valueIndex] < range.min) || (range.max && elemValue[valueIndex] > range.max)) {
+                    if ((range.min !== undefined && elemValue[valueIndex] < range.min) ||
+                        (range.max !== undefined && elemValue[valueIndex] > range.max)) {
                         // Element not in range
                         elemsFinalOpacity[id] = hiddenOpacity;
                     } else {
@@ -741,6 +741,7 @@
             });
 
             $.each(elemsFinalOpacity, function (id) {
+                //console.log(id, elemsFinalOpacity[id]);
                 self.setElementOpacity(elems[id], elemsFinalOpacity[id], animDuration);
             });
         },
@@ -756,29 +757,38 @@
             // Ensure no animation is running
             elem.mapElem.stop();
             if (elem.textElem) elem.textElem.stop();
-            // If final opacity is not null, ensure element is shown
+            // If final opacity is not null, ensure element is shown before proceeding
             if (opacity > 0) {
                 elem.mapElem.show();
                 if (elem.textElem) elem.textElem.show();
             }
             if (animDuration > 0) {
+                // Animate attribute
                 elem.mapElem.animate({"opacity": opacity}, animDuration, "linear", function () {
+                    // If final attribute is 0, hide
                     if (opacity === 0) elem.mapElem.hide();
                 });
+                // Handle text element
                 if (elem.textElem) {
+                    // Animate attribute
                     elem.textElem.animate({"opacity": opacity}, animDuration, "linear", function () {
+                        // If final attribute is 0, hide
                         if (opacity === 0) elem.textElem.hide();
                     });
                 }
             } else {
+                // Set attribute
+                elem.mapElem.attr({"opacity": opacity});
+                // For extrem opacity, hide or show
                 if (opacity === 0) elem.mapElem.hide();
                 else if (opacity === 1) elem.mapElem.show();
-                else elem.mapElem.attr({"opacity": opacity});
-
+                // Handle text elemen
                 if (elem.textElem) {
+                    // Set attribute
+                    elem.textElem.animate({"opacity": opacity});
+                    // For extrem opacity, hide or show
                     if (opacity === 0) elem.textElem.hide();
                     else if (opacity === 1) elem.textElem.show();
-                    else elem.textElem.animate({"opacity": opacity});
                 }
             }
         },
