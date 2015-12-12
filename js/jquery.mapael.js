@@ -49,7 +49,7 @@
 
         // the global options
         self.options = self.extendDefaultOptions(options);
-        
+
         // Save initial HTML content (used by destroy method)
         self.initialHTMLContent = self.$container.html();
 
@@ -115,10 +115,10 @@
      * Each mapael object inherits their properties and methods from this prototype
      */
     Mapael.prototype = {
-        
+
         /*
          * Version number
-         */ 
+         */
         version: version,
 
         /*
@@ -236,20 +236,20 @@
 
             $(self.paper.desc).append(" and Mapael " + self.version + " (http://www.vincentbroute.fr/mapael/)");
         },
-        
+
         /*
          * Destroy mapael
          * This function effectively detach mapael from the container
          *   - Set the container back to the way it was before mapael instanciation
          *   - Remove all data associated to it (memory can then be free'ed by browser)
-         *   
+         *
          * This method can be call directly by user:
          *     $(".mapcontainer").data("mapael").destroy();
-         *     
+         *
          * This method is also automatically called if the user try to call mapael
          * on a container already containing a mapael instance
          */
-        destroy: function() {
+        destroy: function () {
             var self = this;
             // Empty the container (this will also detach all event listeners)
             self.$container.empty();
@@ -274,7 +274,7 @@
             self.links = undefined;
         },
 
-        handleMapResizing: function() {
+        handleMapResizing: function () {
             var self = this;
             // Create the legends for plots taking into account the scale of the map
             var createPlotLegend = function () {
@@ -282,7 +282,7 @@
 
                 self.$map.off("resizeEnd." + pluginName, createPlotLegend);
             };
-            
+
             // onResizeEvent: call when the window element trigger the resize event
             // We create it inside this function (and not in the prototype) in order to have a closure
             // Otherwise, in the prototype, 'this' when triggered is *not* the mapael object but the global window
@@ -295,7 +295,7 @@
                 }, 150);
             };
 
-            // Attach resize handler 
+            // Attach resize handler
             $(window).on("resize." + pluginName, self.onResizeEvent);
 
             self.$map.on("resizeEnd." + pluginName, function () {
