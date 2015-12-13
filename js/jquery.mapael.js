@@ -287,12 +287,6 @@
 
         handleMapResizing: function () {
             var self = this;
-            // Create the legends for plots taking into account the scale of the map
-            var createPlotLegend = function () {
-                self.createLegends("plot", self.plots, (self.$map.width() / self.mapConf.width));
-
-                self.$map.off("resizeEnd." + pluginName, createPlotLegend);
-            };
 
             // onResizeEvent: call when the window element trigger the resize event
             // We create it inside this function (and not in the prototype) in order to have a closure
@@ -309,12 +303,17 @@
             // Attach resize handler
             $(window).on("resize." + pluginName, self.onResizeEvent);
 
+            // Attach resize end handler, and call it once
             self.$map.on("resizeEnd." + pluginName, function () {
                 var containerWidth = self.$map.width();
                 if (self.paper.width != containerWidth) {
-                    self.paper.setSize(containerWidth, self.mapConf.height * (containerWidth / self.mapConf.width));
+                    var newScale = containerWidth / self.mapConf.width;
+                    // Set new size
+                    self.paper.setSize(containerWidth, self.mapConf.height * newScale);
+                    // Create plots legend again to take into account the new scale
+                    self.createLegends("plot", self.plots, newScale);
                 }
-            }).on("resizeEnd." + pluginName, createPlotLegend).trigger("resizeEnd." + pluginName);
+            }).trigger("resizeEnd." + pluginName);
         },
 
         /*
@@ -1365,6 +1364,9 @@
 
             $legend = $("." + legendOptions.cssClass, self.$container).empty();
             legendPaper = new Raphael($legend.get(0));
+            // Set some data to object
+            $(legendPaper.canvas).attr({"data-type": legendType, "data-index": legendIndex});
+
             height = width = 0;
 
             // Set the title of the legend
@@ -1542,7 +1544,6 @@
                 width = legendOptions.VMLWidth;
 
             legendPaper.setSize(width, height);
-            return legendPaper;
         },
 
         /*
@@ -1642,7 +1643,6 @@
         createLegends: function (legendType, elems, scale) {
             var self = this;
             var legendsOptions = self.options.legend[legendType];
-            var legends = [];
 
             if (!$.isArray(self.options.legend[legendType])) {
                 legendsOptions = [self.options.legend[legendType]];
@@ -1654,10 +1654,9 @@
                     throw new Error("The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.");
                 }
                 if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
-                    legends.push(self.drawLegend(legendsOptions[j], legendType, elems, scale, j));
+                    self.drawLegend(legendsOptions[j], legendType, elems, scale, j);
                 }
             }
-            return legends;
         },
 
         /*
