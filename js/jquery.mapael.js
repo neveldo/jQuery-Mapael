@@ -220,8 +220,8 @@
             });
 
             // Attach showElementsInRange event
-            self.$container.on("showElementsInRange." + pluginName, function (e, ranges) {
-                self.onShowElementsInRange(e, ranges);
+            self.$container.on("showElementsInRange." + pluginName, function (e, opt) {
+                self.onShowElementsInRange(e, opt);
             });
 
             // Handle map size
