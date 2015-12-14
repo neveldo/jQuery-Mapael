@@ -156,6 +156,12 @@
             // Create Raphael paper
             self.paper = new Raphael(self.$map[0], self.mapConf.width, self.mapConf.height);
 
+            // issue #135: Check for Raphael bug on text element boundaries
+            if (self.isRaphaelBBoxBugPresent() === true) {
+                self.destroy();
+                throw new Error("Can't get boundary box for text (is your container hidden? See #135)");
+            }
+
             // add plugin class name on element
             self.$container.addClass(pluginName);
 
@@ -1735,6 +1741,29 @@
                     }
                 }, interval
             );
+        },
+        
+        /*
+          * Check for Raphael bug regarding drawing while beeing hidden (under display:none)
+          * See https://github.com/neveldo/jQuery-Mapael/issues/135
+          * @return true/false
+          *
+          * Wants to override this behavior? Use prototype overriding:
+          *     $.mapael.prototype.isRaphaelBBoxBugPresent = function() {return false;};
+          */
+        isRaphaelBBoxBugPresent: function(){
+            var self = this;
+            // Draw text, then get its boundaries
+            var text_elem = self.paper.text(-50, -50, "TEST");
+            var text_elem_bbox = text_elem.getBBox();
+            // remove element
+            text_elem.remove();
+            // If it has no height and width, then the paper is hidden
+            if (text_elem_bbox.width === 0 && text_elem_bbox.height === 0){
+                return true;
+            } else {
+                return false;
+            }
         },
 
         // Default map options
