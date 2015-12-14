@@ -778,16 +778,14 @@
             } else {
                 // Set attribute
                 elem.mapElem.attr({"opacity": opacity});
-                // For extrem opacity, hide or show
+                // For null opacity, hide it
                 if (opacity === 0) elem.mapElem.hide();
-                else if (opacity === 1) elem.mapElem.show();
                 // Handle text elemen
                 if (elem.textElem) {
                     // Set attribute
                     elem.textElem.attr({"opacity": opacity});
-                    // For extrem opacity, hide or show
+                // For null opacity, hide it
                     if (opacity === 0) elem.textElem.hide();
-                    else if (opacity === 1) elem.textElem.show();
                 }
             }
         },
