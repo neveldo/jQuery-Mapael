@@ -715,7 +715,7 @@
                 var range = ranges[valueIndex];
                 // Check if user defined at least a min or max value
                 if (range.min === undefined && range.max === undefined) {
-                    return true; // next range
+                    return true; // skip this iteration (each loop), goto next range
                 }
                 // Loop through each elements
                 $.each(elems, function (id) {
@@ -726,7 +726,7 @@
                     }
                     // Check existence of this value index
                     if (elemValue[valueIndex] === undefined) {
-                        return true; // next element
+                        return true; // skip this iteration (each loop), goto next element
                     }
                     // Check if in range
                     if ((range.min !== undefined && elemValue[valueIndex] < range.min) ||
