@@ -225,6 +225,11 @@
                 self.onUpdateEvent(e, opt);
             });
 
+            // Attach showElementsInRange event
+            self.$container.on("showElementsInRange." + pluginName, function (e, opt) {
+                self.onShowElementsInRange(e, opt);
+            });
+
             // Handle map size
             if (self.options.map.width) {
                 // NOT responsive: map has a fixed width
@@ -636,6 +641,162 @@
         },
 
         /*
+         * Show some element in range defined by user
+         * Triggered by user $(".mapcontainer").trigger("showElementsInRange", [opt]);
+         *
+         * @param opt the options
+         *  opt.hiddenOpacity opacity for hidden element (default = 0.3)
+         *  opt.animDuration animation duration in ms (default = 0)
+         *  opt.afterShowRange callback
+         *  opt.ranges the range to show:
+         *  Example:
+         *  opt.ranges = {
+         *      'plot' : {
+         *          0 : {                        // valueIndex
+         *              'min': 1000,
+         *              'max': 1200
+         *          },
+         *          1 : {                        // valueIndex
+         *              'min': 10,
+         *              'max': 12
+         *          }
+         *      },
+         *      'area' : {
+         *          {'min': 10, 'max': 20}    // No valueIndex, only an object, use 0 as valueIndex (easy case)
+         *      }
+         *  }
+         */
+        onShowElementsInRange: function(e, opt) {
+            var self = this;
+
+            // set animDuration to default if not defined
+            if (opt.animDuration === undefined) {
+                opt.animDuration = 0;
+            }
+
+            // set hiddenOpacity to default if not defined
+            if (opt.hiddenOpacity === undefined) {
+                opt.hiddenOpacity = 0.3;
+            }
+
+            // handle area
+            if (opt.ranges && opt.ranges.area) {
+                self.showElemByRange(opt.ranges.area, self.areas, opt.hiddenOpacity, opt.animDuration);
+            }
+
+            // handle plot
+            if (opt.ranges && opt.ranges.plot) {
+                self.showElemByRange(opt.ranges.plot, self.plots, opt.hiddenOpacity, opt.animDuration);
+            }
+
+            // handle link
+            if (opt.ranges && opt.ranges.link) {
+                self.showElemByRange(opt.ranges.link, self.links, opt.hiddenOpacity, opt.animDuration);
+            }
+
+            // Call user callback
+            if (opt.afterShowRange) opt.afterShowRange();
+        },
+
+        /*
+         * Show some element in range
+         * @param ranges: the ranges
+         * @param elems: list of element on which to check against previous range
+         * @hiddenOpacity: the opacity when hidden
+         * @animDuration: the animation duration
+         */
+        showElemByRange: function(ranges, elems, hiddenOpacity, animDuration) {
+            var self = this;
+            // Hold the final opacity value for all elements consolidated after applying each ranges
+            // This allow to set the opacity only once for each elements
+            var elemsFinalOpacity = {};
+
+            // set object with one valueIndex to 0 if we have directly the min/max
+            if (ranges.min !== undefined || ranges.max !== undefined) {
+                ranges = {0: ranges};
+            }
+
+            // Loop through each valueIndex
+            $.each(ranges, function (valueIndex) {
+                var range = ranges[valueIndex];
+                // Check if user defined at least a min or max value
+                if (range.min === undefined && range.max === undefined) {
+                    return true; // skip this iteration (each loop), goto next range
+                }
+                // Loop through each elements
+                $.each(elems, function (id) {
+                    var elemValue = elems[id].value;
+                    // set value with one valueIndex to 0 if not object
+                    if (typeof elemValue !== "object") {
+                        elemValue = [elemValue];
+                    }
+                    // Check existence of this value index
+                    if (elemValue[valueIndex] === undefined) {
+                        return true; // skip this iteration (each loop), goto next element
+                    }
+                    // Check if in range
+                    if ((range.min !== undefined && elemValue[valueIndex] < range.min) ||
+                        (range.max !== undefined && elemValue[valueIndex] > range.max)) {
+                        // Element not in range
+                        elemsFinalOpacity[id] = hiddenOpacity;
+                    } else {
+                        // Element in range
+                        elemsFinalOpacity[id] = 1;
+                    }
+                });
+            });
+            // Now that we looped through all ranges, we can really assign the final opacity
+            $.each(elemsFinalOpacity, function (id) {
+                self.setElementOpacity(elems[id], elemsFinalOpacity[id], animDuration);
+            });
+        },
+
+        /*
+         * Set element opacity
+         * Handle elem.mapElem and elem.textElem
+         * @param elem the element
+         * @param opacity the opacity to apply
+         * @param animDuration the animation duration to use
+         */
+        setElementOpacity: function(elem, opacity, animDuration) {
+            // Ensure no animation is running
+            elem.mapElem.stop();
+            if (elem.textElem) elem.textElem.stop();
+            // If final opacity is not null, ensure element is shown before proceeding
+            if (opacity > 0) {
+                elem.mapElem.show();
+                if (elem.textElem) elem.textElem.show();
+            }
+            if (animDuration > 0) {
+                // Animate attribute
+                elem.mapElem.animate({"opacity": opacity}, animDuration, "linear", function () {
+                    // If final attribute is 0, hide
+                    if (opacity === 0) elem.mapElem.hide();
+                });
+                // Handle text element
+                if (elem.textElem) {
+                    // Animate attribute
+                    elem.textElem.animate({"opacity": opacity}, animDuration, "linear", function () {
+                        // If final attribute is 0, hide
+                        if (opacity === 0) elem.textElem.hide();
+                    });
+                }
+            } else {
+                // Set attribute
+                elem.mapElem.attr({"opacity": opacity});
+                // For null opacity, hide it
+                if (opacity === 0) elem.mapElem.hide();
+                // Handle text elemen
+                if (elem.textElem) {
+                    // Set attribute
+                    elem.textElem.attr({"opacity": opacity});
+                // For null opacity, hide it
+                    if (opacity === 0) elem.textElem.hide();
+                }
+            }
+        },
+
+        /*
          *
          * Update the current map
          * Refresh attributes and tooltips for areas and plots
@@ -683,13 +844,15 @@
             // This function show an element using animation
             // Used for newPlots and newLinks
             var fnShowElement = function (elem) {
+                // Starts with hidden elements
                 elem.mapElem.attr({opacity: 0});
-                elem.mapElem.animate({"opacity": (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1}, animDuration);
-
-                if (elem.textElem) {
-                    elem.textElem.attr({opacity: 0});
-                    elem.textElem.animate({"opacity": (elem.textElem.originalAttrs.opacity !== undefined) ? elem.textElem.originalAttrs.opacity : 1}, animDuration);
-                }
+                if (elem.textElem) elem.textElem.attr({opacity: 0});
+                // Set final element opacity
+                self.setElementOpacity(
+                    elem,
+                    (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1,
+                    animDuration
+                );
             };
 
             if (typeof opt.mapOptions === "object") {
@@ -1430,40 +1593,17 @@
                         (function (id) {
                             if (hidden === '0') { // we want to hide this element
                                 hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
-                                if (animDuration > 0) {
-                                    elems[id].mapElem.animate({"opacity": legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function () {
-                                        if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
-                                    });
-                                    if (elems[id].textElem) {
-                                        elems[id].textElem.animate({"opacity": legendOptions.hideElemsOnClick.opacity}, animDuration, "linear", function () {
-                                            if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
-                                        });
-                                    }
-                                } else {
-                                    if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].mapElem.hide();
-                                    else elems[id].mapElem.attr({"opacity": legendOptions.hideElemsOnClick.opacity});
-
-                                    if (elems[id].textElem) {
-                                        if (legendOptions.hideElemsOnClick.opacity === 0) elems[id].textElem.hide();
-                                        else elems[id].textElem.animate({"opacity": legendOptions.hideElemsOnClick.opacity});
-                                    }
-                                }
+                                self.setElementOpacity(elems[id], legendOptions.hideElemsOnClick.opacity, animDuration);
                             } else { // We want to show this element
                                 delete hiddenBy[legendIndex]; // Remove this legendIndex from object
                                 // Check if another legendIndex is defined
                                 // We will show this element only if no legend is no longer hiding it
                                 if ($.isEmptyObject(hiddenBy)) {
-                                    if (legendOptions.hideElemsOnClick.opacity === 0) {
-                                        elems[id].mapElem.show();
-                                        if (elems[id].textElem) elems[id].textElem.show();
-                                    }
-                                    if (animDuration > 0) {
-                                        elems[id].mapElem.animate({"opacity": elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1}, animDuration);
-                                        if (elems[id].textElem) elems[id].textElem.animate({"opacity": elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1}, animDuration);
-                                    } else {
-                                        elems[id].mapElem.attr({"opacity": elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1});
-                                        if (elems[id].textElem) elems[id].textElem.attr({"opacity": elems[id].textElem.originalAttrs.opacity !== undefined ? elems[id].textElem.originalAttrs.opacity : 1});
-                                    }
+                                    self.setElementOpacity(
+                                        elems[id],
+                                        elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1,
+                                        animDuration
+                                    );
                                 }
                             }
                             // Update elem data with new values
