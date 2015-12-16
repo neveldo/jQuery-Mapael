@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Multiple projection example</title>
+    <style type="text/css">
+        body {
+            color: #5d5d5d;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .mapael .map {
+            position: relative;
+        }
+
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #343434;
+        }
+    </style>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"
+            charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="../../js/maps/world_countries.js" charset="utf-8"></script>
+    <script src="../../js/maps/world_countries_mercator.js" charset="utf-8"></script>
+    <script src="../../js/maps/world_countries_miller.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            
+            var test_plots = {
+                "paris": {
+                    latitude: 48.86,
+                    longitude: 2.3444444444444,
+                    tooltip: {
+                        content: "Paris"
+                    }
+                },
+                "tokyo": {
+                    latitude: 35.689488,
+                    longitude: 139.691706,
+                    tooltip: {
+                        content: "Tokyo"
+                    }
+                },
+                "moscow": {
+                    latitude: 55.755786,
+                    longitude: 37.617633,
+                    tooltip: {
+                        content: "Moscow"
+                    }
+                },
+                "los_angeles": {
+                    latitude: 34.052234,
+                    longitude: -118.243685,
+                    tooltip: {
+                        content: "Los Angeles"
+                    }
+                },
+                "punta_arenas": {
+                    latitude: -53.163833,
+                    longitude: -70.917068,
+                    tooltip: {
+                        content: "Punta Arenas"
+                    }
+                },
+                "aukland": {
+                    latitude: -36.84846,
+                    longitude: 174.763332,
+                    tooltip: {
+                        content: "Aukland"
+                    }
+                },
+                "kiruna": {
+                    latitude: 67.855737,
+                    longitude: 20.225231,
+                    tooltip: {
+                        content: "Kiruna"
+                    }
+                },
+                "reykjavik": {
+                    latitude: 64.135338,
+                    longitude: -21.89521,
+                    tooltip: {
+                        content: "Reykjavík"
+                    }
+                },
+                "alert": {
+                    latitude: 82.516305,
+                    longitude: -62.308482,
+                    tooltip: {
+                        content: "Alert"
+                    }
+                },
+                "wales": {
+                    latitude: 65.609167,
+                    longitude: -168.0875,
+                    tooltip: {
+                        content: "Wales"
+                    }
+                },
+                "tiksi": {
+                    latitude: 71.625094,
+                    longitude: 128.872883,
+                    tooltip: {
+                        content: "Tiksi"
+                    }
+                },
+                "pretoria": {
+                    latitude: -25.746019,
+                    longitude: 28.18712,
+                    tooltip: {
+                        content: "Pretoria"
+                    }
+                }
+            };
+
+            var getElemID = function(elem) {
+                // Show element ID
+                return $(elem.node).attr("data-id");
+            };
+
+            $(".mapcontainer_equi").mapael({
+                map: {
+                    name: "world_countries",
+                    defaultArea: {
+                        tooltip: {
+                            content: getElemID
+                        }
+                    }
+                },
+                plots: test_plots
+            });
+
+            $(".mapcontainer_merc").mapael({
+                map: {
+                    name: "world_countries_mercator",
+                    defaultArea: {
+                        tooltip: {
+                            content: getElemID
+                        }
+                    }
+                },
+                plots: test_plots
+            });
+
+            $(".mapcontainer_miller").mapael({
+                map: {
+                    name: "world_countries_miller",
+                    defaultArea: {
+                        tooltip: {
+                            content: getElemID
+                        }
+                    },
+                    defaultPlot: {
+                        size: 9
+                    }
+                },
+                plots: test_plots
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Multiple projection example</h1>
+
+    <h2>Equirectangular projection</h2>
+    <div class="mapcontainer_equi">
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+    </div>
+
+    <h2>Mercator projection</h2>
+    <div class="mapcontainer_merc">
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+    </div>
+
+    <h2>Miller projection</h2>
+    <div class="mapcontainer_miller">
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+    </div>
+
+    <p><b>All example for jQuery Mapael are available <a href="http://www.vincentbroute.fr/mapael/">here</a>.</b></p>
+
+</div>
+
+
+</body>
+</html>
