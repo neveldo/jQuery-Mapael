@@ -85,3 +85,54 @@ Basically, you need to modify the prototype inside `$.mapael` instead of the old
 
 Additional note: use `$.mapael.prototype.setTooltip.call(this, ...)` to call original behavior.
 
+### D. New Zoom buttons functionnality ([#166](https://github.com/neveldo/jQuery-Mapael/issues/166))
+The zoom buttons are more curstomizable! Also, a reset buttons is now available by default.
+
+**Old options:**
+```javascript 
+zoom: {
+    enabled: false,
+    maxLevel: 10,
+    step: 0.25,
+    mousewheel: true,
+    /* Old options */
+    zoomIncssClass: "zoomIn",
+    zoomOutcssClass: "zoomOut",
+    /* - */
+    touch: true,
+    animDuration: 200,
+    animEasing: "linear"
+}
+```
+
+**New options:**
+```javascript 
+zoom: {
+    enabled: false,
+    maxLevel: 10,
+    step: 0.25,
+    mousewheel: true,
+    touch: true,
+    animDuration: 200,
+    animEasing: "linear",
+    /* New options */
+    buttons: {
+        "reset": {
+            cssClass: "zoomButton zoomReset",
+            content: "&#8226;", // bullet sign
+            title: "Reset zoom"
+        },
+        "in": {
+            cssClass: "zoomButton zoomIn",
+            content: "+",
+            title: "Zoom in"
+        },
+        "out": {
+            cssClass: "zoomButton zoomOut",
+            content: "&#8722;", // minus sign
+            title: "Zoom out"
+        }
+    }
+}
+
+

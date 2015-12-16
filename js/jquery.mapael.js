@@ -405,11 +405,20 @@
          */
         initZoom: function (mapWidth, mapHeight, zoomOptions) {
             var self = this;
-            var $zoomIn;
-            var $zoomOut;
             var mousedown = false;
             var previousX = 0;
             var previousY = 0;
+            var fnZoomButtons = {
+                "reset": function () {
+                    self.$container.trigger("zoom." + pluginName, {"level": 0});
+                },
+                "in": function () {
+                    self.$container.trigger("zoom." + pluginName, {"level": self.zoomData.zoomLevel + 1});
+                },
+                "out": function () {
+                    self.$container.trigger("zoom." + pluginName, {"level": self.zoomData.zoomLevel - 1});
+                }
+            };
 
             // init Zoom data
             $.extend(self.zoomData, {
@@ -418,16 +427,17 @@
                 panY: 0
             });
 
-            // init zoom button
-            $zoomIn = $("<div>").addClass(zoomOptions.zoomInCssClass).html("+");
-            $zoomOut = $("<div>").addClass(zoomOptions.zoomOutCssClass).html("&#x2212;");
-            self.$map.append($zoomIn).append($zoomOut);
-
-            $zoomIn.on("click." + pluginName, function () {
-                self.$container.trigger("zoom." + pluginName, {"level": self.zoomData.zoomLevel + 1});
-            });
-            $zoomOut.on("click." + pluginName, function () {
-                self.$container.trigger("zoom." + pluginName, {"level": self.zoomData.zoomLevel - 1});
+            // init zoom buttons
+            $.each(zoomOptions.buttons, function(type, opt) {
+                if (fnZoomButtons[type] === undefined) throw new Error("Unknown zoom button '" + type + "'");
+                // Create div with classes, contents and title (for tooltip)
+                var $button = $("<div>").addClass(opt.cssClass)
+                                    .html(opt.content)
+                                    .attr("title", opt.title);
+                // Assign click event
+                $button.on("click." + pluginName, fnZoomButtons[type]);
+                // Append to map
+                self.$map.append($button);
             });
 
             // Update the zoom level of the map on mousewheel
@@ -1992,12 +2002,27 @@
                     enabled: false,
                     maxLevel: 10,
                     step: 0.25,
-                    zoomInCssClass: "zoomIn",
-                    zoomOutCssClass: "zoomOut",
                     mousewheel: true,
                     touch: true,
                     animDuration: 200,
-                    animEasing: "linear"
+                    animEasing: "linear",
+                    buttons: {
+                        "reset": {
+                            cssClass: "zoomButton zoomReset",
+                            content: "&#8226;", // bullet sign
+                            title: "Reset zoom"
+                        },
+                        "in": {
+                            cssClass: "zoomButton zoomIn",
+                            content: "+",
+                            title: "Zoom in"
+                        },
+                        "out": {
+                            cssClass: "zoomButton zoomOut",
+                            content: "&#8722;", // minus sign
+                            title: "Zoom out"
+                        }
+                    }
                 }
             },
             legend: {
