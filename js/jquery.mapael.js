@@ -424,9 +424,9 @@
 
             // init zoom buttons
             $.each(zoomOptions.buttons, function(type, opt) {
-                var $button;
+                if (fnZoomButtons[type] === undefined) throw new Error("Unknown zoom button '" + type + "'");
                 // Create div with classes, contents and title (for tooltip)
-                $button = $("<div>").addClass(opt.cssClass)
+                var $button = $("<div>").addClass(opt.cssClass)
                                     .html(opt.content)
                                     .attr("title", opt.title);
                 // Assign click event
