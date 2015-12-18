@@ -442,18 +442,14 @@
             // Update the zoom level of the map on mousewheel
             if (self.options.map.zoom.mousewheel) {
                 self.$map.on("mousewheel." + pluginName, function (e) {
-                    var offset = self.$map.offset();
-                    var initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
                     var zoomLevel = (e.deltaY > 0) ? 1 : -1;
-                    var zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
-                    var x = zoomFactor * initFactor * (e.clientX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
-                    var y = zoomFactor * initFactor * (e.clientY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
+                    var coord = self.mapPagePositionToXY(e.pageX, e.pageY);
 
                     self.$container.trigger("zoom." + pluginName, {
                         "fixedCenter": true,
                         "level": self.zoomData.zoomLevel + zoomLevel,
-                        "x": x,
-                        "y": y
+                        "x": coord.x,
+                        "y": coord.y
                     });
 
                     return false;
@@ -464,37 +460,27 @@
             if (self.options.map.zoom.touch) {
                 self.$map.on("touchstart." + pluginName, function (e) {
                     if (e.originalEvent.touches.length === 2) {
-                        self.zoomCenterX = (e.originalEvent.touches[0].clientX + e.originalEvent.touches[1].clientX) / 2;
-                        self.zoomCenterY = (e.originalEvent.touches[0].clientY + e.originalEvent.touches[1].clientY) / 2;
-                        self.previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+                        self.zoomCenterX = (e.originalEvent.touches[0].pageX + e.originalEvent.touches[1].pageX) / 2;
+                        self.zoomCenterY = (e.originalEvent.touches[0].pageY + e.originalEvent.touches[1].pageY) / 2;
+                        self.previousPinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].pageX - e.originalEvent.touches[0].pageX), 2) + Math.pow((e.originalEvent.touches[1].pageY - e.originalEvent.touches[0].pageY), 2));
                     }
                 });
 
                 self.$map.on("touchmove." + pluginName, function (e) {
-                    var offset = 0;
-                    var initFactor = 0;
-                    var zoomFactor = 0;
-                    var x = 0;
-                    var y = 0;
                     var pinchDist = 0;
                     var zoomLevel = 0;
 
                     if (e.originalEvent.touches.length === 2) {
-                        pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].clientX - e.originalEvent.touches[0].clientX), 2) + Math.pow((e.originalEvent.touches[1].clientY - e.originalEvent.touches[0].clientY), 2));
+                        pinchDist = Math.sqrt(Math.pow((e.originalEvent.touches[1].pageX - e.originalEvent.touches[0].pageX), 2) + Math.pow((e.originalEvent.touches[1].pageY - e.originalEvent.touches[0].pageY), 2));
 
                         if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
-                            offset = self.$map.offset();
-                            initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
-                            zoomFactor = 1 / (1 + (self.zoomData.zoomLevel) * self.options.map.zoom.step);
-                            x = zoomFactor * initFactor * (self.zoomCenterX + $(window).scrollLeft() - offset.left) + self.zoomData.panX;
-                            y = zoomFactor * initFactor * (self.zoomCenterY + $(window).scrollTop() - offset.top) + self.zoomData.panY;
-
+                            var coord = self.mapPagePositionToXY(self.zoomCenterX, self.zoomCenterY);
                             zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
                             self.$container.trigger("zoom." + pluginName, {
                                 "fixedCenter": true,
                                 "level": self.zoomData.zoomLevel + zoomLevel,
-                                "x": x,
-                                "y": y
+                                "x": coord.x,
+                                "y": coord.y
                             });
                             self.previousPinchDist = pinchDist;
                         }
@@ -572,6 +558,32 @@
                     return false;
                 }
             });
+        },
+
+        /*
+         * Map a mouse position to a map position
+         *      Transformation principle:
+         *          ** start with (pageX, pageY) absolute mouse coordinate
+         *          - Apply translation: take into accounts the map offset in the page
+         *          ** from this point, we have relative mouse coordinate
+         *          - Apply homothetic transformation: take into accounts initial factor of map sizing (fullWidth / actualWidth)
+         *          - Apply homothetic transformation: take into accounts the zoom factor
+         *          ** from this point, we have relative map coordinate
+         *          - Apply translation: take into accounts the current panning of the map
+         *          ** from this point, we have absolute map coordinate
+         * @param pageX: mouse client coordinate on X
+         * @param pageY: mouse client coordinate on Y
+         * @return map coordinate {x, y}
+         */
+        mapPagePositionToXY: function(pageX, pageY) {
+            var self = this;
+            var offset = self.$map.offset();
+            var initFactor = (self.options.map.width) ? (self.mapConf.width / self.options.map.width) : (self.mapConf.width / self.$map.width());
+            var zoomFactor = 1 / (1 + (self.zoomData.zoomLevel * self.options.map.zoom.step));
+            return {
+                x: (zoomFactor * initFactor * (pageX - offset.left)) + self.zoomData.panX,
+                y: (zoomFactor * initFactor * (pageY - offset.top)) + self.zoomData.panY
+            };
         },
 
         /*
@@ -1891,7 +1903,7 @@
                 }, interval
             );
         },
-        
+
         /*
           * Check for Raphael bug regarding drawing while beeing hidden (under display:none)
           * See https://github.com/neveldo/jQuery-Mapael/issues/135
