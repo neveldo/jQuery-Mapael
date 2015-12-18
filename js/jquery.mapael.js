@@ -1908,11 +1908,7 @@
             // remove element
             text_elem.remove();
             // If it has no height and width, then the paper is hidden
-            if (text_elem_bbox.width === 0 && text_elem_bbox.height === 0){
-                return true;
-            } else {
-                return false;
-            }
+            return (text_elem_bbox.width === 0 && text_elem_bbox.height === 0);
         },
 
         // Default map options
