@@ -598,7 +598,7 @@
          */
         onZoomEvent: function (e, zoomOptions) {
             var self = this;
-            var newLevel = 0;
+            var newLevel = self.zoomData.zoomLevel;
             var panX = 0;
             var panY = 0;
             var previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
@@ -609,27 +609,30 @@
             var coords = {};
 
             // Get user defined zoom level
-            if (typeof zoomOptions.level === "string") {
-                // level is a string, either "n", "+n" or "-n"
-                if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
-                    // zoomLevel is relative
-                    newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level);
+            if (zoomOptions.level !== undefined) {
+                if (typeof zoomOptions.level === "string") {
+                    // level is a string, either "n", "+n" or "-n"
+                    if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
+                        // zoomLevel is relative
+                        newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level);
+                    } else {
+                        // zoomLevel is absolute
+                        newLevel = parseInt(zoomOptions.level);
+                    }
                 } else {
-                    // zoomLevel is absolute
-                    newLevel = parseInt(zoomOptions.level);
+                    // level is integer
+                    if (zoomOptions.level < 0) {
+                        // zoomLevel is relative
+                        newLevel = self.zoomData.zoomLevel + zoomOptions.level;
+                    } else {
+                        // zoomLevel is absolute
+                        newLevel = zoomOptions.level;
+                    }
                 }
-            } else {
-                // level is integer
-                if (zoomOptions.level < 0) {
-                    // zoomLevel is relative
-                    newLevel = self.zoomData.zoomLevel + zoomOptions.level;
-                } else {
-                    // zoomLevel is absolute
-                    newLevel = zoomOptions.level;
-                }
+                // Make sure we stay in the boundaries
+                newLevel = Math.min(Math.max(newLevel, 0), self.options.map.zoom.maxLevel);
             }
-            // Make sure we stay in the boundaries
-            newLevel = Math.min(Math.max(newLevel, 0), self.options.map.zoom.maxLevel);
+            
             zoomLevel = (1 + newLevel * self.options.map.zoom.step);
 
             if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
