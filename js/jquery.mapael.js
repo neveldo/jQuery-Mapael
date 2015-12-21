@@ -347,11 +347,10 @@
             var bbox = {};
             var textPosition = {};
 
-            if (elemOptions.value !== undefined)
+            // Assign value attribute to element
+            if (elemOptions.value !== undefined){
                 elem.value = elemOptions.value;
-
-            // Init attrsHover
-            self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
+            }
 
             // Init the label related to the element
             if (elemOptions.text && elemOptions.text.content !== undefined) {
@@ -360,13 +359,21 @@
                 textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
                 elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
                 elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
-                self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
-                if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem, elem.textElem);
-                self.setHover(elem.mapElem, elem.textElem);
                 $(elem.textElem.node).attr("data-id", id);
-            } else {
-                if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem);
-                self.setHover(elem.mapElem);
+            }
+
+            // Set user event handlers
+            if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem, elem.textElem);
+
+            // Set hover behavior only if attrsHover is set for area or for text
+            if (($.isEmptyObject(elemOptions.attrsHover) === false) ||
+                (elem.textElem && $.isEmptyObject(elemOptions.text.attrsHover) === false)) {
+                // Set hover option for mapElem
+                self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
+                // Set hover option for textElem
+                if (elem.textElem) self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
+                // Set hover behavior
+                self.setHover(elem.mapElem, elem.textElem);
             }
 
             // Init the tooltip
