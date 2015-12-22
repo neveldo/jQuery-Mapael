@@ -2140,8 +2140,25 @@
 
     };
 
+    var loadedMaps = {}, loadedLegacyMaps = {};
+
+    // Keep references to jQuery.mapael.maps / jQuery.fn.mapael.maps objects if they exist
+    if ($[pluginName] !== undefined && $[pluginName].maps !== undefined) {
+        loadedMaps = $[pluginName].maps;
+    }
+    if ($.fn[pluginName] !== undefined && $.fn[pluginName].maps !== undefined) {
+        loadedLegacyMaps = $[pluginName].maps;
+    }
+
     // Extend jQuery with Mapael
     $[pluginName] = Mapael;
+
+    // Prevent from empty jQuery.mapael.maps object if mapael script is (re)loaded after the maps 
+    if ($[pluginName].maps === undefined) {
+        $[pluginName].maps = {};
+    }
+    $.extend($[pluginName].maps, loadedMaps, loadedLegacyMaps);
+
     // Add jQuery DOM function
     $.fn[pluginName] = function (options) {
         // Call Mapael on each element
