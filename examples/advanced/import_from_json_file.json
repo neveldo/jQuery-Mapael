@@ -1,0 +1,2477 @@
+[{
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "b2bd710fbebb349df60947c1715a133fe19db359",
+		"fields" : {
+			"departement" : "Pas-de-Calais",
+			"commune" : "Lens",
+			"uic" : "0087345025",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [50.426818, 2.828254],
+			"intitule_gare" : "Lens",
+			"code_postal" : "62300"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.828254, 50.426818]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "2d52d8ea59c867f85e15b9c78a18ef8474ba6ef2",
+		"fields" : {
+			"departement" : "Pas-de-Calais",
+			"commune" : "Arras",
+			"uic" : "0087342014",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [50.286673, 2.781942],
+			"intitule_gare" : "Arras",
+			"code_postal" : "62000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.781942, 50.286673]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "012455250769df86afca0a59cb19c80d923df1ac",
+		"fields" : {
+			"departement" : "Moselle",
+			"commune" : "Metz",
+			"uic" : "0087192039",
+			"segment_drg" : "a",
+			"region" : "Lorraine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [49.109545, 6.176593],
+			"intitule_gare" : "Metz Ville",
+			"code_postal" : "57000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.176593, 49.109545]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "d455ce56646287bbfc04e02ab53fb0364d7af706",
+		"fields" : {
+			"departement" : "Territoire de Belfort",
+			"commune" : "Belfort",
+			"uic" : "0087184002",
+			"segment_drg" : "a",
+			"region" : "Franche-Comt\u00e9",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.633284, 6.853956],
+			"intitule_gare" : "Belfort",
+			"code_postal" : "90000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.853956, 47.633284]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "038dbfe7c72a0b2c990345c3abefc1e57f52cfe4",
+		"fields" : {
+			"departement" : "Aube",
+			"commune" : "Troyes",
+			"uic" : "0087118000",
+			"segment_drg" : "a",
+			"region" : "Champagne-Ardenne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.296069, 4.065281],
+			"intitule_gare" : "Troyes",
+			"code_postal" : "10014"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.065281, 48.296069]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "335c1ec0bd52363daea32d9d6e8491743201adaf",
+		"fields" : {
+			"departement" : "Paris",
+			"commune" : "Paris",
+			"uic" : "0087113001",
+			"segment_drg" : "a",
+			"region" : "\u00cele-de-France",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [48.876742, 2.358424],
+			"intitule_gare" : "Paris Est",
+			"code_postal" : "75010"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.358424, 48.876742]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "9e7cab58312c79eb8850986d2a2ac8cd882817a2",
+		"fields" : {
+			"departement" : "Tarn-et-Garonne",
+			"commune" : "Montauban",
+			"uic" : "0087611244",
+			"segment_drg" : "a",
+			"region" : "Midi-Pyr\u00e9n\u00e9es",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [44.014387, 1.341496],
+			"intitule_gare" : "Montauban Ville Bourbon",
+			"code_postal" : "82000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.341496, 44.014387]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "20572e31675f1c72b923e49a751294074c216c6c",
+		"fields" : {
+			"departement" : "Lot-et-Garonne",
+			"commune" : "Agen",
+			"uic" : "0087586008",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [44.208311, 0.620932],
+			"intitule_gare" : "Agen",
+			"code_postal" : "47000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.620932, 44.208311]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "327ae00a8db5527497eb26b37196338a5bb8b524",
+		"fields" : {
+			"departement" : "Loir-et-Cher",
+			"commune" : "Vend\u00f4me",
+			"uic" : "0087571216",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.821937, 1.021143],
+			"intitule_gare" : "Vend\u00f4me - Villiers-sur-Loir",
+			"code_postal" : "41100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.021143, 47.821937]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "5a0f7326467543ef9fe9c09a1594a45f2efc298b",
+		"fields" : {
+			"departement" : "Indre-et-Loire",
+			"commune" : "Tours",
+			"uic" : "0087571000",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [47.389781, 0.693703],
+			"intitule_gare" : "Tours",
+			"code_postal" : "37000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.693703, 47.389781]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "818d3ee5a2577fc5b3cc908269c28b1f48de67ae",
+		"fields" : {
+			"departement" : "Loiret",
+			"commune" : "Orl\u00e9ans",
+			"uic" : "0087543009",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.90796, 1.904666],
+			"intitule_gare" : "Orl\u00e9ans",
+			"code_postal" : "45000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.904666, 47.90796]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f6d8c82e9a9990953d69f17262ff2035b7c9bfac",
+		"fields" : {
+			"departement" : "Loire-Atlantique",
+			"commune" : "Saint-Nazaire",
+			"uic" : "0087481705",
+			"segment_drg" : "a",
+			"region" : "Pays de la Loire",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.286412, -2.211096],
+			"intitule_gare" : "Saint-Nazaire",
+			"code_postal" : "44600"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-2.211096, 47.286412]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "53e7a879aead8f59796a41d781a3fcd522f83053",
+		"fields" : {
+			"departement" : "Finist\u00e8re",
+			"commune" : "Brest",
+			"uic" : "0087474007",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.38811, -4.478903],
+			"intitule_gare" : "Brest",
+			"code_postal" : "29200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-4.478903, 48.38811]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "046bab9ceacdf945f03f352f9ece680c9a6921ac",
+		"fields" : {
+			"departement" : "C\u00f4tes-d'Armor",
+			"commune" : "Saint-Brieuc",
+			"uic" : "0087473009",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.50758, -2.765],
+			"intitule_gare" : "Saint-Brieuc",
+			"code_postal" : "22000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-2.765, 48.50758]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "e872aee525a70fe31a1831daf776508e473e053e",
+		"fields" : {
+			"departement" : "Ille-et-Vilaine",
+			"commune" : "Rennes",
+			"uic" : "0087471003",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [48.103517, -1.672744],
+			"intitule_gare" : "Rennes",
+			"code_postal" : "35005"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.672744, 48.103517]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "18d4a332693779885313e8503aeef7dc8946137d",
+		"fields" : {
+			"departement" : "Pyr\u00e9n\u00e9es-Atlantiques",
+			"commune" : "Bayonne",
+			"uic" : "0087673004",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.496801, -1.470306],
+			"intitule_gare" : "Bayonne",
+			"code_postal" : "64100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.470306, 43.496801]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "9d557b30363c3aeea01a85eb62af5bb1d52f1bd0",
+		"fields" : {
+			"departement" : "Hautes-Pyr\u00e9n\u00e9es",
+			"commune" : "Lourdes",
+			"uic" : "0087671339",
+			"segment_drg" : "a",
+			"region" : "Midi-Pyr\u00e9n\u00e9es",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.10037, -0.042174],
+			"intitule_gare" : "Lourdes",
+			"code_postal" : "65100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.042174, 43.10037]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "a69fdfbef2f7940edc70b920e2120402154542f1",
+		"fields" : {
+			"departement" : "Dr\u00f4me",
+			"commune" : "Mont\u00e9limar",
+			"uic" : "0087764001",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [44.559079, 4.744792],
+			"intitule_gare" : "Mont\u00e9limar",
+			"code_postal" : "26200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.744792, 44.559079]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "ace155c11d694b4b07e80da9f338aad1a4accc53",
+		"fields" : {
+			"departement" : "Rh\u00f4ne",
+			"commune" : "Colombier-Saugnieu",
+			"uic" : "0087762906",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.721109, 5.074969],
+			"intitule_gare" : "Lyon Saint-Exup\u00e9ry TGV",
+			"code_postal" : "69125"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.074969, 45.721109]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "2bd773c6c1a42947eff7ee198bf70cf831d72d0a",
+		"fields" : {
+			"departement" : "Alpes-Maritimes",
+			"commune" : "Cannes",
+			"uic" : "0087757625",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.553839, 7.019682],
+			"intitule_gare" : "Cannes",
+			"code_postal" : "06400"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [7.019682, 43.553839]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "20c23cc1971580f61bf3fb16646e59be35aa0f3d",
+		"fields" : {
+			"departement" : "Var",
+			"commune" : "Saint-Rapha\u00ebl",
+			"uic" : "0087757526",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.42356, 6.769083],
+			"intitule_gare" : "Saint-Rapha\u00ebl Valescure",
+			"code_postal" : "83700"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.769083, 43.42356]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "bd7b10d69a4dd0668334862016746c92da017a3a",
+		"fields" : {
+			"departement" : "Var",
+			"commune" : "Arcs",
+			"uic" : "0087755447",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.455524, 6.482498],
+			"intitule_gare" : "Les Arcs - Draguignan",
+			"code_postal" : "83460"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.482498, 43.455524]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "a2b8cc2f0538e9715f13639fa33d06154e7a9773",
+		"fields" : {
+			"departement" : "Savoie",
+			"commune" : "Bourg-Saint-Maurice",
+			"uic" : "0087741793",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.619036, 6.771273],
+			"intitule_gare" : "Bourg-Saint-Maurice",
+			"code_postal" : "73700"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.771273, 45.619036]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "cae0a32ff55223b9f9eb5958bb98747737fc20b3",
+		"fields" : {
+			"departement" : "Savoie",
+			"commune" : "Aix-les-Bains",
+			"uic" : "0087741132",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.688161, 5.909371],
+			"intitule_gare" : "Aix-les-Bains le Revard",
+			"code_postal" : "73100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.909371, 45.688161]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "d85a3a16a765690650bd29fcb66414bd4e2a57e0",
+		"fields" : {
+			"departement" : "Savoie",
+			"commune" : "Chamb\u00e9ry",
+			"uic" : "0087741009",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.571302, 5.919547],
+			"intitule_gare" : "Chamb\u00e9ry - Challes-les-Eaux",
+			"code_postal" : "73010"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.919547, 45.571302]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "9b085695f61aed9e7fce48dc1d46bee5ee9a767d",
+		"fields" : {
+			"departement" : "Corr\u00e8ze",
+			"commune" : "Brive-la-Gaillarde",
+			"uic" : "0087594002",
+			"segment_drg" : "a",
+			"region" : "Limousin",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.152618, 1.528655],
+			"intitule_gare" : "Brive-la-Gaillarde",
+			"code_postal" : "19100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.528655, 45.152618]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "30192f72a77c88c9d118397748856bed7a017adb",
+		"fields" : {
+			"departement" : "Haute-Vienne",
+			"commune" : "Limoges",
+			"uic" : "0087592006",
+			"segment_drg" : "a",
+			"region" : "Limousin",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.836089, 1.267356],
+			"intitule_gare" : "Limoges B\u00e9n\u00e9dictins",
+			"code_postal" : "87000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.267356, 45.836089]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "b2e5835e4eadb6648422194afb87fc6c61e114e1",
+		"fields" : {
+			"departement" : "Charente",
+			"commune" : "Angoul\u00eame",
+			"uic" : "0087583005",
+			"segment_drg" : "a",
+			"region" : "Poitou-Charentes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.653572, 0.164608],
+			"intitule_gare" : "Angoul\u00eame",
+			"code_postal" : "16000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.164608, 45.653572]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "8ca6a6f703595e222c62c4b1a15416b2b3353273",
+		"fields" : {
+			"departement" : "Vienne",
+			"commune" : "Poitiers",
+			"uic" : "0087575001",
+			"segment_drg" : "a",
+			"region" : "Poitou-Charentes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.582275, 0.333241],
+			"intitule_gare" : "Poitiers",
+			"code_postal" : "86000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.333241, 46.582275]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "6860794af1a1c80088a1d50c8a4211114c81c33a",
+		"fields" : {
+			"departement" : "Loire-Atlantique",
+			"commune" : "Baule-Escoublac",
+			"uic" : "0087481754",
+			"segment_drg" : "a",
+			"region" : "Pays de la Loire",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.28869, -2.389102],
+			"intitule_gare" : "La Baule-Escoublac",
+			"code_postal" : "44500"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-2.389102, 47.28869]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "5cc7766ccaac5985ed17914888435aae5bbf93af",
+		"fields" : {
+			"departement" : "Morbihan",
+			"commune" : "Auray",
+			"uic" : "0087476200",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.68022, -2.999995],
+			"intitule_gare" : "Auray",
+			"code_postal" : "56400"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-2.999995, 47.68022]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "91aabff42ff3ecf66e769b50899e2cbf7428b0db",
+		"fields" : {
+			"departement" : "C\u00f4tes-d'Armor",
+			"commune" : "Guingamp",
+			"uic" : "0087473207",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.555659, -3.143343],
+			"intitule_gare" : "Guingamp",
+			"code_postal" : "22200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-3.143343, 48.555659]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "04295dc763939821342e918c8d43424c6578458a",
+		"fields" : {
+			"departement" : "Essonne",
+			"commune" : "Massy",
+			"uic" : "0087393702",
+			"segment_drg" : "a",
+			"region" : "\u00cele-de-France",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.725758, 2.261254],
+			"intitule_gare" : "Massy TGV",
+			"code_postal" : "91300"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.261254, 48.725758]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "78ab65aeab6b5b37e3874d56abe83f06774384c7",
+		"fields" : {
+			"departement" : "Eure",
+			"commune" : "\u00c9vreux",
+			"uic" : "0087387001",
+			"segment_drg" : "a",
+			"region" : "Haute-Normandie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.018748, 1.149629],
+			"intitule_gare" : "\u00c9vreux Normandie",
+			"code_postal" : "27000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.149629, 49.018748]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4eac12e0ab7eec32631d90a117b16ff2290b3604",
+		"fields" : {
+			"departement" : "Paris",
+			"commune" : "Paris",
+			"uic" : "0087384008",
+			"segment_drg" : "a",
+			"region" : "\u00cele-de-France",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [48.876242, 2.325331],
+			"intitule_gare" : "Paris Saint-Lazare",
+			"code_postal" : "75008"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.325331, 48.876242]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "6515729c66184b0cb1c4a42271ab2c23a54d34f4",
+		"fields" : {
+			"departement" : "Pyr\u00e9n\u00e9es-Orientales",
+			"commune" : "Perpignan",
+			"uic" : "0087784009",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [42.696292, 2.879779],
+			"intitule_gare" : "Perpignan",
+			"code_postal" : "66027"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.879779, 42.696292]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f52ef403ec840f40377833573a8d4837e6c8f879",
+		"fields" : {
+			"departement" : "H\u00e9rault",
+			"commune" : "B\u00e9ziers",
+			"uic" : "0087781005",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.33633, 3.218873],
+			"intitule_gare" : "B\u00e9ziers",
+			"code_postal" : "34500"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.218873, 43.33633]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "11669d307e904fb256e901c111e259ffa4d10b3b",
+		"fields" : {
+			"departement" : "H\u00e9rault",
+			"commune" : "S\u00e8te",
+			"uic" : "0087773200",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.412485, 3.69656],
+			"intitule_gare" : "S\u00e8te",
+			"code_postal" : "34200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.69656, 43.412485]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "abf4f63c582f6c3bf126d072fd575e7a05bd02aa",
+		"fields" : {
+			"departement" : "Alpes-Maritimes",
+			"commune" : "Nice",
+			"uic" : "0087756056",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [43.704556, 7.261904],
+			"intitule_gare" : "Nice",
+			"code_postal" : "06008"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [7.261904, 43.704556]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "e6ea6c100e4c59238c9f37bf9a02328b3ae546d0",
+		"fields" : {
+			"departement" : "Bouches-du-Rh\u00f4ne",
+			"commune" : "Marseille",
+			"uic" : "0087751008",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [43.302666, 5.380407],
+			"intitule_gare" : "Marseille Saint-Charles",
+			"code_postal" : "13232"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.380407, 43.302666]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f30e5306be4189d7c628ac3e3006fc91938b288e",
+		"fields" : {
+			"departement" : "Ain",
+			"commune" : "Bourg-en-Bresse",
+			"uic" : "0087743005",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.200351, 5.215063],
+			"intitule_gare" : "Bourg-en-Bresse",
+			"code_postal" : "01000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.215063, 46.200351]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "04ce13c6656726d953245e02c2e80c4d2dfa2f8e",
+		"fields" : {
+			"departement" : "C\u00f4te-d'Or",
+			"commune" : "Dijon",
+			"uic" : "0087713040",
+			"segment_drg" : "a",
+			"region" : "Bourgogne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [47.32337, 5.027208],
+			"intitule_gare" : "Dijon",
+			"code_postal" : "21000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.027208, 47.32337]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "6ad4bb9ed76fdd4ffc6e7483798abaf64bac4862",
+		"fields" : {
+			"departement" : "Sa\u00f4ne-et-Loire",
+			"commune" : "\u00c9cuisses",
+			"uic" : "0087694109",
+			"segment_drg" : "a",
+			"region" : "Bourgogne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.807815, 4.430403],
+			"intitule_gare" : "Le Creusot - Montceau-les-Mines - Montchanin TGV",
+			"code_postal" : "71210"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.430403, 46.807815]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "9d746f97f573ff91ca281b3f5f6acf7fedb9833f",
+		"fields" : {
+			"departement" : "Pyr\u00e9n\u00e9es-Atlantiques",
+			"commune" : "Pau",
+			"uic" : "0087672006",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.291762, -0.369626],
+			"intitule_gare" : "Pau",
+			"code_postal" : "64000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.369626, 43.291762]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f4e5b011c6e31d3ca1cecbe290e16cb1c5a1b4c8",
+		"fields" : {
+			"departement" : "Bouches-du-Rh\u00f4ne",
+			"commune" : "Aix-en-Provence",
+			"uic" : "0087319012",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [43.455237, 5.317534],
+			"intitule_gare" : "Aix-en-Provence TGV",
+			"code_postal" : "13592"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.317534, 43.455237]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "ce000a923407c40bfdb119cc4387be12392b639a",
+		"fields" : {
+			"departement" : "Somme",
+			"commune" : "Ablaincourt-Pressoir",
+			"uic" : "0087313882",
+			"segment_drg" : "a",
+			"region" : "Picardie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.861154, 2.83233],
+			"intitule_gare" : "TGV Haute Picardie",
+			"code_postal" : "80200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.83233, 49.861154]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "c3db0656d66a04b5ef78b1014c547a44e34658f7",
+		"fields" : {
+			"departement" : "Nord",
+			"commune" : "Lille",
+			"uic" : "0087286005",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [50.636577, 3.06987],
+			"intitule_gare" : "Lille Flandres",
+			"code_postal" : "59000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.06987, 50.636577]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "9e25a24e04bd25de4549829d39a538bbc96bee7c",
+		"fields" : {
+			"departement" : "Nord",
+			"commune" : "Dunkerque",
+			"uic" : "0087281006",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [51.03047, 2.368961],
+			"intitule_gare" : "Dunkerque",
+			"code_postal" : "59140"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.368961, 51.03047]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "0ff502f2d00482f0208f1d1e3cd928b36bbedbec",
+		"fields" : {
+			"departement" : "Haut-Rhin",
+			"commune" : "Colmar",
+			"uic" : "0087182014",
+			"segment_drg" : "a",
+			"region" : "Alsace",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.073201, 7.346967],
+			"intitule_gare" : "Colmar",
+			"code_postal" : "68000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [7.346967, 48.073201]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "3f09a551655dcf289b7f926689d389dd974277cd",
+		"fields" : {
+			"departement" : "Marne",
+			"commune" : "Reims",
+			"uic" : "0087171009",
+			"segment_drg" : "a",
+			"region" : "Champagne-Ardenne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.258978, 4.024435],
+			"intitule_gare" : "Reims",
+			"code_postal" : "51100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.024435, 49.258978]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "76b23a617395e63c0bdd729904befe43dc26f01b",
+		"fields" : {
+			"departement" : "Meuse",
+			"commune" : "Trois-Domaines",
+			"uic" : "0087147322",
+			"segment_drg" : "a",
+			"region" : "Lorraine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.978549, 5.270954],
+			"intitule_gare" : "Meuse TGV",
+			"code_postal" : "55220"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.270954, 48.978549]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4c1d5ff19d55a5d11a615bc59c71736451c7cbaf",
+		"fields" : {
+			"departement" : "Moselle",
+			"commune" : "Louvigny",
+			"uic" : "0087142109",
+			"segment_drg" : "a",
+			"region" : "Lorraine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.947773, 6.169838],
+			"intitule_gare" : "Lorraine TGV",
+			"code_postal" : "57420"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.169838, 48.947773]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "cd6bf653dc40d80d8e2ddcea8347d8a9ecac6ae1",
+		"fields" : {
+			"departement" : "Gironde",
+			"commune" : "Bordeaux",
+			"uic" : "0087581009",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [44.825873, -0.556697],
+			"intitule_gare" : "Bordeaux Saint-Jean",
+			"code_postal" : "33800"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.556697, 44.825873]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "02fc70f7923bd1d09def9a8608434aa2dafeb9ff",
+		"fields" : {
+			"departement" : "Loir-et-Cher",
+			"commune" : "Blois",
+			"uic" : "0087574004",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.585445, 1.323823],
+			"intitule_gare" : "Blois - Chambord",
+			"code_postal" : "41000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.323823, 47.585445]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f010abed15e4d49f0b0cb48557e3f09c369bdb8b",
+		"fields" : {
+			"departement" : "Maine-et-Loire",
+			"commune" : "Angers",
+			"uic" : "0087484006",
+			"segment_drg" : "a",
+			"region" : "Pays de la Loire",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [47.464647, -0.55682],
+			"intitule_gare" : "Angers Saint-Laud",
+			"code_postal" : "49100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.55682, 47.464647]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "ff75a0edda53998760f690e30ee762de72a759f3",
+		"fields" : {
+			"departement" : "Loire-Atlantique",
+			"commune" : "Nantes",
+			"uic" : "0087481002",
+			"segment_drg" : "a",
+			"region" : "Pays de la Loire",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [47.216148, -1.542356],
+			"intitule_gare" : "Nantes",
+			"code_postal" : "44041"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.542356, 47.216148]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4d9a7220402278ac43f916a37a24bd8317a82597",
+		"fields" : {
+			"departement" : "Mayenne",
+			"commune" : "Laval",
+			"uic" : "0087478404",
+			"segment_drg" : "a",
+			"region" : "Pays de la Loire",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.076206, -0.760907],
+			"intitule_gare" : "Laval",
+			"code_postal" : "53000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.760907, 48.076206]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "cbd553ffceb039180c40d607f9ff82dd7581f96f",
+		"fields" : {
+			"departement" : "Ille-et-Vilaine",
+			"commune" : "Saint-Malo",
+			"uic" : "0087478107",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.646859, -2.004158],
+			"intitule_gare" : "Saint-Malo",
+			"code_postal" : "35400"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-2.004158, 48.646859]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "74a57f83f3852b6ae6c8c5bc6d755f880d051954",
+		"fields" : {
+			"departement" : "Seine-Maritime",
+			"commune" : "Rouen",
+			"uic" : "0087411017",
+			"segment_drg" : "a",
+			"region" : "Haute-Normandie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [49.448764, 1.094087],
+			"intitule_gare" : "Rouen Rive Droite",
+			"code_postal" : "76000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.094087, 49.448764]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f0d06ffeaeb2de4a00da33cc01e26fbe530bdd7f",
+		"fields" : {
+			"departement" : "Nord",
+			"commune" : "Douai",
+			"uic" : "0087345009",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [50.371677, 3.089986],
+			"intitule_gare" : "Douai",
+			"code_postal" : "59500"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.089986, 50.371677]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "fa029799201bc4040340e1672f48d188a497da25",
+		"fields" : {
+			"departement" : "Nord",
+			"commune" : "Valenciennes",
+			"uic" : "0087343004",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [50.363259, 3.517115],
+			"intitule_gare" : "Valenciennes",
+			"code_postal" : "59300"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.517115, 50.363259]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "ce0aa708adc5e8f3b290b0f2f2ec9e846d4a54af",
+		"fields" : {
+			"departement" : "Doubs",
+			"commune" : "Auxons",
+			"uic" : "0087300863",
+			"segment_drg" : "a",
+			"region" : "Franche-Comt\u00e9",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.307361058531725, 5.953195095062256],
+			"intitule_gare" : "Besan\u00e7on Franche-Comt\u00e9 TGV",
+			"code_postal" : "25870"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.953195095062256, 47.307361058531725]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "bf4a3ad8d42c4508fdee52a23362c69d47bfe019",
+		"fields" : {
+			"departement" : "Pas-de-Calais",
+			"commune" : "Fr\u00e9thun",
+			"uic" : "0087281071",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [50.902585, 1.811286],
+			"intitule_gare" : "Calais - Fr\u00e9thun",
+			"code_postal" : "62185"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.811286, 50.902585]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "e1f7902cf76ef1198cfe73ecea8e168d785c674d",
+		"fields" : {
+			"departement" : "Bas-Rhin",
+			"commune" : "Strasbourg",
+			"uic" : "0087212027",
+			"segment_drg" : "a",
+			"region" : "Alsace",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [48.584967, 7.734584],
+			"intitule_gare" : "Strasbourg",
+			"code_postal" : "67000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [7.734584, 48.584967]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4dc1295fc935579e90caf0f3882ea01b30a10843",
+		"fields" : {
+			"departement" : "Meurthe-et-Moselle",
+			"commune" : "Nancy",
+			"uic" : "0087141002",
+			"segment_drg" : "a",
+			"region" : "Lorraine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [48.689861, 6.174583],
+			"intitule_gare" : "Nancy",
+			"code_postal" : "54000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.174583, 48.689861]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "2a0b5476a8e58280ed9ef951a24824ebc0f13e8d",
+		"fields" : {
+			"departement" : "Allier",
+			"commune" : "Vichy",
+			"uic" : "0087732008",
+			"segment_drg" : "a",
+			"region" : "Auvergne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.126979, 3.430448],
+			"intitule_gare" : "Vichy",
+			"code_postal" : "03200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.430448, 46.126979]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f841f4920198ab0049ae001047a9342330a12131",
+		"fields" : {
+			"departement" : "Rh\u00f4ne",
+			"commune" : "Lyon",
+			"uic" : "0087723197",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [45.760559, 4.859355],
+			"intitule_gare" : "Lyon Part Dieu",
+			"code_postal" : "69003"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.859355, 45.760559]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "619bbeb1a8f045ee6439a684dc8fbe553afd2cd6",
+		"fields" : {
+			"departement" : "Rh\u00f4ne",
+			"commune" : "Lyon",
+			"uic" : "0087722025",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [45.748476, 4.825733],
+			"intitule_gare" : "Lyon Perrache",
+			"code_postal" : "69286"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.825733, 45.748476]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4cbaf1c1ad23c5b9ae1b929440b3181bafefdb44",
+		"fields" : {
+			"departement" : "Pyr\u00e9n\u00e9es-Atlantiques",
+			"commune" : "Hendaye",
+			"uic" : "0087677005",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.353132, -1.781724],
+			"intitule_gare" : "Hendaye",
+			"code_postal" : "64700"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.781724, 43.353132]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "461f9d35caf883e67a8e5677f7bc51bda279198f",
+		"fields" : {
+			"departement" : "Pyr\u00e9n\u00e9es-Atlantiques",
+			"commune" : "Biarritz",
+			"uic" : "0087673400",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.459397, -1.545915],
+			"intitule_gare" : "Biarritz",
+			"code_postal" : "64200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.545915, 43.459397]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "b7e2e56f34614631b346f65199644e752dfd8f8a",
+		"fields" : {
+			"departement" : "Landes",
+			"commune" : "Dax",
+			"uic" : "0087673202",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.720472, -1.050301],
+			"intitule_gare" : "Dax",
+			"code_postal" : "40100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.050301, 43.720472]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "edb95cf9f32945bc65ff202ef30b51b84267044d",
+		"fields" : {
+			"departement" : "Hautes-Pyr\u00e9n\u00e9es",
+			"commune" : "Tarbes",
+			"uic" : "0087671008",
+			"segment_drg" : "a",
+			"region" : "Midi-Pyr\u00e9n\u00e9es",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.239955, 0.069415],
+			"intitule_gare" : "Tarbes",
+			"code_postal" : "65000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.069415, 43.239955]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "b426b8cb1584549b0d310dc6dda5dee211a7b765",
+		"fields" : {
+			"departement" : "Alpes-Maritimes",
+			"commune" : "Antibes",
+			"uic" : "0087757674",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.585784, 7.119498],
+			"intitule_gare" : "Antibes",
+			"code_postal" : "06600"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [7.119498, 43.585784]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "c6e25a4282d6a68b19766578b952bc52e9a51464",
+		"fields" : {
+			"departement" : "Var",
+			"commune" : "Toulon",
+			"uic" : "0087755009",
+			"segment_drg" : "a",
+			"region" : "Provence-Alpes-C\u00f4te d'Azur",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.12837, 5.929293],
+			"intitule_gare" : "Toulon",
+			"code_postal" : "83000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.929293, 43.12837]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "5f6483fae67857a0e7bfef972be5560d3b98b551",
+		"fields" : {
+			"departement" : "Haute-Savoie",
+			"commune" : "Annecy",
+			"uic" : "0087746008",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.901965, 6.121835],
+			"intitule_gare" : "Annecy",
+			"code_postal" : "74000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.121835, 45.901965]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "6b68bbe67bf91f398d19b750b7e6421e99d2b44f",
+		"fields" : {
+			"departement" : "Savoie",
+			"commune" : "Mo\u00fbtiers",
+			"uic" : "0087741728",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.486344, 6.531425],
+			"intitule_gare" : "Mo\u00fbtiers - Salins - Brides-les-Bains",
+			"code_postal" : "73600"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.531425, 45.486344]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "de653adca1def7cd3e62f929b1d535aaf344eb00",
+		"fields" : {
+			"departement" : "Vienne",
+			"commune" : "Chasseneuil-du-Poitou",
+			"uic" : "0087324095",
+			"segment_drg" : "a",
+			"region" : "Poitou-Charentes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.669918, 0.377209],
+			"intitule_gare" : "Futuroscope",
+			"code_postal" : "86360"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.377209, 46.669918]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "fa69c00a4383c6c32b89780a8fcbf5206cd11da9",
+		"fields" : {
+			"departement" : "Somme",
+			"commune" : "Amiens",
+			"uic" : "0087313874",
+			"segment_drg" : "a",
+			"region" : "Picardie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [49.890746, 2.312592],
+			"intitule_gare" : "Amiens",
+			"code_postal" : "80017"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.312592, 49.890746]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "bcc496b01dc79a80cae2dd7d24660ccc023b7bfe",
+		"fields" : {
+			"departement" : "Territoire de Belfort",
+			"commune" : "Meroux",
+			"uic" : "0087300822",
+			"segment_drg" : "a",
+			"region" : "Franche-Comt\u00e9",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.585937, 6.897687],
+			"intitule_gare" : "Belfort - Montb\u00e9liard TGV",
+			"code_postal" : "90400"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.897687, 47.585937]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "8b25b6d850775552a85ca7ca3736b26a5f473108",
+		"fields" : {
+			"departement" : "Haut-Rhin",
+			"commune" : "Mulhouse",
+			"uic" : "0087182063",
+			"segment_drg" : "a",
+			"region" : "Alsace",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [47.742224, 7.342396],
+			"intitule_gare" : "Mulhouse",
+			"code_postal" : "68053"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [7.342396, 47.742224]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "290bdeb466eefe6a5e6e104a2f147ee221d76838",
+		"fields" : {
+			"departement" : "Seine-et-Marne",
+			"commune" : "Chessy",
+			"uic" : "0087111849",
+			"segment_drg" : "a",
+			"region" : "\u00cele-de-France",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [48.869856, 2.78272],
+			"intitule_gare" : "Marne-la-Vall\u00e9e Chessy",
+			"code_postal" : "77111"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.78272, 48.869856]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "6ff622d118563b9055ef8d54e57c724b5d8f0a46",
+		"fields" : {
+			"departement" : "Dr\u00f4me",
+			"commune" : "Alixan",
+			"uic" : "0087763029",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [44.991545, 4.978703],
+			"intitule_gare" : "Valence TGV Rh\u00f4ne-Alpes Sud",
+			"code_postal" : "26958"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.978703, 44.991545]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "12ec0885b212402f9e1a2b30b60b2ddbd93ec48d",
+		"fields" : {
+			"departement" : "Is\u00e8re",
+			"commune" : "Grenoble",
+			"uic" : "0087747006",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [45.191493, 5.714584],
+			"intitule_gare" : "Grenoble",
+			"code_postal" : "38000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.714584, 45.191493]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "a631ab9b2456cc1300a93a7e1e0ac2f2408b8b81",
+		"fields" : {
+			"departement" : "Ain",
+			"commune" : "Bellegarde-sur-Valserine",
+			"uic" : "0087745000",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.109425, 5.823483],
+			"intitule_gare" : "Bellegarde",
+			"code_postal" : "01200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [5.823483, 46.109425]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "767c49ef14e8f224aaf778801391530fe5b51b9b",
+		"fields" : {
+			"departement" : "Puy-de-D\u00f4me",
+			"commune" : "Clermont-Ferrand",
+			"uic" : "0087734004",
+			"segment_drg" : "a",
+			"region" : "Auvergne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.778945, 3.100543],
+			"intitule_gare" : "Clermont-Ferrand",
+			"code_postal" : "63000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.100543, 45.778945]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4c61e84d9ac66289bea7ff1b307fc464e8edc5f6",
+		"fields" : {
+			"departement" : "Doubs",
+			"commune" : "Besan\u00e7on",
+			"uic" : "0087718007",
+			"segment_drg" : "a",
+			"region" : "Franche-Comt\u00e9",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.247019, 6.022003],
+			"intitule_gare" : "Besan\u00e7on Viotte",
+			"code_postal" : "25000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.022003, 47.247019]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "c00e66c8b53654faf2c641922ef56eaa7d2a6085",
+		"fields" : {
+			"departement" : "Ni\u00e8vre",
+			"commune" : "Nevers",
+			"uic" : "0087696005",
+			"segment_drg" : "a",
+			"region" : "Bourgogne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.987282, 3.150743],
+			"intitule_gare" : "Nevers",
+			"code_postal" : "58000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.150743, 46.987282]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "9089d5301e3c728c5c754b6ef6699bbc8cd0a9ad",
+		"fields" : {
+			"departement" : "Aude",
+			"commune" : "Carcassonne",
+			"uic" : "0087615286",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.218029, 2.351824],
+			"intitule_gare" : "Carcassonne",
+			"code_postal" : "11000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.351824, 43.218029]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "c9746233c32ac70a93a70c37bd35b62875351e33",
+		"fields" : {
+			"departement" : "Gironde",
+			"commune" : "Libourne",
+			"uic" : "0087584052",
+			"segment_drg" : "a",
+			"region" : "Aquitaine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [44.915888, -0.236344],
+			"intitule_gare" : "Libourne",
+			"code_postal" : "33500"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.236344, 44.915888]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "2bdbfda44bf653da4e823792ee5b7841d26896e7",
+		"fields" : {
+			"departement" : "Cher",
+			"commune" : "Bourges",
+			"uic" : "0087576207",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.094145, 2.394255],
+			"intitule_gare" : "Bourges",
+			"code_postal" : "18000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.394255, 47.094145]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "02591dccdc2e36e3dd910669ab0f102591c2cf87",
+		"fields" : {
+			"departement" : "Vienne",
+			"commune" : "Ch\u00e2tellerault",
+			"uic" : "0087575142",
+			"segment_drg" : "a",
+			"region" : "Poitou-Charentes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.818594, 0.549279],
+			"intitule_gare" : "Ch\u00e2tellerault",
+			"code_postal" : "86100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.549279, 46.818594]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "d14b40835faa8d3ba7a03544b6b594c20e9db94b",
+		"fields" : {
+			"departement" : "Charente-Maritime",
+			"commune" : "Rochelle",
+			"uic" : "0087485003",
+			"segment_drg" : "a",
+			"region" : "Poitou-Charentes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.15269, -1.145305],
+			"intitule_gare" : "La Rochelle",
+			"code_postal" : "17000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.145305, 46.15269]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "aeda9368b34ba10e2a4623ec7b614d8c595b8e83",
+		"fields" : {
+			"departement" : "Finist\u00e8re",
+			"commune" : "Quimper",
+			"uic" : "0087474098",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.994455, -4.092103],
+			"intitule_gare" : "Quimper",
+			"code_postal" : "29000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-4.092103, 47.994455]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "ee96abd70bc87adc0649288173c1fb29589f79ab",
+		"fields" : {
+			"departement" : "Calvados",
+			"commune" : "Deauville",
+			"uic" : "0087444372",
+			"segment_drg" : "a",
+			"region" : "Basse-Normandie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.360005, 0.084167],
+			"intitule_gare" : "Trouville - Deauville",
+			"code_postal" : "14360"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.084167, 49.360005]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "699ac832ce367702792ed33635a5e0c3f4838f66",
+		"fields" : {
+			"departement" : "Calvados",
+			"commune" : "Lisieux",
+			"uic" : "0087444265",
+			"segment_drg" : "a",
+			"region" : "Basse-Normandie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.138299, 0.231143],
+			"intitule_gare" : "Lisieux",
+			"code_postal" : "14100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.231143, 49.138299]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "e760564eb704bfaa06193938dc650cab2e848ee0",
+		"fields" : {
+			"departement" : "Seine-Maritime",
+			"commune" : "Havre",
+			"uic" : "0087413013",
+			"segment_drg" : "a",
+			"region" : "Haute-Normandie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.492996, 0.125677],
+			"intitule_gare" : "Le Havre",
+			"code_postal" : "76600"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.125677, 49.492996]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "906e84969205a0047f8b9033a5b21e15520bcb00",
+		"fields" : {
+			"departement" : "Morbihan",
+			"commune" : "Vannes",
+			"uic" : "0087476606",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.665169, -2.75245],
+			"intitule_gare" : "Vannes",
+			"code_postal" : "56000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-2.75245, 47.665169]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f0f20f17f4c1d3b36393186064341a64e4b4815b",
+		"fields" : {
+			"departement" : "Morbihan",
+			"commune" : "Lorient",
+			"uic" : "0087476002",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.755597, -3.366221],
+			"intitule_gare" : "Lorient",
+			"code_postal" : "56100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-3.366221, 47.755597]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "039c2ada6e9d5277fbc192ac5d3edc6833b5188f",
+		"fields" : {
+			"departement" : "Finist\u00e8re",
+			"commune" : "Morlaix",
+			"uic" : "0087474338",
+			"segment_drg" : "a",
+			"region" : "Bretagne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [48.57797, -3.832514],
+			"intitule_gare" : "Morlaix",
+			"code_postal" : "29600"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-3.832514, 48.57797]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "bd6422019d1c3bcedf25e3077a2da1578712c147",
+		"fields" : {
+			"departement" : "Manche",
+			"commune" : "Cherbourg-Octeville",
+			"uic" : "0087444877",
+			"segment_drg" : "a",
+			"region" : "Basse-Normandie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.633505, -1.621515],
+			"intitule_gare" : "Cherbourg",
+			"code_postal" : "50100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.621515, 49.633505]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "0eaafdda37f2dd301626c68cc42e47fe8fc11241",
+		"fields" : {
+			"departement" : "Calvados",
+			"commune" : "Caen",
+			"uic" : "0087444000",
+			"segment_drg" : "a",
+			"region" : "Basse-Normandie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.176354, -0.347613],
+			"intitule_gare" : "Caen",
+			"code_postal" : "14000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.347613, 49.176354]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "6418853492ab92d5e694cded5db5bfea2c074256",
+		"fields" : {
+			"departement" : "Sarthe",
+			"commune" : "Mans",
+			"uic" : "0087396002",
+			"segment_drg" : "a",
+			"region" : "Pays de la Loire",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [47.995034, 0.19014],
+			"intitule_gare" : "Le Mans",
+			"code_postal" : "72000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.19014, 47.995034]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "f96d0bde51b6099eb295fe40413fa9b92c9ee2a2",
+		"fields" : {
+			"departement" : "Paris",
+			"commune" : "Paris",
+			"uic" : "0087391003 0087391102",
+			"segment_drg" : "a",
+			"region" : "\u00cele-de-France",
+			"nombre_plateformes" : "2",
+			"niveau_de_service" : "3",
+			"wgs_84" : [48.841172, 2.320514],
+			"intitule_gare" : "Paris Montparnasse",
+			"code_postal" : "75015"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.320514, 48.841172]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "58d9f9e1538a5fb36ee6dd161f63a8128949cafa",
+		"fields" : {
+			"departement" : "Oise",
+			"commune" : "Compi\u00e8gne",
+			"uic" : "0087276691",
+			"segment_drg" : "a",
+			"region" : "Picardie",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.422005, 2.823679],
+			"intitule_gare" : "Compi\u00e8gne",
+			"code_postal" : "60200"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.823679, 49.422005]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "594df5a2d947a40f6702431cc70e5f4fce974840",
+		"fields" : {
+			"departement" : "Nord",
+			"commune" : "Lille",
+			"uic" : "0087223263",
+			"segment_drg" : "a",
+			"region" : "Nord-Pas-de-Calais",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [50.639224, 3.075796],
+			"intitule_gare" : "Lille Europe",
+			"code_postal" : "59777"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.075796, 50.639224]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4e59ef33a552bbdedb5a09fa800af7ceae7c45da",
+		"fields" : {
+			"departement" : "Moselle",
+			"commune" : "Thionville",
+			"uic" : "0087191007",
+			"segment_drg" : "a",
+			"region" : "Lorraine",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.353931, 6.169543],
+			"intitule_gare" : "Thionville",
+			"code_postal" : "57100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [6.169543, 49.353931]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "ba573a64236be4bfde9c24400b81b60ec90a8b59",
+		"fields" : {
+			"departement" : "H\u00e9rault",
+			"commune" : "Agde",
+			"uic" : "0087781278",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.31728, 3.466203],
+			"intitule_gare" : "Agde",
+			"code_postal" : "34300"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.466203, 43.31728]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "fdf4d22c3e6dddf17a31cf60abdbda2b76d0443f",
+		"fields" : {
+			"departement" : "Aude",
+			"commune" : "Narbonne",
+			"uic" : "0087781104",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.190387, 3.00591],
+			"intitule_gare" : "Narbonne",
+			"code_postal" : "11100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.00591, 43.190387]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "65a2de4e79f5bdbba79f6ac685c82881a547578c",
+		"fields" : {
+			"departement" : "Gard",
+			"commune" : "N\u00eemes",
+			"uic" : "0087775007",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [43.832291, 4.365845],
+			"intitule_gare" : "N\u00eemes",
+			"code_postal" : "30000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.365845, 43.832291]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "472846c5b16daa34d1cde218cd12ddae7910ebb3",
+		"fields" : {
+			"departement" : "H\u00e9rault",
+			"commune" : "Montpellier",
+			"uic" : "0087773002",
+			"segment_drg" : "a",
+			"region" : "Languedoc-Roussillon",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [43.604738, 3.880674],
+			"intitule_gare" : "Montpellier Saint-Roch",
+			"code_postal" : "34011"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.880674, 43.604738]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "8d63b16d2098fd22d2046fe2c10d13cdc8e6e107",
+		"fields" : {
+			"departement" : "Loire",
+			"commune" : "Saint-\u00c9tienne",
+			"uic" : "0087726000",
+			"segment_drg" : "a",
+			"region" : "Rh\u00f4ne-Alpes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [45.443366, 4.399722],
+			"intitule_gare" : "Saint-\u00c9tienne Ch\u00e2teaucreux",
+			"code_postal" : "42000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.399722, 45.443366]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "4beaabe0a9c77d0bd2161a0b48d094d62c62ed18",
+		"fields" : {
+			"departement" : "Sa\u00f4ne-et-Loire",
+			"commune" : "M\u00e2con",
+			"uic" : "0087725705",
+			"segment_drg" : "a",
+			"region" : "Bourgogne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.282884, 4.778876],
+			"intitule_gare" : "M\u00e2con Loch\u00e9 TGV",
+			"code_postal" : "71000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.778876, 46.282884]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "43dc9ba097f2e7dc27a7cfaa5a5402fcfc15ad72",
+		"fields" : {
+			"departement" : "Sa\u00f4ne-et-Loire",
+			"commune" : "Chalon-sur-Sa\u00f4ne",
+			"uic" : "0087725002",
+			"segment_drg" : "a",
+			"region" : "Bourgogne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.781612, 4.843454],
+			"intitule_gare" : "Chalon-sur-Sa\u00f4ne",
+			"code_postal" : "71100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.843454, 46.781612]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "871743948dc9a0d29d0e909ba3c046e7efe43494",
+		"fields" : {
+			"departement" : "Allier",
+			"commune" : "Moulins",
+			"uic" : "0087696328",
+			"segment_drg" : "a",
+			"region" : "Auvergne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.561346, 3.338842],
+			"intitule_gare" : "Moulins sur Allier",
+			"code_postal" : "03000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.338842, 46.561346]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "98d801dfa910231b9203f7755814a7feefd6fb11",
+		"fields" : {
+			"departement" : "Haute-Garonne",
+			"commune" : "Toulouse",
+			"uic" : "0087611004",
+			"segment_drg" : "a",
+			"region" : "Midi-Pyr\u00e9n\u00e9es",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [43.611206, 1.453616],
+			"intitule_gare" : "Toulouse Matabiau",
+			"code_postal" : "31500"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.453616, 43.611206]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "926ec5425cf922d645c4e96018da7da35c33e3e5",
+		"fields" : {
+			"departement" : "Indre",
+			"commune" : "Ch\u00e2teauroux",
+			"uic" : "0087597005",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.809737, 1.699536],
+			"intitule_gare" : "Ch\u00e2teauroux",
+			"code_postal" : "36000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.699536, 46.809737]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "bc338b119f621f91b338ae8013e49333cf16ad8c",
+		"fields" : {
+			"departement" : "Cher",
+			"commune" : "Vierzon",
+			"uic" : "0087576009",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.226497, 2.059822],
+			"intitule_gare" : "Vierzon",
+			"code_postal" : "18100"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [2.059822, 47.226497]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "72d8e51cd202f493cfefb7759a37243ca7d46557",
+		"fields" : {
+			"departement" : "Indre-et-Loire",
+			"commune" : "Saint-Pierre-des-Corps",
+			"uic" : "0087571240",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"wgs_84" : [47.386099, 0.72355],
+			"intitule_gare" : "Saint-Pierre-des-Corps",
+			"code_postal" : "37700"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [0.72355, 47.386099]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "809a26372b2eca0a1325f3c6d5350a5eb129034b",
+		"fields" : {
+			"departement" : "Loiret",
+			"commune" : "Fleury-les-Aubrais",
+			"uic" : "0087543017",
+			"segment_drg" : "a",
+			"region" : "Centre",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [47.926801, 1.906629],
+			"intitule_gare" : "Les Aubrais",
+			"code_postal" : "45400"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [1.906629, 47.926801]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "076bcc39b02caad938323abb9cdcb7584d9f299f",
+		"fields" : {
+			"departement" : "Vend\u00e9e",
+			"commune" : "Roche-sur-Yon",
+			"uic" : "0087486019",
+			"segment_drg" : "a",
+			"region" : "Pays de la Loire",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.67212, -1.435621],
+			"intitule_gare" : "La Roche-sur-Yon",
+			"code_postal" : "85000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-1.435621, 46.67212]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "7ebcfae302cb0ec8590e263ea14d61dfa43f5399",
+		"fields" : {
+			"departement" : "Deux-S\u00e8vres",
+			"commune" : "Niort",
+			"uic" : "0087485300",
+			"segment_drg" : "a",
+			"region" : "Poitou-Charentes",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [46.319491, -0.454639],
+			"intitule_gare" : "Niort",
+			"code_postal" : "79000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [-0.454639, 46.319491]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "9e8d48a3db3f88631d659de01cd8de6ef0f9142f",
+		"fields" : {
+			"departement" : "Ardennes",
+			"commune" : "Charleville-M\u00e9zi\u00e8res",
+			"uic" : "0087172007",
+			"segment_drg" : "a",
+			"region" : "Champagne-Ardenne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.767915, 4.724952],
+			"intitule_gare" : "Charleville-M\u00e9zi\u00e8res",
+			"code_postal" : "08000"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [4.724952, 49.767915]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "815b2368934e501e4029fc96cfc24521965a54cd",
+		"fields" : {
+			"departement" : "Marne",
+			"commune" : "Bezannes",
+			"uic" : "0087171926",
+			"segment_drg" : "a",
+			"region" : "Champagne-Ardenne",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "2",
+			"wgs_84" : [49.214806, 3.994632],
+			"intitule_gare" : "Champagne-Ardenne TGV",
+			"code_postal" : "51430"
+		},
+		"geometry" : {
+			"type" : "Point",
+			"coordinates" : [3.994632, 49.214806]
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}, {
+		"datasetid" : "referentiel-gares-voyageurs",
+		"recordid" : "8b1f8e764c49d3f663625659e1034044281da481",
+		"fields" : {
+			"departement" : "Paris",
+			"commune" : "Paris",
+			"uic" : "0087686667",
+			"segment_drg" : "a",
+			"region" : "\u00cele-de-France",
+			"nombre_plateformes" : "1",
+			"niveau_de_service" : "3",
+			"intitule_gare" : "Paris Bercy",
+			"code_postal" : "75012"
+		},
+		"record_timestamp" : "2015-11-20T13:45:26+01:00"
+	}
+]
