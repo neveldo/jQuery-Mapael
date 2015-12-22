@@ -5,6 +5,10 @@ if (location.href.match(/(\?|&)lcovReport($|&|=)/)) {
 
    // send results to PhantomJS
    QUnit.done(function() {
-      alert(JSON.stringify(['qunit.report', window._$blanket_LCOV]));
+        var data = JSON.stringify(['qunit.report', window._$blanket_LCOV]);
+
+        // Fix for coveralls "Fatal error: ENOENT, no such file or directory"
+        data = data.replace("file://", "");
+        alert(data);
    });
 }
