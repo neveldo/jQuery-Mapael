@@ -2140,8 +2140,6 @@
 
     };
 
-    var loadedMaps = {}, loadedLegacyMaps = {};
-
     // Extend jQuery with Mapael
     if ($[pluginName] === undefined) $[pluginName] = {};
     $.extend(true, $[pluginName], Mapael);
