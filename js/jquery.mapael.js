@@ -2141,7 +2141,9 @@
     };
 
     // Extend jQuery with Mapael
-    $[pluginName] = Mapael;
+    if ($[pluginName] === undefined) $[pluginName] = {};
+    $.extend(true, $[pluginName], Mapael);
+
     // Add jQuery DOM function
     $.fn[pluginName] = function (options) {
         // Call Mapael on each element
