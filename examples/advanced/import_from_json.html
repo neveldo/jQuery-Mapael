@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Minimal example</title>
+    <style type="text/css">
+        body {
+            color: #5d5d5d;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-top: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+        p {
+            font-size:16px;
+        }
+
+        .note {
+            font-size:10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #fff;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #343434;
+        }
+
+        .mapael .map {
+            position: relative;
+        }
+
+    </style>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/1.1.1/chroma.min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="../../js/maps/france_departments.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+
+        $(function () {
+            // Show loading message
+            $(".mapcontainer span").html("Loading JSON data").css({"color":"blue", "font-weight":"bold"});
+
+            // We need a setTimeout (~200ms) in order to allow the UI to be refreshed for the message to be shown
+            setTimeout(function(){
+                // Get the data
+                $.getJSON("import_from_json_file.json", function (data) {
+                    // Success
+                    // This variable will hold all the plots of our map
+                    var plots = {};
+                    var plotsColors = chroma.scale("Blues");
+                    // Parse each elements
+                    $.each(data, function (id, elem) {
+                        // Check if we have the GPS position of the element
+                        if (elem.fields.wgs_84) {
+                            // Will hold the plot information
+                            var plot = {};
+                            // Assign position
+                            plot.latitude = elem.fields.wgs_84[0];
+                            plot.longitude = elem.fields.wgs_84[1];
+                            // Assign some information inside the tooltip
+                            plot.tooltip = {
+                                content: "<span style='font-weight:bold;'>" +
+                                            elem.fields.intitule_gare + " (" + elem.fields.code_postal + ")" +
+                                         "</span>" +
+                                         "<br/>Level " + elem.fields.niveau_de_service + " station in " + elem.fields.commune + " (" + elem.fields.departement + ")"
+                            };
+                            // Assign the background color randomize from a scale
+                            plot.attrs = {
+                                fill: plotsColors(Math.random())
+                            };
+                            // Set plot element to array
+                            plots[id] = plot;
+                        } else {
+                            console.warn("Ignored element " + id + " without GPS position");
+                        }
+                    });
+
+                    // Create map
+                    $(".mapcontainer").mapael({
+                        map: {
+                            name: "france_departments",
+                            defaultPlot: {
+                                size: 10
+                            }
+                        },
+                        plots: plots
+                    });
+
+                }).fail(function() {
+                    // Error
+                    $(".mapcontainer span").html("Failed to load JSON data").css({"color":"red"});
+                });
+            }, 200);
+        });
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Importing data from JSON</h1>
+
+        <h2>French railway station for passengers</h2>
+
+        <p>Category: national stations (above 250 000 annual visitors) as at 20th of November, 2015</p>
+
+        <p class="note">
+            JSON data are taken from <a href="https://ressources.data.sncf.com/explore/dataset/referentiel-gares-voyageurs">SNCF Open Data website</a>.
+        </p>
+
+        <div class="mapcontainer">
+            <div class="map">
+                <span>Alternative content for the map</span>
+            </div>
+        </div>
+
+        <p><b>All example for jQuery Mapael are available <a href="http://www.vincentbroute.fr/mapael/">here</a>.</b></p>
+
+    </div>
+</body>
+</html>
