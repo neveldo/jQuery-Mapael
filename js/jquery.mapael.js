@@ -262,6 +262,10 @@
          */
         destroy: function () {
             var self = this;
+
+            // Detach all event listeners attached to the container
+            self.$container.off("." + pluginName);
+
             // Empty the container (this will also detach all event listeners)
             self.$container.empty();
             // Detach the global resize event handler
