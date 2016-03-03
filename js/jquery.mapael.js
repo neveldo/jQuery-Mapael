@@ -362,7 +362,15 @@
                 bbox = elem.mapElem.getBBox();
                 textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
                 elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
-                elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
+
+                // Allow fine tuning of the label's position relative to it's calculated position.
+                var dx = 0, dy = 0;
+                if(typeof options.text.attrs.dx !== undefined) dx = options.text.attrs.dx;
+                if(typeof options.text.attrs.dy !== undefined) dy = options.text.attrs.dy;
+
+                // Add the text
+                elem.textElem = paper.text(textPosition.x + dx, textPosition.y + dy, options.text.content).attr(options.text.attrs);
+
                 $(elem.textElem.node).attr("data-id", id);
             }
 
