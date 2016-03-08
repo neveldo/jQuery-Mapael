@@ -1750,14 +1750,18 @@
             var $mapElem = {};
             var $textElem = {};
             var hoverTO = 0;
+            var hoverFROM = 0;
             var overBehaviour = function () {
+                clearTimeout(hoverFROM);
                 hoverTO = setTimeout(function () {
                     self.elemHover(mapElem, textElem);
                 }, 120);
             };
             var outBehaviour = function () {
                 clearTimeout(hoverTO);
-                self.elemOut(mapElem, textElem);
+                hoverFROM = setTimeout(function () {
+                    self.elemOut(mapElem, textElem);
+                }, 120);
             };
 
             $mapElem = $(mapElem.node);
