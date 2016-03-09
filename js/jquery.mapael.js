@@ -1839,36 +1839,47 @@
          * Get the coordinates of the text relative to a bbox and a position
          * @param bbox the boundary box of the element
          * @param textPosition the wanted text position (inner, right, left, top or bottom)
+         * @param margin number or object {x: val, y:val} margin between the bbox and the text
          */
         getTextPosition: function (bbox, textPosition, margin) {
             var textX = 0;
             var textY = 0;
             var textAnchor = "";
 
+            if (typeof margin === "number") {
+                if (textPosition === "bottom" || textPosition === "top") {
+                    margin = {x: 0, y: margin};
+                } else if (textPosition === "right" || textPosition === "left") {
+                    margin = {x: margin, y: 0};
+                } else {
+                    margin = {x: 0, y: 0};
+                }
+            }
+
             switch (textPosition) {
                 case "bottom" :
-                    textX = (bbox.x + bbox.x2) / 2;
-                    textY = bbox.y2 + margin;
+                    textX = ((bbox.x + bbox.x2) / 2) + margin.x;
+                    textY = bbox.y2 + margin.y;
                     textAnchor = "middle";
                     break;
                 case "top" :
-                    textX = (bbox.x + bbox.x2) / 2;
-                    textY = bbox.y - margin;
+                    textX = ((bbox.x + bbox.x2) / 2) + margin.x;
+                    textY = bbox.y - margin.y;
                     textAnchor = "middle";
                     break;
                 case "left" :
-                    textX = bbox.x - margin;
-                    textY = (bbox.y + bbox.y2) / 2;
+                    textX = bbox.x - margin.x;
+                    textY = ((bbox.y + bbox.y2) / 2) + margin.y;
                     textAnchor = "end";
                     break;
                 case "right" :
-                    textX = bbox.x2 + margin;
-                    textY = (bbox.y + bbox.y2) / 2;
+                    textX = bbox.x2 + margin.x;
+                    textY = ((bbox.y + bbox.y2) / 2) + margin.y;
                     textAnchor = "start";
                     break;
                 default : // "inner" position
-                    textX = (bbox.x + bbox.x2) / 2;
-                    textY = (bbox.y + bbox.y2) / 2;
+                    textX = ((bbox.x + bbox.x2) / 2) + margin.x;
+                    textY = ((bbox.y + bbox.y2) / 2) + margin.y;
                     textAnchor = "middle";
             }
             return {"x": textX, "y": textY, "textAnchor": textAnchor};
