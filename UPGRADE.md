@@ -134,6 +134,7 @@ zoom: {
         }
     }
 }
+```
 
 ### E. Updated the CSS position of the tooltip
 
