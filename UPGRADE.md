@@ -1,6 +1,6 @@
 # Upgrading Mapael
 
-## From 1.10.0 to 2.0.0
+## From 1.1.0 to 2.0.0
 
 ### A. Change your `update` event trigger ([#105](https://github.com/neveldo/jQuery-Mapael/issues/105))
 The `update` event has a new signature.
@@ -135,4 +135,19 @@ zoom: {
     }
 }
 
+### E. Updated the CSS position of the tooltip
 
+In the CSS file related to mapael maps, the tooltip position should now be 'absolute' instead of 'fixed'. 
+
+**Old style:**
+```css
+.mapael .mapTooltip {
+    position: fixed;
+}
+```
+**New style:**
+```css
+.mapael .mapTooltip {
+    position: absolute;
+}
+```
