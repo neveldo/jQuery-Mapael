@@ -1755,7 +1755,7 @@
                 clearTimeout(mouseoverTimeout);
                 mouseoutTimeout = setTimeout(function(){
                     self.elemOut(mapElem, textElem);
-                })
+                }, 120);
             };
 
             $mapElem = $(mapElem.node);
