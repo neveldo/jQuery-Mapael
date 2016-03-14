@@ -2135,7 +2135,8 @@
                 },
                 hideElemsOnClick: {
                     enabled: true,
-                    opacity: 0.2
+                    opacity: 0.2,
+                    animDuration: 300
                 },
                 slices: [],
                 mode: "vertical"
