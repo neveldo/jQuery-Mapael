@@ -1077,7 +1077,7 @@
                     }
                 });
             }
-            if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, plots, self.options);
+            if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, self.plots, self.options);
         },
 
         /*
@@ -1743,15 +1743,19 @@
             var self = this;
             var $mapElem = {};
             var $textElem = {};
-            var hoverTO = 0;
+            var mouseoverTimeout = 0;
+            var mouseoutTimeout = 0;
             var overBehaviour = function () {
-                hoverTO = setTimeout(function () {
+                clearTimeout(mouseoutTimeout);
+                mouseoverTimeout = setTimeout(function () {
                     self.elemHover(mapElem, textElem);
                 }, 120);
             };
             var outBehaviour = function () {
-                clearTimeout(hoverTO);
-                self.elemOut(mapElem, textElem);
+                clearTimeout(mouseoverTimeout);
+                mouseoutTimeout = setTimeout(function(){
+                    self.elemOut(mapElem, textElem);
+                }, 120);
             };
 
             $mapElem = $(mapElem.node);
