@@ -5,7 +5,7 @@ Change log for jQuery-Mapael
 
 - Feature : Added 'showElementsInRange' event to filter the elements to show on the map depending on values intervals ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/a634d2d731a070b0369f4d7cd55109c05c8ac579))
 - Refactoring : Move default options inside prototype to allow overriding ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/c17c0de61a90581e1a88aace64fd2b97fbcb1bb1))
-- Refactoring : Refactored internal structure of the plugin ([Indigo744)
+- Refactoring : Refactored internal structure of the plugin (Indigo744)
 - Misc : Added many new code examples (Indigo744)
 - Misc : Added unit tests (Indigo744)
 - Refactoring : New update event signature ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/3ad903b8e38bcc7dd5e3d368f07c1d379a0e19d4))
