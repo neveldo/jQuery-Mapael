@@ -601,7 +601,7 @@
          * Zoom on the map at a specific level focused on specific coordinates
          * If no coordinates are specified, the zoom will be focused on the center of the map
          * options :
-         *    "level" : level of the zoom between 0 and maxLevel
+         *    "level" : level of the zoom between minLevel and maxLevel
          *    "x" or "latitude" : x coordinate or latitude of the point to focus on
          *    "y" or "longitude" : y coordinate or longitude of the point to focus on
          *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
@@ -641,7 +641,7 @@
                     }
                 }
                 // Make sure we stay in the boundaries
-                newLevel = Math.min(Math.max(newLevel, 0), self.options.map.zoom.maxLevel);
+                newLevel = Math.min(Math.max(newLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
             }
             
             zoomLevel = (1 + newLevel * self.options.map.zoom.step);
@@ -2060,6 +2060,7 @@
                 },
                 zoom: {
                     enabled: false,
+                    minLevel: 0,
                     maxLevel: 10,
                     step: 0.25,
                     mousewheel: true,
