@@ -3,6 +3,16 @@ Change log for jQuery-Mapael
 
 ## 2.0.0 - Not released yet
 
+- Feature : Added 'showElementsInRange' event to filter the elements to show on the map depending on values intervals ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/a634d2d731a070b0369f4d7cd55109c05c8ac579))
+- Refactoring : Move default options inside prototype to allow overriding ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/c17c0de61a90581e1a88aace64fd2b97fbcb1bb1))
+- Refactoring : Refactored internal structure of the plugin ([Indigo744)
+- Misc : Added many new code examples (Indigo744)
+- Misc : Added unit tests (Indigo744)
+- Refactoring : New update event signature ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/3ad903b8e38bcc7dd5e3d368f07c1d379a0e19d4))
+- Bugfix : Fixed leaking when removing plots/links ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/2c9aa9bdbec554286c3f69d8b194bac3a23b5602))
+- Feature : tooltip.content accept function ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/489cad8f93fc1d328a6e76d5d0fd824af6eec00d))
+- Bugfix : handleClickOnLegendElem take into account other legends ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/23419ccbc522b497831478a2f827819460e1b6fd))
+- Bugfix : Set default size when no size is set on slices ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/2f4fa5c6dddacf52cb1308ae261e94239791fceb))
 - Bugfix : Fixed target for zoom related events 'mousewheel', 'touchstart' and 'touchmove' ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/b3f8ab04ed76c13aa0c3dc97dff582e612ebb503))
 - Feature : Delete all plots/links in 'update' event ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/822a1caa322c5c0e422447e204b7624c5e3e1885))
 - Refactoring : Set legend slice max value inclusive ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/68f95555858bfc9e3afcea96d95d00c3d573e34b))
@@ -12,7 +22,7 @@ Change log for jQuery-Mapael
 - Feature : Added animDuration option to 'zoom' event and set it to 0 by default for initial zoom ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/bbcecae471e31c1b37aa62d7ed83842550837ae6))
 - Refactoring : Removed map.tooltip.target option ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/f1e8758b91504f399392e4af390ed020ad935bdf))
 - Feature : Added tooltip.overflow.right and tooltip.overflow.bottom options to allow tooltip overflow from the container ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/476fbbad7a23f622bc49e80f6be47413f585cf31))
-- Bugfix : fixed raphael.safari() call with laster version of Raphael.js ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/f458ea8af781a57d6d3b77e1dd6b52bbfb8332ed))
+- Bugfix : Fixed raphael.safari() call with laster version of Raphael.js ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/f458ea8af781a57d6d3b77e1dd6b52bbfb8332ed))
 - Bugfix : Fixed legend display when no title is defined ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/3d8200706548a9bbd0710d3dd6829d767c7d2ffc))
 - Refactoring : Tooltip position is computed as absolute instead of fixed ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/7907701a46ae7a270d68a7f6ac9c9be96d95f8df))
 - Bugfix : Fixed IE8 js error on map update ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/44798289cc28ff5150e3f94dbe11c02b5d0bc33c))
