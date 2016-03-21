@@ -3,6 +3,16 @@ Change log for jQuery-Mapael
 
 ## 2.0.0 - Not released yet
 
+- Feature : Added new minLevel option ([billyrennekamp](https://github.com/neveldo/jQuery-Mapael/commit/0f8b4e8f5a1c3cf4508d438cdc487835a9ac2046))
+- Bugfix : Fixed the flicker on mouseover between text and area ([billyrennekamp](https://github.com/neveldo/jQuery-Mapael/commit/826a340631b9459630205b684b31594e7c829875))
+- Feature : margin option now accept an object in order to fine tune x and y offset of text position ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/06a4a0f49bdf44916ecf4f0f1846322611c07508))
+- Bugfix : initElem : setHover only if attrsHover set ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/4a8d1e015d7d502d5ab45589306a470dc9b05602))
+- Feature : Allow zoom trigger with no level set ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/02f04ac2cdcfd8f78e2723edcc33694d2a85139d))
+- Feature : Relative zoom for onZoom ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/b17da7e75446c60cb31a258a8c8e3d74c2573eb5))
+- Misc : Added Mercator and Miller world map ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/e1657c047fbab109591ec80aa880d61ccfcbf411))
+- Feature : Legends are redrawn on resize ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/37e98a7dca5d17ce92cb2b6555bca7ffd5f9884c))
+- Feature : Expanded zoom buttons functionality ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/45f7407a7358f990de54f1bb050459c7a4995420))
+- Feature : Added checkForRaphaelBBoxBug() function in order to check for a known bug from Raphael.js when creating a paper in an hidden container ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/e5d32cdbaf91a5b22ce582de54fc0112903f1ddc))
 - Feature : Added 'showElementsInRange' event to filter the elements to show on the map depending on values intervals ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/a634d2d731a070b0369f4d7cd55109c05c8ac579))
 - Refactoring : Move default options inside prototype to allow overriding ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/c17c0de61a90581e1a88aace64fd2b97fbcb1bb1))
 - Refactoring : Refactored internal structure of the plugin (Indigo744)
