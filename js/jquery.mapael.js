@@ -168,6 +168,18 @@
             if (self.options.map.tooltip.css) self.$tooltip.css(self.options.map.tooltip.css);
             self.paper.setViewBox(0, 0, self.mapConf.width, self.mapConf.height, false);
 
+            // Handle map size
+            if (self.options.map.width) {
+                // NOT responsive: map has a fixed width
+                self.paper.setSize(self.options.map.width, self.mapConf.height * (self.options.map.width / self.mapConf.width));
+
+                // Create the legends for plots taking into account the scale of the map
+                self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
+            } else {
+                // Responsive: handle resizing of the map
+                self.handleMapResizing();
+            }
+
             // Draw map areas
             $.each(self.mapConf.elems, function (id) {
                 var elemOptions = self.getElemOptions(
@@ -229,18 +241,6 @@
             self.$container.on("showElementsInRange." + pluginName, function (e, opt) {
                 self.onShowElementsInRange(e, opt);
             });
-
-            // Handle map size
-            if (self.options.map.width) {
-                // NOT responsive: map has a fixed width
-                self.paper.setSize(self.options.map.width, self.mapConf.height * (self.options.map.width / self.mapConf.width));
-
-                // Create the legends for plots taking into account the scale of the map
-                self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
-            } else {
-                // Responsive: handle resizing of the map
-                self.handleMapResizing();
-            }
 
             // Hook that allows to add custom processing on the map
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
