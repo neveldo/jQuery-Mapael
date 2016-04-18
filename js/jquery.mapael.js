@@ -369,13 +369,15 @@
             // Set user event handlers
             if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem, elem.textElem);
 
+            // Set hover option for mapElem
+            self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
+
+            // Set hover option for textElem
+            if (elem.textElem) self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
+
             // Set hover behavior only if attrsHover is set for area or for text
             if (($.isEmptyObject(elemOptions.attrsHover) === false) ||
                 (elem.textElem && $.isEmptyObject(elemOptions.text.attrsHover) === false)) {
-                // Set hover option for mapElem
-                self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
-                // Set hover option for textElem
-                if (elem.textElem) self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
                 // Set hover behavior
                 self.setHover(elem.mapElem, elem.textElem);
             }
