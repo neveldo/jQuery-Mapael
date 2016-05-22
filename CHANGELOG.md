@@ -3,6 +3,7 @@ Change log for jQuery-Mapael
 
 ## 2.0.0 - Not released yet
 
+- Bugfix : Fixed updateElem() function for SVG elements (bbox object undefined) ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/b374f196956c70e0f2868c2ab1d8b965e864016f))
 - Feature : Added new minLevel option ([billyrennekamp](https://github.com/neveldo/jQuery-Mapael/commit/0f8b4e8f5a1c3cf4508d438cdc487835a9ac2046))
 - Bugfix : Fixed the flicker on mouseover between text and area ([billyrennekamp](https://github.com/neveldo/jQuery-Mapael/commit/826a340631b9459630205b684b31594e7c829875))
 - Feature : margin option now accept an object in order to fine tune x and y offset of text position ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/06a4a0f49bdf44916ecf4f0f1846322611c07508))
