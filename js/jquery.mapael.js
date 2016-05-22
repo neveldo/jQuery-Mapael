@@ -1175,7 +1175,7 @@
          */
         updateElem: function (elemOptions, elem, animDuration) {
             var self = this;
-            var bbox;
+            var bbox = elem.mapElem.getBBox();
             var textPosition;
             var plotOffsetX;
             var plotOffsetY;
@@ -1187,8 +1187,6 @@
             if (elem.textElem) {
                 if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content != elem.textElem.attrs.text)
                     elem.textElem.attr({text: elemOptions.text.content});
-
-                bbox = elem.mapElem.getBBox();
 
                 if (elemOptions.size || (elemOptions.width && elemOptions.height)) {
                     if (elemOptions.type == "image" || elemOptions.type == "svg") {
