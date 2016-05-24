@@ -992,6 +992,17 @@
 
             // Update areas attributes and tooltips
             $.each(self.areas, function (id) {
+                // Avoid updating unchanged elements
+                if (opt.mapOptions === undefined ||
+                    (
+                        (opt.mapOptions.map === undefined || opt.mapOptions.map.defaultArea === undefined)
+                        && (opt.mapOptions.areas === undefined || opt.mapOptions.areas[id] === undefined)
+                        && (opt.mapOptions.legend === undefined || opt.mapOptions.legend.area === undefined)
+                    )
+                ) {
+                    return;
+                }
+
                 var elemOptions = self.getElemOptions(
                     self.options.map.defaultArea,
                     (self.options.areas[id] ? self.options.areas[id] : {}),
@@ -1003,6 +1014,17 @@
 
             // Update plots attributes and tooltips
             $.each(self.plots, function (id) {
+                // Avoid updating unchanged elements
+                if (opt.mapOptions === undefined ||
+                    (
+                        (opt.mapOptions.map === undefined || opt.mapOptions.map.defaultPlot === undefined)
+                        && (opt.mapOptions.plots === undefined || opt.mapOptions.plots[id] === undefined)
+                        && (opt.mapOptions.legend === undefined || opt.mapOptions.legend.plot === undefined)
+                    )
+                ) {
+                    return;
+                }
+
                 var elemOptions = self.getElemOptions(
                     self.options.map.defaultPlot,
                     (self.options.plots[id] ? self.options.plots[id] : {}),
@@ -1027,6 +1049,16 @@
 
             // Update links attributes and tooltips
             $.each(self.links, function (id) {
+                // Avoid updating unchanged elements
+                if (opt.mapOptions === undefined ||
+                    (
+                        (opt.mapOptions.map === undefined || opt.mapOptions.map.defaultLink === undefined)
+                        && (opt.mapOptions.links === undefined || opt.mapOptions.links[id] === undefined)
+                    )
+                ) {
+                    return;
+                }
+
                 var elemOptions = self.getElemOptions(
                     self.options.map.defaultLink,
                     (self.options.links[id] ? self.options.links[id] : {}),
