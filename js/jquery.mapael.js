@@ -993,79 +993,76 @@
             // Update areas attributes and tooltips
             $.each(self.areas, function (id) {
                 // Avoid updating unchanged elements
-                if (opt.mapOptions === undefined ||
+                if ((opt.mapOptions !== undefined &&
                     (
-                        (opt.mapOptions.map === undefined || opt.mapOptions.map.defaultArea === undefined)
-                        && (opt.mapOptions.areas === undefined || opt.mapOptions.areas[id] === undefined)
-                        && (opt.mapOptions.legend === undefined || opt.mapOptions.legend.area === undefined)
-                    )
+                        (opt.mapOptions.map !== undefined && opt.mapOptions.map.defaultArea !== undefined)
+                        || (opt.mapOptions.areas !== undefined && opt.mapOptions.areas[id] !== undefined)
+                        || (opt.mapOptions.legend !== undefined && opt.mapOptions.legend.area !== undefined)
+                    ))
+                    || opt.replaceOptions === true
                 ) {
-                    return;
+                    var elemOptions = self.getElemOptions(
+                        self.options.map.defaultArea,
+                        (self.options.areas[id] ? self.options.areas[id] : {}),
+                        self.options.legend.area
+                    );
+
+                    self.updateElem(elemOptions, self.areas[id], animDuration);
                 }
-
-                var elemOptions = self.getElemOptions(
-                    self.options.map.defaultArea,
-                    (self.options.areas[id] ? self.options.areas[id] : {}),
-                    self.options.legend.area
-                );
-
-                self.updateElem(elemOptions, self.areas[id], animDuration);
             });
 
             // Update plots attributes and tooltips
             $.each(self.plots, function (id) {
                 // Avoid updating unchanged elements
-                if (opt.mapOptions === undefined ||
+                if ((opt.mapOptions !== undefined &&
                     (
-                        (opt.mapOptions.map === undefined || opt.mapOptions.map.defaultPlot === undefined)
-                        && (opt.mapOptions.plots === undefined || opt.mapOptions.plots[id] === undefined)
-                        && (opt.mapOptions.legend === undefined || opt.mapOptions.legend.plot === undefined)
-                    )
+                        (opt.mapOptions.map !== undefined && opt.mapOptions.map.defaultPlot !== undefined)
+                        || (opt.mapOptions.plots !== undefined && opt.mapOptions.plots[id] !== undefined)
+                        || (opt.mapOptions.legend !== undefined && opt.mapOptions.legend.plot !== undefined)
+                    ))
+                    || opt.replaceOptions === true
                 ) {
-                    return;
-                }
+                    var elemOptions = self.getElemOptions(
+                        self.options.map.defaultPlot,
+                        (self.options.plots[id] ? self.options.plots[id] : {}),
+                        self.options.legend.plot
+                    );
+                    if (elemOptions.type == "square") {
+                        elemOptions.attrs.width = elemOptions.size;
+                        elemOptions.attrs.height = elemOptions.size;
+                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.size - self.plots[id].mapElem.attrs.width) / 2;
+                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.size - self.plots[id].mapElem.attrs.height) / 2;
+                    } else if (elemOptions.type == "image") {
+                        elemOptions.attrs.width = elemOptions.width;
+                        elemOptions.attrs.height = elemOptions.height;
+                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
+                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
+                    } else { // Default : circle
+                        elemOptions.attrs.r = elemOptions.size / 2;
+                    }
 
-                var elemOptions = self.getElemOptions(
-                    self.options.map.defaultPlot,
-                    (self.options.plots[id] ? self.options.plots[id] : {}),
-                    self.options.legend.plot
-                );
-                if (elemOptions.type == "square") {
-                    elemOptions.attrs.width = elemOptions.size;
-                    elemOptions.attrs.height = elemOptions.size;
-                    elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.size - self.plots[id].mapElem.attrs.width) / 2;
-                    elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.size - self.plots[id].mapElem.attrs.height) / 2;
-                } else if (elemOptions.type == "image") {
-                    elemOptions.attrs.width = elemOptions.width;
-                    elemOptions.attrs.height = elemOptions.height;
-                    elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
-                    elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
-                } else { // Default : circle
-                    elemOptions.attrs.r = elemOptions.size / 2;
+                    self.updateElem(elemOptions, self.plots[id], animDuration);
                 }
-
-                self.updateElem(elemOptions, self.plots[id], animDuration);
             });
 
             // Update links attributes and tooltips
             $.each(self.links, function (id) {
                 // Avoid updating unchanged elements
-                if (opt.mapOptions === undefined ||
+                if ((opt.mapOptions !== undefined &&
                     (
-                        (opt.mapOptions.map === undefined || opt.mapOptions.map.defaultLink === undefined)
-                        && (opt.mapOptions.links === undefined || opt.mapOptions.links[id] === undefined)
-                    )
+                        (opt.mapOptions.map !== undefined && opt.mapOptions.map.defaultLink !== undefined)
+                        || (opt.mapOptions.links !== undefined && opt.mapOptions.links[id] !== undefined)
+                    ))
+                    || opt.replaceOptions === true
                 ) {
-                    return;
+                    var elemOptions = self.getElemOptions(
+                        self.options.map.defaultLink,
+                        (self.options.links[id] ? self.options.links[id] : {}),
+                        {}
+                    );
+
+                    self.updateElem(elemOptions, self.links[id], animDuration);
                 }
-
-                var elemOptions = self.getElemOptions(
-                    self.options.map.defaultLink,
-                    (self.options.links[id] ? self.options.links[id] : {}),
-                    {}
-                );
-
-                self.updateElem(elemOptions, self.links[id], animDuration);
             });
 
             // Update legends
