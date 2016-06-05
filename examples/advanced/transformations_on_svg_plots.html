@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Map with some transformations performed on SVG plotted points</title>
+    <style type="text/css">
+        body {
+            color: #5d5d5d;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        /* Specific mapael css class are below
+         * 'mapael' class is added by plugin
+        */
+
+        .mapael .map {
+            position: relative;
+            background-color:#cddee0;
+            margin-bottom:10px;
+        }
+
+        .mapael .mapTooltip {
+            position : absolute;
+            background-color : #474c4b;
+            moz-opacity:0.70;
+            opacity: 0.70;
+            filter:alpha(opacity=70);
+            border-radius:10px;
+            padding : 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display:none;
+            color:#fff;
+        }
+
+        /* For all zoom buttons */
+        .mapael .zoomButton {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            color: #000;
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+            text-align: center;
+            border-radius: 3px;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            font-weight: bold;
+            left: 10px;
+
+            -webkit-user-select: none;
+            -khtml-user-select : none;
+            -moz-user-select: none;
+            -o-user-select : none;
+            user-select: none;
+        }
+
+        /* Reset Zoom button first */
+        .mapael .zoomReset {
+            top: 10px;
+        }
+
+        /* Then Zoom In button */
+        .mapael .zoomIn {
+            top: 30px;
+        }
+
+        /* Then Zoom Out button */
+        .mapael .zoomOut {
+            top: 50px;
+        }
+        
+    </style>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"
+            charset="utf-8"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" charset="utf-8"></script>
+    <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
+    <script src="../../js/maps/france_departments.js" charset="utf-8"></script>
+    <script src="../../js/maps/world_countries.js" charset="utf-8"></script>
+    <script src="../../js/maps/usa_states.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            $(".mapcontainer").mapael({
+                map: {
+                    name: "usa_states"
+                    , zoom: {
+                        enabled: true,
+                        maxLevel: 20
+                    }
+                    , defaultArea: {
+                        attrs: {
+                            fill: "#f4f4e8"
+                            , stroke: "#ced8d0"
+                        }
+                        , attrsHover: {
+                            fill: "#a4e100"
+                        }
+                    }
+                    , defaultPlot: {
+                        type: "svg",
+                        path: "M 7.5,0 C 2.48,0 0,3.5 0,7.81 0,12.12 7.5,22 7.5,22 7.5,22 15,12.13 15,7.81 15,3.49 12.52,0 7.5,0 Z",
+                        width: 30,
+                        height: 44,
+                        attrs: {
+                            fill: "#8AD12C",
+                            transform: "r25"
+                        },
+                        attrsHover: {
+                            transform: "...r360s2"
+                        }
+                    }
+                },
+                legend: {
+                    plot: {
+                        title: "American cities",
+                        slices: [{
+                            label: "Value 1",
+                            sliceValue: "Value 1"
+                        }, {
+                            label: "Value 2",
+                            sliceValue: "Value 2"
+                        }]
+                    }
+                },
+                plots: {
+                    'ny': {
+                        latitude: 40.717079,
+                        longitude: -74.00116,
+                        tooltip: {content: "New York"},
+                        value: "Value 1"
+                    },
+                    'an': {
+                        latitude: 61.2108398,
+                        longitude: -149.9019557,
+                        tooltip: {content: "Anchorage"},
+                        value: "Value 2"
+                    },
+                    'sf': {
+                        latitude: 37.792032,
+                        longitude: -122.394613,
+                        tooltip: {content: "San Francisco"},
+                        value: "Value 1"
+                    },
+                    'pa': {
+                        latitude: 19.493204,
+                        longitude: -154.8199569,
+                        tooltip: {content: "Pahoa"},
+                        value: "Value 2"
+                    },
+                    'la': {
+                        latitude: 34.025052,
+                        longitude: -118.192006,
+                        tooltip: {content: "Los Angeles"},
+                        value: "Value 1"
+                    },
+                    'dallas': {
+                        latitude: 32.784881,
+                        longitude: -96.808244,
+                        tooltip: {content: "Dallas"},
+                        value: "Value 2"
+                    },
+                    'miami': {
+                        latitude: 25.789125,
+                        longitude: -80.205674,
+                        tooltip: {content: "Miami"},
+                        value: "Value 2"
+                    },
+                    'washington': {
+                        latitude: 38.905761,
+                        longitude: -77.020746,
+                        tooltip: {content: "Washington"},
+                        value: "Value 2"
+                    },
+                    'seattle': {
+                        latitude: 47.599571,
+                        longitude: -122.319426,
+                        tooltip: {content: "Seattle"},
+                        value: "Value 1"
+                    }
+                }
+            });
+
+
+            $('#refresh').on('click', function () {
+
+                // and delete some others ...
+                var deletedPlots = ["paris", "lyon"];
+
+                $(".mapcontainer").trigger('update', [{
+                    mapOptions: {map: {defaultPlot:{attrs:{transform:'r55'}}}}, 
+                    animDuration: 1000
+                }]);
+            });
+
+
+        });
+    </script>
+
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Map with some transformations performed on SVG plotted points</h1>
+<input type="button" value="Update elements" id="refresh"/>
+    <div class="mapcontainer">
+        <div class="map">
+            <span>Alternative content for the map</span>
+        </div>
+        <div class="plotLegend">
+            <span>Alternative content for the legend</span>
+        </div>
+
+    </div>
+
+    <p><b>All example for jQuery Mapael are available <a href="http://www.vincentbroute.fr/mapael/">here</a>.</b></p>
+
+</div>
+
+
+</body>
+</html>
