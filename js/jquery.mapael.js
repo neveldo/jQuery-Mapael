@@ -1037,7 +1037,11 @@
                         elemOptions.attrs.height = elemOptions.height;
                         elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
                         elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
-                    } else { // Default : circle
+                    } else if (elemOptions.type == "svg") {
+                        if (elemOptions.attrs.transform !== undefined) {
+                            elemOptions.attrs.transform = self.plots[id].mapElem.baseTransform + elemOptions.attrs.transform;
+                        }
+                    }else { // Default : circle
                         elemOptions.attrs.r = elemOptions.size / 2;
                     }
 
@@ -1328,14 +1332,20 @@
                     ).attr(elemOptions.attrs)
                 };
             } else if (elemOptions.type == "svg") {
-                plot = {"mapElem": self.paper.path(elemOptions.path).attr(elemOptions.attrs)};
+                if (elemOptions.attrs.transform === undefined) {
+                    elemOptions.attrs.transform = "";
+                }
+
+                plot = {"mapElem": self.paper.path(elemOptions.path)};
                 plot.mapElem.originalWidth = plot.mapElem.getBBox().width;
                 plot.mapElem.originalHeight = plot.mapElem.getBBox().height;
-                plot.mapElem.transform("m" + (elemOptions.width / plot.mapElem.originalWidth) + ",0,0," + (elemOptions.height / plot.mapElem.originalHeight) + "," + (coords.x - elemOptions.width / 2) + "," + (coords.y - elemOptions.height / 2));
+
+                plot.mapElem.baseTransform = "m" + (elemOptions.width / plot.mapElem.originalWidth) + ",0,0," + (elemOptions.height / plot.mapElem.originalHeight) + "," + (coords.x - elemOptions.width / 2) + "," + (coords.y - elemOptions.height / 2);
+                elemOptions.attrs.transform = plot.mapElem.baseTransform + elemOptions.attrs.transform;
+                plot.mapElem.attr(elemOptions.attrs);
             } else { // Default = circle
                 plot = {"mapElem": self.paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
             }
-
             self.initElem(plot, elemOptions, id);
             return plot;
         },
