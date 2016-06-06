@@ -1383,17 +1383,33 @@
             var self = this;
             var tooltipTO = 0;
             var cssClass = self.$tooltip.attr('class');
+
+
+
             var updateTooltipPosition = function (x, y) {
+
+            	var offsetLeft = 10;
+            	var offsetTop = 20;
+
+                if (typeof elem.tooltip.offset === "object") {
+                    if (typeof elem.tooltip.offset.left !== "undefined") {
+                        offsetLeft = elem.tooltip.offset.left;
+                    }                    
+                    if (typeof elem.tooltip.offset.top !== "undefined") {
+                        offsetTop = elem.tooltip.offset.top;
+                    }
+                }
+
                 var tooltipPosition = {
-                    "left": Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5, x - self.$map.offset().left + 10),
-                    "top": Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5, y - self.$map.offset().top + 20)
+                    "left": Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5, x - self.$map.offset().left + offsetLeft),
+                    "top": Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5, y - self.$map.offset().top + offsetTop)
                 };
 
-                if (elem.tooltip.overflow !== undefined) {
-                    if (elem.tooltip.overflow.right !== undefined && elem.tooltip.overflow.right === true) {
+                if (typeof elem.tooltip.overflow === "object") {
+                    if (elem.tooltip.overflow.right === true) {
                         tooltipPosition.left = x - self.$map.offset().left + 10;
                     }
-                    if (elem.tooltip.overflow.bottom !== undefined && elem.tooltip.overflow.bottom === true) {
+                    if (selem.tooltip.overflow.bottom === true) {
                         tooltipPosition.top = y - self.$map.offset().top + 20;
                     }
                 }
