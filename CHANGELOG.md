@@ -3,6 +3,7 @@ Change log for jQuery-Mapael
 
 ## 2.0.0 - Not released yet
 
+- Feature : Update jQuery to v3.0.0 and Raphael.js to v2.2.0 (neveldo)
 - Feature : Add tooltip.offset.left and tooltip.offset.top options to set a custom offset between the cursor and the tooltip ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/e01e1aae53854ee61946658adbe489e1202bd4ab))
 - Bugfix : Prevent from updating unneeded areas, plots and links in the 'update' event ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/e9195136dad543036884578a51fc346863e92042))
 - Feature : Allow transformations on SVG plotted points ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/cadd617e9a4ebd9b319a261849850027fbbb5670))
