@@ -17,7 +17,7 @@ For example, with Mapael, you can display a map of the world with clickable coun
 Mapael supports all modern browsers and Internet Explorer 9+. For older versions of IE, you can load jQuery 1.11.x and Raphael.js 2.1.2 as dependencies, most of the jQuery Mapael features should work fine.
 
 ![Dataviz example](http://www.vincentbroute.fr/mapael/assets/img/world-example.png)
-[See this example !](http://www.vincentbroute.fr/mapael/usecases/world)
+[See this example !](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/dataviz_example.html)
 
 ## Key features
 
@@ -53,28 +53,40 @@ Here is the simplest example that shows how to display an empty map of the world
 
 **Basic**
 
-*   [Minimal example](http://jsfiddle.net/neveldo/tn5AF/)
-*   [Map with some custom plotted cities and areas](http://jsfiddle.net/neveldo/z559d0s2/)
-*   [Map with zoom-in, zoom-out buttons and zoom on mousewheel](http://jsfiddle.net/neveldo/jh4jzyhw/)
-*   [Map with a legend for areas](http://jsfiddle.net/neveldo/TUYHN/)
-*   [Map with a legend for plotted cities](http://jsfiddle.net/neveldo/n6XyQ/)
-*   [Map with a legend where slices are specified with a fixed value instead of min and max values](http://jsfiddle.net/neveldo/bgjh7a4f/)
-*   [Map with a legend for images](http://jsfiddle.net/neveldo/1jjq6g9y/)
-*   [Map with a legend for plotted cities and areas](http://jsfiddle.net/neveldo/VqwUZ/)
-*   [Use legendSpecificAttrs option to apply specific attributes to the legend elements](http://jsfiddle.net/neveldo/5o16cw7s/)
-*   [Map with an horizontal legend for plotted cities and areas](http://jsfiddle.net/neveldo/qr540oyv/)
-*   [Map with href on areas and plotted cities](http://jsfiddle.net/neveldo/dqcbkp4z/)
+*   [Minimal example](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/minimal_example.html)
+*   [Map with some custom plotted cities and areas](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/plotted_cities_areas.html)
+*   [Map with zoom-in, zoom-out, zoom-reset buttons and zoom on mousewheel feature](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/zoom_features.html)
+*   [Map with a legend for areas](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legend_areas.html)
+*   [Map with a legend for plotted cities](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legend_plotted_cities.html)
+*   [Map with a legend where slices are specified with a fixed value instead of min and max values](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legend_slices_fixed_values.html)
+*   [Map with a legend for images](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legend_images.html)
+*   [Map with SVG paths defined through the legend to plot some cities](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legend_SVG_paths.html)
+*   [Map with a legend for areas (only one item from the legend activated at a time.html)](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legend_areas_one_item_activated_at_a_time.html)
+*   [Map with a legend for plotted cities and areas](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legend_plotted_cities_areas.html)
+*   [Use legendSpecificAttrs option to apply specific attributes to the legend elements](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/legendSpecificAttrs_option.html)
+*   [Map with an horizontal legend for plotted cities and areas](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/horizontal_legend.html)
+*   [Map with href on areas and plotted cities](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/href_areas_plotted_cities.html)
+*   [Multiple projection example (Equirectangular, Mercator and Miller.html)](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/basic/multiple_projections.html)
 
 **Advanced**
 
-*   [Map with links between the plotted cities](http://jsfiddle.net/neveldo/yckqj78q/)
-*   [Map with multiple plotted cities legends that handle different criteria](http://jsfiddle.net/neveldo/xd2azoxL/)
-*   [Trigger an 'update' event for refreshing elements](http://jsfiddle.net/neveldo/TKUy4/)
-*   [Use the 'eventHandlers' option and the 'update' event for refreshing areas when the user click on them](http://jsfiddle.net/neveldo/qGwWr/)
-*   [Use 'zoom' event in order to zoom on specific areas of the map](http://jsfiddle.net/neveldo/ejf9dsL9/)
-*   [Use 'zoom.init' option in order to set an initial zoom level on a specific position](http://jsfiddle.net/neveldo/6ms3vusb/)
-*   [Use 'afterInit' option to extend the Raphael paper](http://jsfiddle.net/neveldo/xqpwwLqg/)
-*   [Use the 'eventHandlers' option to display information about plotted cities in a div on mouseover](http://jsfiddle.net/neveldo/b5fj4qod/)
+*   [Map with links between the plotted cities](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/links_between_plotted_cities.html)
+*   [Map with some updates on links performed](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/updates_on_links_performed.html)
+*   [Map with multiple plotted cities legends that handle different criteria](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/multiple_legends_plotted_cities.html)
+*   [Trigger an 'update' event for refreshing elements](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/update_event_for_refreshing_elements.html)
+*   [Use the 'eventHandlers' option and the 'update' event for refreshing areas when the user click on them](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/eventHandlers_option_and_update_event_refresh_onclick.html)
+*   [Use 'zoom' event in order to zoom on specific areas of the map](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/zoom_event_on_specific_area.html)
+*   [Use 'zoom.init' option in order to set an initial zoom level on a specific position](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/initial_zoom_level_on_a_specific_position.html)
+*   [Use 'afterInit' option to extend the Raphael paper](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/afterInit_extend_raphael_paper.html)
+*   [Use the 'eventHandlers' option to display information about plotted cities in a div on mouseover](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/eventHandlers_display_information_about_plotted_cities.html)
+*   [Dataviz example : population of countries and cities by year](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/dataviz_example.html)
+*   [Importing data from JSON (French railway station for passengers.html)](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/import_from_json.html)
+*   [Show or hide the legends through the 'update' event and the 'setLegendElemsState' option.](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/legend_show_hide.html)
+*   [Multiple instances of Mapael on the same page with overriden default options](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/multiple_instances.html)
+*   [Map with a range selection for areas](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/range_selection_areas.html)
+*   [Map with a range selection for plotted cities](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/range_selection_plotted_cities.html)
+*   [Zoom on click example](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/zoom_on_click.html)
+*   [Map with some transformations performed on SVG plotted points](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/transformations_on_svg_plots.html)
 
 ## License
 
