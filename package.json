@@ -24,7 +24,7 @@
     "browser"
   ],
   "dependencies": {
-    "jquery": "^1.7",
+    "jquery": "^3.0",
     "raphael": "^2.2",
     "jquery-mousewheel": "^3.1"
   },

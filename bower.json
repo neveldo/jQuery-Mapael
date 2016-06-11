@@ -7,7 +7,7 @@
   "ignore": [],
   "dependencies": {
     "raphael": ">=2.2",
-    "jquery": ">=1.7",
+    "jquery": ">=3.0",
     "jquery-mousewheel": ">=3.1"
   }
 }
