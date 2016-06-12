@@ -1,7 +1,7 @@
 # ChangeLog
 Change log for jQuery-Mapael
 
-## 2.0.0 - Not released yet
+## 2.0.0 - June 12, 2016
 
 - Feature : Update jQuery to v3.0.0 and Raphael.js to v2.2.0 (neveldo)
 - Feature : Add tooltip.offset.left and tooltip.offset.top options to set a custom offset between the cursor and the tooltip ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/e01e1aae53854ee61946658adbe489e1202bd4ab))
@@ -44,7 +44,7 @@ Change log for jQuery-Mapael
 - Feature : Add legend.(area|plot).hideElemsOnClick.animDuration option ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/52eef6549b70ea09d982ccfc78a5b8f6ea944d8a))
 - Bugfix : Fix current zoomX and zommY values set in container’ data. ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/438858423f5eb816124d9171806030f6be1261a7))
 
-## 1.1.0 - 31 August 2015
+## 1.1.0 - August 31, 2015
 Minor version release.
 
 ### New features
@@ -65,11 +65,11 @@ Minor version release.
 - Fix horizontal legend display with squares
 - Fix tooltip position
 
-## 1.0.1 - 17 May 2015
+## 1.0.1 - May 17, 2015
 Bugfix version release.
 - Fix undeclared variable in drawLegend function. IE >10 wasn't able to display the map legend.
 
-## 1.0.0 - 4 January 2015
+## 1.0.0 - January 4, 2015
 Major version release with breaking change.
 ### New features
 - You can now add curved links between two cities, between two points defined by a latitude and a longitude, or between two points defined by a x and y coordinates
@@ -89,13 +89,13 @@ Here are the changes that are not compatible with the 0.7.1:
 - If you have overloaded $.fn.mapael.defaultOptions, note that the default Mapael options (previously stored in $.fn.mapael.defaultOptions) are now stored in two different variables : $.fn.mapael.defaultOptions and $.fn.mapael.legendDefaultOptions . The last one is specific to legends options.
 - Legends 'display' option is now set to true by default instead of false
 
-## 0.7.1 - 23 January 2014
+## 0.7.1 - January 23, 2014
 Bugfix version release:
 - Fix legend colorisation with zero values in slices definition
 - Don't animate areas and plots in the legend on mouse hover
 - afterUpdate call : Fix undefined opt
 
-## 0.7.0 - 17 November 2013
+## 0.7.0 - November 17, 2013
 ### Improvements
 - Improve zooming feature. You can now trigger a 'zoom' event on the container (required parameter : level, optional parameters : x, y in order to zoom on a specific area). The current zoom level is now stored as data. Example of use : http://jsfiddle.net/neveldo/RahvT/
 - Add two new hooks in order to allow custom processing on map initialization and map update ('update' event) : afterInit and afterUpdate. Here is an example with the afterInit() hook : http://jsfiddle.net/neveldo/8Ke69/
@@ -103,7 +103,7 @@ Bugfix version release:
 - prevent the tooltip to overflow from the container
 - 'update' event' now allows to update attrsHover for plots and area (bugfix)
 
-## 0.6.0 - **29 September 2013**
+## 0.6.0 - September 29, 2013
 
 ### Improvements
 - Add missing Michigan state on the USA map
@@ -123,14 +123,14 @@ Bugfix version release:
 - Parameters for the update event are now the followings : updatedOptions, newPlots, deletedPlots, and opt. Example : $(".container").trigger('update', [updatedOptions, newPlots, deletedPlots, opt]);. See documentation and examples for more information.
 - The options for the texts (previously text, textAttrs, textHoverAttrs and textPosition) are now the followings : text.content, text.attrs, text.attrsHover and text.position. See documentation and examples for more information.
 
-## 0.5.1 - 24 August 2013
+## 0.5.1 - August 24, 2013
 Fourth version
 
-## 0.4.0 - 29 July 2013
+## 0.4.0 - July 29, 2013
 Third version
 
-## 0.3.0 - 15 July 2013
+## 0.3.0 - July 15, 2013
 Second version
 
-## 0.2.2 - 2 July 2013
+## 0.2.2 - July 2, 2013
 First version
