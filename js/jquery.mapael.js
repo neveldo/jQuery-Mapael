@@ -1321,6 +1321,13 @@
 
             if (elemOptions.x !== undefined && elemOptions.y !== undefined)
                 coords = {x: elemOptions.x, y: elemOptions.y};
+            else if (elemOptions.plotsOn !== undefined && self.areas[elemOptions.plotsOn].mapElem !== undefined){
+                var path = self.areas[elemOptions.plotsOn].mapElem;
+                var bbox = path.getBBox();
+                var _x = Math.floor(bbox.x + bbox.width/2.0);
+                var _y = Math.floor(bbox.y + bbox.height/2.0);
+                coords = {x: _x, y: _y};
+            }
             else
                 coords = self.mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
 
