@@ -160,7 +160,8 @@
                     },
                     // Plot positioned by x and y instead of latitude, longitude
                     'myplot': {
-                        plotsOn: "department-22",
+                        x: 300,
+                        y: 200,
                         text: {
                             content: "My plot"
                             , position: "bottom"
@@ -190,7 +191,17 @@
                                 , fill: "#fff"
                             }
                         }
-                    }
+                    },
+                    // Plot positioned by area name of the map
+                    'myplot_with_area_name': {
+                        plotsOn: "department-22",
+                        text: {
+                            content: "Dept. 22"
+                            , position: "bottom"
+                            , attrs: {"font-size": 10, fill: "#004a9b", opacity: 0.6}
+                            , attrsHover: {fill: "#004a9b", opacity: 1}
+                        },
+                    },
                 }
             });
         });
