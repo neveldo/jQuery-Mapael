@@ -503,14 +503,14 @@
             }
 
             // Panning
-            $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function () {
+            $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend." + pluginName : ""), function () {
                 mousedown = false;
                 setTimeout(function () {
                     self.panning = false;
                 }, 50);
             });
 
-            self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart" : ""), function (e) {
+            self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart." + pluginName : ""), function (e) {
                 if (e.pageX !== undefined) {
                     mousedown = true;
                     previousX = e.pageX;
@@ -522,7 +522,7 @@
                         previousY = e.originalEvent.touches[0].pageY;
                     }
                 }
-            }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove" : ""), function (e) {
+            }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove." + pluginName : ""), function (e) {
                 var currentLevel = self.zoomData.zoomLevel;
                 var pageX = 0;
                 var pageY = 0;
