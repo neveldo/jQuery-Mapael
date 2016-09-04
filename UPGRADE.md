@@ -62,6 +62,7 @@ The current Mapael instance of each map was not accessible.
 - in `$.mapael`: the Mapael *prototype* (this is *not* an instance of mapael, this is only the prototype)
 - in `$.fn.mapael`: the DOM attachment method (this is only a wrapper to attach mapael to the element by creating a mapael instance).
 - in each DOM container data: the current instance of Mapael (accessible through `$(".mapcontainer").data("mapael")`)
+- The zoom data are no longer accessible through `$('.mapcontainer').data('zoomLevel');` for instance. They are now stored in `$(".mapcontainer").data("mapael").zoomData.zoomLevel` for instance.
 
 These internal changes have some external impacts:
 
