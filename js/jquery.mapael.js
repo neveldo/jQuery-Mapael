@@ -226,7 +226,7 @@
                 if (self.options.map.zoom.init.animDuration === undefined) {
                     self.options.map.zoom.init.animDuration = 0;
                 }
-                self.$container.trigger("zoom." + pluginName, self.options.map.zoom.init);
+                self.$container.trigger("zoom", self.options.map.zoom.init);
             }
 
             // Create the legends for areas
@@ -300,7 +300,7 @@
                 clearTimeout(self.resizeTO);
                 // setTimeout to wait for the user to finish its resizing
                 self.resizeTO = setTimeout(function () {
-                    self.$map.trigger("resizeEnd." + pluginName);
+                    self.$map.trigger("resizeEnd");
                 }, 150);
             };
 
@@ -317,7 +317,7 @@
                     // Create plots legend again to take into account the new scale
                     self.createLegends("plot", self.plots, newScale);
                 }
-            }).trigger("resizeEnd." + pluginName);
+            }).trigger("resizeEnd");
         },
 
         /*
@@ -422,13 +422,13 @@
             var previousY = 0;
             var fnZoomButtons = {
                 "reset": function () {
-                    self.$container.trigger("zoom." + pluginName, {"level": 0});
+                    self.$container.trigger("zoom", {"level": 0});
                 },
                 "in": function () {
-                    self.$container.trigger("zoom." + pluginName, {"level": "+1"});
+                    self.$container.trigger("zoom", {"level": "+1"});
                 },
                 "out": function () {
-                    self.$container.trigger("zoom." + pluginName, {"level": -1});
+                    self.$container.trigger("zoom", {"level": -1});
                 }
             };
 
@@ -458,7 +458,7 @@
                     var zoomLevel = (e.deltaY > 0) ? 1 : -1;
                     var coord = self.mapPagePositionToXY(e.pageX, e.pageY);
 
-                    self.$container.trigger("zoom." + pluginName, {
+                    self.$container.trigger("zoom", {
                         "fixedCenter": true,
                         "level": self.zoomData.zoomLevel + zoomLevel,
                         "x": coord.x,
@@ -489,7 +489,7 @@
                         if (Math.abs(pinchDist - self.previousPinchDist) > 15) {
                             var coord = self.mapPagePositionToXY(self.zoomCenterX, self.zoomCenterY);
                             zoomLevel = (pinchDist - self.previousPinchDist) / Math.abs(pinchDist - self.previousPinchDist);
-                            self.$container.trigger("zoom." + pluginName, {
+                            self.$container.trigger("zoom", {
                                 "fixedCenter": true,
                                 "level": self.zoomData.zoomLevel + zoomLevel,
                                 "x": coord.x,
@@ -503,14 +503,14 @@
             }
 
             // Panning
-            $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend" : ""), function () {
+            $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend." + pluginName : ""), function () {
                 mousedown = false;
                 setTimeout(function () {
                     self.panning = false;
                 }, 50);
             });
 
-            self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart" : ""), function (e) {
+            self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart." + pluginName : ""), function (e) {
                 if (e.pageX !== undefined) {
                     mousedown = true;
                     previousX = e.pageX;
@@ -522,7 +522,7 @@
                         previousY = e.originalEvent.touches[0].pageY;
                     }
                 }
-            }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove" : ""), function (e) {
+            }).on("mousemove." + pluginName + (zoomOptions.touch ? " touchmove." + pluginName : ""), function (e) {
                 var currentLevel = self.zoomData.zoomLevel;
                 var pageX = 0;
                 var pageY = 0;
@@ -926,7 +926,7 @@
                     $("[data-type='elem']", self.$container).each(function (id, elem) {
                         if ($(elem).attr('data-hidden') === "1") {
                             // Toggle state of element by clicking
-                            $(elem).trigger("click." + pluginName, [false, animDuration]);
+                            $(elem).trigger("click", [false, animDuration]);
                         }
                     });
                 }
@@ -1079,7 +1079,7 @@
                 // Show all elements on the map before updating the legends
                 $("[data-type='elem']", self.$container).each(function (id, elem) {
                     if ($(elem).attr('data-hidden') === "1") {
-                        $(elem).trigger("click." + pluginName, [false, animDuration]);
+                        $(elem).trigger("click", [false, animDuration]);
                     }
                 });
 
@@ -1106,7 +1106,7 @@
                             if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                                 ($(elem).attr('data-hidden') === "1" && action === "show")) {
                                 // Toggle state of element by clicking
-                                $(elem).trigger("click." + pluginName, [false, animDuration]);
+                                $(elem).trigger("click", [false, animDuration]);
                             }
                         });
                     }
@@ -1120,7 +1120,7 @@
                     if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                         ($(elem).attr('data-hidden') === "1" && action === "show")) {
                         // Toggle state of element by clicking
-                        $(elem).trigger("click." + pluginName, [false, animDuration]);
+                        $(elem).trigger("click", [false, animDuration]);
                     }
                 });
             }
@@ -1756,7 +1756,7 @@
                 ) {
                     $("[data-type='elem'][data-hidden=0]", self.$container).each(function () {
                         if ($(this).attr('data-index') !== $(elem.node).attr('data-index')) {
-                            $(this).trigger("click." + pluginName, false);
+                            $(this).trigger("click", false);
                         }
                     });
                 }
@@ -1765,7 +1765,7 @@
             $(elem.node).on("click." + pluginName, hideMapElems);
 
             if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
-                $(elem.node).trigger("click." + pluginName, false);
+                $(elem.node).trigger("click", false);
             }
         },
 
