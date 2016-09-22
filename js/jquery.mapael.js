@@ -1154,12 +1154,12 @@
                 }
 
                 if (p1.plotsOn !== undefined && self.areas[p1.plotsOn] !== undefined) {
-                    var path = self.areas[p1.plotsOn].mapElem;
-                    var bbox = path.getBBox();
-                    var _x = Math.floor(bbox.x + bbox.width / 2.0);
-                    var _y = Math.floor(bbox.y + bbox.height / 2.0);
-                    coordsP1.x = _x;
-                    coordsP1.y = _y;
+                    var p1_path = self.areas[p1.plotsOn].mapElem;
+                    var p1_bbox = p1_path.getBBox();
+                    var p1_x = Math.floor(p1_bbox.x + p1_bbox.width / 2.0);
+                    var p1_y = Math.floor(p1_bbox.y + p1_bbox.height / 2.0);
+                    coordsP1.x = p1_x;
+                    coordsP1.y = p1_y;
                 }
                 else if (p1.latitude !== undefined && p1.longitude !== undefined) {
                     coordsP1 = self.mapConf.getCoords(p1.latitude, p1.longitude);
@@ -1169,12 +1169,12 @@
                 }
 
                 if (p2.plotsOn !== undefined && self.areas[p2.plotsOn] !== undefined) {
-                    var path = self.areas[p2.plotsOn].mapElem;
-                    var bbox = path.getBBox();
-                    var _x = Math.floor(bbox.x + bbox.width / 2.0);
-                    var _y = Math.floor(bbox.y + bbox.height / 2.0);
-                    coordsP2.x = _x;
-                    coordsP2.y = _y;
+                    var p2_path = self.areas[p2.plotsOn].mapElem;
+                    var p2_bbox = p2_path.getBBox();
+                    var p2_x = Math.floor(p2_bbox.x + p2_bbox.width / 2.0);
+                    var p2_y = Math.floor(p2_bbox.y + p2_bbox.height / 2.0);
+                    coordsP2.x = p2_x;
+                    coordsP2.y = p2_y;
                 }
                 else if (p2.latitude !== undefined && p2.longitude !== undefined) {
                     coordsP2 = self.mapConf.getCoords(p2.latitude, p2.longitude);
