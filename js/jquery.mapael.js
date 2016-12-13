@@ -1232,9 +1232,7 @@
          * Update the element "elem" on the map with the new elemOptions options
          */
         updateElem: function (elemOptions, elem, animDuration) {
-
             var self = this;
-
             var bbox;
             var textPosition;
             var plotOffsetX;
