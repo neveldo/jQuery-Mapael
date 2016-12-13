@@ -1221,7 +1221,7 @@
         */
         isAttrsChanged: function(originalAttrs, newAttrs) {
             for (var key in newAttrs) {
-                if (typeof originalAttrs[key] === 'undefined' || newAttrs[key] !== originalAttrs[key]) {
+                if (typeof originalAttrs[key] === 'undefined' || newAttrs[key] !== originalAttrs[key]) {
                     return true;
                 }
             }
