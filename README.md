@@ -88,6 +88,7 @@ Here is the simplest example that shows how to display an empty map of the world
 *   [Map with a range selection for plotted cities](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/range_selection_plotted_cities.html)
 *   [Zoom on click example](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/zoom_on_click.html)
 *   [Map with some transformations performed on SVG plotted points](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/transformations_on_svg_plots.html)
+*   [Map with some transformations performed on SVG plotted points](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/add_cities_on_map_by_double_click.html)
 
 ## License
 
