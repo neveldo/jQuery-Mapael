@@ -1007,7 +1007,6 @@
                         (self.options.areas[id] ? self.options.areas[id] : {}),
                         self.options.legend.area
                     );
-
                     self.updateElem(elemOptions, self.areas[id], animDuration);
                 }
             });
@@ -1218,11 +1217,23 @@
         },
 
         /*
+        * Check wether newAttrs object bring modifications to originalAttrs object
+        */
+        isAttrsChanged: function(originalAttrs, newAttrs) {
+            for (var key in newAttrs) {
+                if (typeof originalAttrs[key] === 'undefined' || newAttrs[key] !== originalAttrs[key]) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        /*
          * Update the element "elem" on the map with the new elemOptions options
          */
         updateElem: function (elemOptions, elem, animDuration) {
             var self = this;
-            var bbox = elem.mapElem.getBBox();
+            var bbox;
             var textPosition;
             var plotOffsetX;
             var plotOffsetY;
@@ -1234,6 +1245,8 @@
             if (elem.textElem) {
                 if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content != elem.textElem.attrs.text)
                     elem.textElem.attr({text: elemOptions.text.content});
+
+                bbox = elem.mapElem.getBBox();
 
                 if (elemOptions.size || (elemOptions.width && elemOptions.height)) {
                     if (elemOptions.type == "image" || elemOptions.type == "svg") {
@@ -1271,13 +1284,20 @@
 
             // Update elements attrs and attrsHover
             self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
-            if (animDuration > 0)
-                elem.mapElem.animate(elemOptions.attrs, animDuration);
-            else
-                elem.mapElem.attr(elemOptions.attrs);
+
+            if (self.isAttrsChanged(elem.mapElem.attrs, elemOptions.attrs)) {
+                if (animDuration > 0)
+                    elem.mapElem.animate(elemOptions.attrs, animDuration);
+                else
+                    elem.mapElem.attr(elemOptions.attrs);
+            }
 
             // Update dimensions of SVG plots
             if (elemOptions.type == "svg") {
+
+                if (bbox === undefined) {
+                    bbox = elem.mapElem.getBBox();
+                }
                 elem.mapElem.transform("m" + (elemOptions.width / elem.mapElem.originalWidth) + ",0,0," + (elemOptions.height / elem.mapElem.originalHeight) + "," + bbox.x + "," + bbox.y);
             }
 
@@ -1395,8 +1415,8 @@
 
             var updateTooltipPosition = function (x, y) {
 
-            	var offsetLeft = 10;
-            	var offsetTop = 20;
+                var offsetLeft = 10;
+                var offsetTop = 20;
 
                 if (typeof elem.tooltip.offset === "object") {
                     if (typeof elem.tooltip.offset.left !== "undefined") {
