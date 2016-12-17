@@ -308,16 +308,19 @@
             $(window).on("resize." + pluginName, self.onResizeEvent);
 
             // Attach resize end handler, and call it once
-            self.$map.on("resizeEnd." + pluginName, function () {
+            self.$map.on("resizeEnd." + pluginName, function (e, isInit) {
                 var containerWidth = self.$map.width();
                 if (self.paper.width != containerWidth) {
                     var newScale = containerWidth / self.mapConf.width;
                     // Set new size
                     self.paper.setSize(containerWidth, self.mapConf.height * newScale);
+
                     // Create plots legend again to take into account the new scale
-                    self.createLegends("plot", self.plots, newScale);
+                    if (isInit || self.options.legend.redrawOnResize) {
+                        self.createLegends("plot", self.plots, newScale);
+                    }
                 }
-            }).trigger("resizeEnd");
+            }).trigger("resizeEnd", [true]);
         },
 
         /*
@@ -331,7 +334,7 @@
             options = $.extend(true, {}, Mapael.prototype.defaultOptions, options);
 
             // Extend legend default options
-            $.each(options.legend, function (type) {
+            $.each(['area', 'plot'], function (key, type) {
                 if ($.isArray(options.legend[type])) {
                     for (var i = 0; i < options.legend[type].length; ++i)
                         options.legend[type][i] = $.extend(true, {}, Mapael.prototype.legendDefaultOptions[type], options.legend[type][i]);
@@ -444,8 +447,8 @@
                 if (fnZoomButtons[type] === undefined) throw new Error("Unknown zoom button '" + type + "'");
                 // Create div with classes, contents and title (for tooltip)
                 var $button = $("<div>").addClass(opt.cssClass)
-                                    .html(opt.content)
-                                    .attr("title", opt.title);
+                    .html(opt.content)
+                    .attr("title", opt.title);
                 // Assign click event
                 $button.on("click." + pluginName, fnZoomButtons[type]);
                 // Append to map
@@ -645,7 +648,7 @@
                 // Make sure we stay in the boundaries
                 newLevel = Math.min(Math.max(newLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
             }
-            
+
             zoomLevel = (1 + newLevel * self.options.map.zoom.step);
 
             if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
@@ -852,7 +855,7 @@
                 if (elem.textElem) {
                     // Set attribute
                     elem.textElem.attr({"opacity": opacity});
-                // For null opacity, hide it
+                    // For null opacity, hide it
                     if (opacity === 0) elem.textElem.hide();
                 }
             }
@@ -1071,10 +1074,10 @@
 
             // Update legends
             if (opt.mapOptions && (
-                (typeof opt.mapOptions.legend === "object")
-                || (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultArea === "object")
-                || (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object")
-            )) {
+                    (typeof opt.mapOptions.legend === "object")
+                    || (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultArea === "object")
+                    || (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object")
+                )) {
                 // Show all elements on the map before updating the legends
                 $("[data-type='elem']", self.$container).each(function (id, elem) {
                     if ($(elem).attr('data-hidden') === "1") {
@@ -1217,8 +1220,8 @@
         },
 
         /*
-        * Check wether newAttrs object bring modifications to originalAttrs object
-        */
+         * Check wether newAttrs object bring modifications to originalAttrs object
+         */
         isAttrsChanged: function(originalAttrs, newAttrs) {
             for (var key in newAttrs) {
                 if (typeof originalAttrs[key] === 'undefined' || newAttrs[key] !== originalAttrs[key]) {
@@ -1421,7 +1424,7 @@
                 if (typeof elem.tooltip.offset === "object") {
                     if (typeof elem.tooltip.offset.left !== "undefined") {
                         offsetLeft = elem.tooltip.offset.left;
-                    }                    
+                    }
                     if (typeof elem.tooltip.offset.top !== "undefined") {
                         offsetTop = elem.tooltip.offset.top;
                     }
@@ -1533,7 +1536,7 @@
             }
 
             // Calculate attrs (and width, height and r (radius)) for legend elements, and yCenter for horizontal legends
-            
+
             for (i = 0, length = legendOptions.slices.length; i < length; ++i) {
                 var yCenterCurrent = 0;
 
@@ -1543,7 +1546,7 @@
                     legendOptions.slices[i].legendSpecificAttrs = {};
                 }
 
-                 $.extend(true, sliceOptions[i].attrs, legendOptions.slices[i].legendSpecificAttrs);
+                $.extend(true, sliceOptions[i].attrs, legendOptions.slices[i].legendSpecificAttrs);
 
                 if (legendType == "area") {
                     if (sliceOptions[i].attrs.width === undefined)
@@ -1564,8 +1567,6 @@
                     if (sliceOptions[i].attrs.r === undefined)
                         sliceOptions[i].attrs.r = sliceOptions[i].size / 2;
                 }
-
-                
 
                 // Compute yCenter for this legend slice
                 yCenterCurrent = legendOptions.marginBottomTitle;
@@ -1849,7 +1850,7 @@
             var outBehaviour = function () {
                 clearTimeout(mouseoverTimeout);
                 mouseoutTimeout = setTimeout(function(){
-                    self.elemOut(mapElem, textElem);                
+                    self.elemOut(mapElem, textElem);
                 }, 120);
             };
 
@@ -2053,13 +2054,13 @@
         },
 
         /*
-          * Check for Raphael bug regarding drawing while beeing hidden (under display:none)
-          * See https://github.com/neveldo/jQuery-Mapael/issues/135
-          * @return true/false
-          *
-          * Wants to override this behavior? Use prototype overriding:
-          *     $.mapael.prototype.isRaphaelBBoxBugPresent = function() {return false;};
-          */
+         * Check for Raphael bug regarding drawing while beeing hidden (under display:none)
+         * See https://github.com/neveldo/jQuery-Mapael/issues/135
+         * @return true/false
+         *
+         * Wants to override this behavior? Use prototype overriding:
+         *     $.mapael.prototype.isRaphaelBBoxBugPresent = function() {return false;};
+         */
         isRaphaelBBoxBugPresent: function(){
             var self = this;
             // Draw text, then get its boundaries
@@ -2182,6 +2183,7 @@
                 }
             },
             legend: {
+                redrawOnResize: true,
                 area: [],
                 plot: []
             },
