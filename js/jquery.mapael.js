@@ -316,7 +316,7 @@
                     self.paper.setSize(containerWidth, self.mapConf.height * newScale);
 
                     // Create plots legend again to take into account the new scale
-                    if (isInit || self.options.legend.redrawOnResize) {
+                    if (isInit || self.options.legend.redrawOnResize) {
                         self.createLegends("plot", self.plots, newScale);
                     }
                 }
