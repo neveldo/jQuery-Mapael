@@ -1244,6 +1244,10 @@
             if (elemOptions.value !== undefined)
                 elem.value = elemOptions.value;
 
+            if (elemOptions.toFront === true) {
+                elem.mapElem.toFront();
+            }
+
             // Update the label
             if (elem.textElem) {
                 if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content != elem.textElem.attrs.text)
