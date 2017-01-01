@@ -283,7 +283,7 @@
             for (var id in self.createdLegends) {
                 self.createdLegends[id].container.empty();
                 self.createdLegends[id].container.html(self.createdLegends[id].initialHTMLContent);
-            };
+            }
 
             // Remove mapael class
             self.$container.removeClass(pluginName);
