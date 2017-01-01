@@ -521,6 +521,11 @@
                 });
             }
 
+            // When the user drag the map, prevent to move the clicked element instead of dragging the map (behaviour seen with Firefox)
+            self.$map.on("dragstart", function() {
+                return false;
+            });
+
             // Panning
             $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend." + pluginName : ""), function () {
                 mousedown = false;
