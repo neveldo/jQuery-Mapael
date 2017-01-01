@@ -50,9 +50,6 @@
         // the global options
         self.options = self.extendDefaultOptions(options);
 
-        // Save initial HTML content (used by destroy method)
-        self.initialHTMLContent = self.$container.html();
-
         // zoom TimeOut handler (used to set and clear)
         self.zoomTO = 0;
 
@@ -85,7 +82,13 @@
         self.animationIntervalID = null;
 
         // Map subcontainer jQuery object
-        self.$map = {};
+        self.$map = $("." + self.options.map.cssClass, self.container);
+
+        // Save initial HTML content (used by destroy method)
+        self.initialMapHTMLContent = self.$map.html();
+
+        // Allow to store legend containers and initial contents (used by destroy method)
+        self.createdLegends = {};
 
         // The tooltip jQuery object
         self.$tooltip = {};
@@ -137,7 +140,7 @@
             self.$tooltip = $("<div>").addClass(self.options.map.tooltip.cssClass).css("display", "none");
 
             // Get the map container, empty it then append tooltip
-            self.$map = $("." + self.options.map.cssClass, self.container).empty().append(self.$tooltip);
+            self.$map.empty().append(self.$tooltip);
 
             // Get the map from $.mapael or $.fn.mapael (backward compatibility)
             if ($[pluginName] && $[pluginName].maps && $[pluginName].maps[self.options.map.name]) {
@@ -265,17 +268,29 @@
 
             // Detach all event listeners attached to the container
             self.$container.off("." + pluginName);
+            self.$map.off("." + pluginName);
 
-            // Empty the container (this will also detach all event listeners)
-            self.$container.empty();
             // Detach the global resize event handler
             if (self.onResizeEvent) $(window).off("resize." + pluginName, self.onResizeEvent);
+
+            // Empty the container (this will also detach all event listeners)
+            self.$map.empty();
+
             // Replace initial HTML content
-            self.$container.html(self.initialHTMLContent);
+            self.$map.html(self.initialMapHTMLContent);
+
+            // Empty legend containers and replace initial HTML content
+            for (var id in self.createdLegends) {
+                self.createdLegends[id].container.empty();
+                self.createdLegends[id].container.html(self.createdLegends[id].initialHTMLContent);
+            };
+
             // Remove mapael class
             self.$container.removeClass(pluginName);
+
             // Remove the data
             self.$container.removeData(pluginName);
+
             // Remove all internal reference
             self.container = undefined;
             self.$container = undefined;
@@ -310,6 +325,7 @@
             // Attach resize end handler, and call it once
             self.$map.on("resizeEnd." + pluginName, function (e, isInit) {
                 var containerWidth = self.$map.width();
+
                 if (self.paper.width != containerWidth) {
                     var newScale = containerWidth / self.mapConf.width;
                     // Set new size
@@ -1523,7 +1539,17 @@
             var sliceOptions = [];
             var length = 0;
 
-            $legend = $("." + legendOptions.cssClass, self.$container).empty();
+            $legend = $("." + legendOptions.cssClass, self.$container);
+
+            if (typeof self.createdLegends[legendOptions.cssClass] ==='undefined') {
+                self.createdLegends[legendOptions.cssClass] = {
+                    container: $legend,
+                    initialHTMLContent: $legend.html()
+                };
+            }
+
+            $legend.empty();
+
             legendPaper = new Raphael($legend.get(0));
             // Set some data to object
             $(legendPaper.canvas).attr({"data-type": legendType, "data-index": legendIndex});
