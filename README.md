@@ -92,7 +92,7 @@ Here is the simplest example that shows how to display an empty map of the world
 
 ## License
 
-Copyright (C) 2013-2016 [Vincent Brouté](http://www.vincentbroute.fr)
+Copyright (C) 2013-2017 [Vincent Brouté](http://www.vincentbroute.fr)
 
 jQuery Mapael is licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
