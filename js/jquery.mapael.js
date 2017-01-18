@@ -1724,7 +1724,7 @@
                         self.setHoverOptions(elem, sliceOptions[i].attrs, sliceOptions[i].attrs);
                         self.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
                         self.setHover(elem, label);
-                        self.handleClickOnLegendElem(legendOptions, sliceOptions[i], label, elem, elems, legendIndex);
+                        self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
                     }
                 }
             }
@@ -1748,6 +1748,14 @@
          */
         handleClickOnLegendElem: function (legendOptions, sliceOptions, label, elem, elems, legendIndex) {
             var self = this;
+
+            /**
+             *
+             * @param e
+             * @param hideOtherElems : option used for the 'exclusive' mode to enabled only one item from the legend
+             * at once
+             * @param animDuration : used in the 'update' event in order to apply the same animDuration on the legend items
+             */
             var hideMapElems = function (e, hideOtherElems, animDuration) {
                 var elemValue = 0;
                 var hidden = $(label.node).attr('data-hidden');
@@ -1777,11 +1785,8 @@
                         elemValue = elems[id].value;
                     }
 
-                    if ((sliceOptions.sliceValue !== undefined && elemValue == sliceOptions.sliceValue)
-                        || ((sliceOptions.sliceValue === undefined)
-                        && (sliceOptions.min === undefined || elemValue >= sliceOptions.min)
-                        && (sliceOptions.max === undefined || elemValue <= sliceOptions.max))
-                    ) {
+                    // Hide elements whose value matches with the slice of the clicked legend item
+                    if (self.getLegendSlice(elemValue, legendOptions) === sliceOptions) {
                         (function (id) {
                             if (hidden === '0') { // we want to hide this element
                                 hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
