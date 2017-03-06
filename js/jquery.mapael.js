@@ -484,7 +484,7 @@
                         "y": coord.y
                     });
 
-                    return false;
+                    e.preventDefault();
                 });
             }
 
