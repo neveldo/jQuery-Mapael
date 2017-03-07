@@ -5,7 +5,7 @@
  *
  * Version: 2.0.0
  *
- * Copyright (c) 2017 Vincent Brouté (http://www.vincentbroute.fr/mapael)
+ * Copyright (c) 2017 Vincent Brouté (https://www.vincentbroute.fr/mapael)
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
  *
  * Thanks to Indigo744
@@ -248,7 +248,7 @@
             // Hook that allows to add custom processing on the map
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
-            $(self.paper.desc).append(" and Mapael " + self.version + " (http://www.vincentbroute.fr/mapael/)");
+            $(self.paper.desc).append(" and Mapael " + self.version + " (https://www.vincentbroute.fr/mapael/)");
         },
 
         /*

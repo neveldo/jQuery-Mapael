@@ -3,11 +3,11 @@
 [![Build Status](https://travis-ci.org/neveldo/jQuery-Mapael.svg?branch=master)](https://travis-ci.org/neveldo/jQuery-Mapael)
 [![CDNJS](https://img.shields.io/cdnjs/v/jquery-mapael.svg)](https://cdnjs.com/libraries/jquery-mapael)
 
-The complete documentation is available on [Mapael website](http://www.vincentbroute.fr/mapael) (repository:  ['neveldo/mapael-documentation'](https://github.com/neveldo/mapael-documentation)).
+The complete documentation is available on [Mapael website](https://www.vincentbroute.fr/mapael) (repository:  ['neveldo/mapael-documentation'](https://github.com/neveldo/mapael-documentation)).
 
 Additional maps are stored in the repository ['neveldo/mapael-maps'](https://github.com/neveldo/mapael-maps).
 
-The documentation of Raphael.js is available [here](http://dmitrybaranovskiy.github.io/raphael/reference.html) ([mirror](http://www.vincentbroute.fr/mapael/raphael-js-documentation/)).
+The documentation of Raphael.js is available [here](http://dmitrybaranovskiy.github.io/raphael/reference.html) ([mirror](https://www.vincentbroute.fr/mapael/raphael-js-documentation/)).
 
 ## Overview
 
@@ -17,7 +17,7 @@ For example, with Mapael, you can display a map of the world with clickable coun
 
 Mapael supports all modern browsers and Internet Explorer 9+. For older versions of IE, you can load jQuery 1.11.x and Raphael.js 2.1.2 as dependencies, most of the jQuery Mapael features should work fine.
 
-![Dataviz example](http://www.vincentbroute.fr/mapael/assets/img/world-example.png)
+![Dataviz example](https://www.vincentbroute.fr/mapael/assets/img/world-example.png)
 [See this example !](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/dataviz_example.html)
 
 ## Key features
@@ -92,7 +92,7 @@ Here is the simplest example that shows how to display an empty map of the world
 
 ## License
 
-Copyright (C) 2013-2017 [Vincent Brouté](http://www.vincentbroute.fr)
+Copyright (C) 2013-2017 [Vincent Brouté](https://www.vincentbroute.fr)
 
 jQuery Mapael is licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
