@@ -425,6 +425,10 @@
                 }
             }
 
+            if (elemOptions.cssClass !== undefined) {
+                $(elem.mapElem.node).addClass(elemOptions.cssClass);
+            }
+
             $(elem.mapElem.node).attr("data-id", id);
         },
 
@@ -2142,7 +2146,8 @@
                             "animDuration": 300
                         }
                     },
-                    target: "_self"
+                    target: "_self",
+                    cssClass: "area"
                 },
                 defaultPlot: {
                     type: "circle",
@@ -2169,7 +2174,8 @@
                             animDuration: 300
                         }
                     },
-                    target: "_self"
+                    target: "_self",
+                    cssClass: "plot"
                 },
                 defaultLink: {
                     factor: 0.5,
@@ -2192,7 +2198,8 @@
                             animDuration: 300
                         }
                     },
-                    target: "_self"
+                    target: "_self",
+                    cssClass: "link"
                 },
                 zoom: {
                     enabled: false,
