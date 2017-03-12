@@ -14,7 +14,7 @@
 (function (factory) {
     if (typeof exports === 'object') {
         // CommonJS
-        module.exports = factory(require('jquery'), require('raphael'), require('mousewheel'));
+        module.exports = factory(require('jquery'), require('raphael'), require('jquery-mousewheel'));
     } else if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery', 'raphael', 'mousewheel'], factory);
@@ -2314,5 +2314,7 @@
             $.data(this, pluginName, new Mapael(this, options));
         });
     };
+
+    return Mapael;
 
 }));
