@@ -3,7 +3,7 @@
  * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)
  * Requires jQuery, raphael.js and jquery.mousewheel
  *
- * Version: 2.0.0
+ * Version: 2.1.0
  *
  * Copyright (c) 2017 Vincent Brouté (https://www.vincentbroute.fr/mapael)
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
@@ -30,7 +30,7 @@
     var pluginName = "mapael";
 
     // Version number of jQuery Mapael. See http://semver.org/ for more information.
-    var version = "2.0.0-dev";
+    var version = "2.1.0";
 
     /*
      * Mapael constructor
