@@ -1,6 +1,21 @@
 # ChangeLog
 Change log for jQuery-Mapael
 
+## 2.1.0 - March 13, 2017
+
+- Feature : Allow to add custom CSS class to areas, plotted points and links ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/78de6aa1804b49bec93aa6743a8a061f82d742e6))
+- Bugfix : Fix load for CommonJS ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/a83bd3a11e635ed9ffe99c070edb275f5c2cc9e4))
+- Bugfix : Restaure 'mousewheel' event propagation ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/ff74f9b4961d3af1513c7d7f689b36ca60751dd9))
+- Bugfix : Fix elements hidding through clicks on legend items when some values are straddling two different slices in hideMapElems() function ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/7f38564085eed2445ccecf30bbf7d267984de0cf))
+- Bugfix : Prevent to move the clicked element instead of dragging the map (behaviour seen with Firefox) ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/c4efaae922fb901b4f5180b3e6d7fc212939665d))
+- Bugfix : Fix destroy() in order to empty map and legends containers instead of the main container ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/d66b11c02d858a4ae2661766833181daadd95f6d))
+- Feature : Add toFront option available on area/plot/link options when triggering ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/5b4ace8f602ea911b0513a5e601ace04cd851a27))
+- Feature : Add redrawOnResize option ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/292a5b4c428db028b409d7956587797296de9ca1))
+- Improve updateElem() performance ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/a2923c97c261bdad5399730b64cf623d9f71cb56))
+- Bugfix : Fix namespaces for events bindings ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/ae9e200591cbbe5e41ea449f4bc9214bfdcd4a79))
+- Feature : Added plotsOn option to add points on areas' centers ([Licht-T](https://github.com/neveldo/jQuery-Mapael/commit/898784514b124547e898e5bbf0d2374f0fb4dff0))
+- Bugfix : Fix Western Sahara's code in world map ([dragoscirjan](https://github.com/neveldo/jQuery-Mapael/commit/3a329b590d2274b71ef131cc2370a3330a5e93b7))
+
 ## 2.0.0 - June 12, 2016
 
 - Feature : Update jQuery to v3.0.0 and Raphael.js to v2.2.0 (neveldo)
