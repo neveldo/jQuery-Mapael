@@ -23,7 +23,7 @@ Mapael supports all modern browsers and Internet Explorer 9+. For older versions
 
 ## Key features
 
-*   based on **jQuery and raphael.js**. And optionnaly based on jQuery mousewheel for the zoom on mousewheel feature.
+*   based on **jQuery and raphael.js**. And optionally based on jQuery mousewheel for the zoom on mousewheel feature.
 *   **Interactive.** Set href, tooltip, add events and many more on the elements of your map.
 *   **Plottable cities**  Cities can be plotted on the map with circles, squares, images or SVG paths by their latitude and longitude
 *   **Areas and plotted points colorization with legends.** Mapael automatically sets attributes like color and size to each area and plotted point displayed on map and generates an interactive legend in order to build pretty dataviz
