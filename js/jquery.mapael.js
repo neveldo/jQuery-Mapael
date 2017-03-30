@@ -1266,6 +1266,8 @@
             var plotOffsetX;
             var plotOffsetY;
 
+            elem.mapElem.toFront();
+
             if (elemOptions.value !== undefined)
                 elem.value = elemOptions.value;
 
@@ -1275,6 +1277,9 @@
 
             // Update the label
             if (elem.textElem) {
+
+                elem.textElem.toFront();
+
                 if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content != elem.textElem.attrs.text)
                     elem.textElem.attr({text: elemOptions.text.content});
 
@@ -1946,10 +1951,12 @@
         elemOut: function (mapElem, textElem) {
             var self = this;
             // Set mapElem
+            mapElem.toFront();
             if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
             else mapElem.attr(mapElem.originalAttrs);
             // Set textElem
             if (textElem) {
+                textElem.toFront();
                 if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
                 else textElem.attr(textElem.originalAttrs);
             }
