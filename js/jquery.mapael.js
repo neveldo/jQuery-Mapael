@@ -381,7 +381,13 @@
                 bbox = elem.mapElem.getBBox();
                 textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
                 elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
-                elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
+                
+                var dx = 0, dy = 0;
+                if(typeof elemOptions.text.attrs != "undefined" && typeof elemOptions.text.attrs.dx != "undefined") dx = elemOptions.text.attrs.dx;
+                if(typeof elemOptions.text.attrs != "undefined" && typeof elemOptions.text.attrs.dy != "undefined") dy = elemOptions.text.attrs.dy;
+                elem.textElem = self.paper.text(textPosition.x + dx, textPosition.y + dy, elemOptions.text.content).attr(elemOptions.text.attrs);
+
+                //elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
                 $(elem.textElem.node).attr("data-id", id);
             }
 
