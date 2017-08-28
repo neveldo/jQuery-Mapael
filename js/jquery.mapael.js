@@ -426,7 +426,17 @@
             }
 
             if (elemOptions.cssClass !== undefined) {
-                $(elem.mapElem.node).addClass(elemOptions.cssClass);
+                //$(elem.mapElem.node).addClass(elemOptions.cssClass);
+                var classes = $(elem.mapElem.node).attr("class");
+                if(classes)
+                {
+                    classes += " "+elemOptions.cssClass;
+                }
+                else
+                {
+                    classes = elemOptions.cssClass;
+                }
+                $(elem.mapElem.node).attr("class",classes);
             }
 
             $(elem.mapElem.node).attr("data-id", id);
