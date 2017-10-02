@@ -1927,8 +1927,6 @@
 
             /* Handle tooltip position update */
             if (elem.tooltip !== undefined) {
-                console.log(elem);
-
                 var mouseX = event.pageX;
                 var mouseY = event.pageY;
 
@@ -1954,7 +1952,7 @@
                     if (elem.tooltip.overflow.right === true) {
                         tooltipPosition.left = mouseX - self.$map.offset().left + 10;
                     }
-                    if (selem.tooltip.overflow.bottom === true) {
+                    if (elem.tooltip.overflow.bottom === true) {
                         tooltipPosition.top = mouseY - self.$map.offset().top + 20;
                     }
                 }
