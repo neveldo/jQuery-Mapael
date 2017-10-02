@@ -281,9 +281,12 @@
             self.$map.html(self.initialMapHTMLContent);
 
             // Empty legend containers and replace initial HTML content
-            $.each(self.legends, function(legendIndex) {
-                self.legends[legendIndex].container.empty();
-                self.legends[legendIndex].container.html(self.legends[legendIndex].initialHTMLContent);
+            $.each(self.legends, function(legendType) {
+                $.each(self.legends[legendType], function(legendIndex) {
+                    var legend = self.legends[legendType][legendIndex];
+                    legend.container.empty();
+                    legend.container.html(legend.initialHTMLContent);
+                });
             });
 
             // Remove mapael class
@@ -1879,13 +1882,14 @@
                 legendsOptions = [self.options.legend[legendType]];
             }
 
+            self.legends[legendType] = {};
             for (var j = 0; j < legendsOptions.length; ++j) {
                 // Check for class existence
                 if (legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass, self.$container).length === 0) {
                     throw new Error("The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.");
                 }
                 if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
-                    self.legends[j] = self.drawLegend(legendsOptions[j], legendType, elems, scale, j);
+                    self.legends[legendType][j] = self.drawLegend(legendsOptions[j], legendType, elems, scale, j);
                 }
             }
         },
