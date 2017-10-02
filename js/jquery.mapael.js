@@ -390,6 +390,13 @@
                         self.elemEnter(self.plots[id]);
                     } else if (type === 'link' || type === 'link-text') {
                         self.elemEnter(self.links[id]);
+                    } else if (type === 'legend-elem' || type === 'legend-label') {
+                        var legendIndex = $elem.attr('data-legend-id');
+                        if (self.legends[legendIndex] !== undefined &&
+                            self.legends[legendIndex].elems[id] !== undefined)
+                        {
+                            self.elemEnter(self.legends[legendIndex].elems[id]);
+                        }
                     }
                 }, 120);
             });
@@ -412,6 +419,8 @@
                         self.elemHover(self.plots[id], event);
                     } else if (type === 'link' || type === 'link-text') {
                         self.elemHover(self.links[id], event);
+                    } else if (type === 'legend-elem' || type === 'legend-label') {
+                        /* Nothing to do */
                     }
 
                 }, 10);
@@ -436,6 +445,13 @@
                     self.elemOut(self.plots[id]);
                 } else if (type === 'link' || type === 'link-text') {
                     self.elemOut(self.links[id]);
+                } else if (type === 'legend-elem' || type === 'legend-label') {
+                    var legendIndex = $elem.attr('data-legend-id');
+                    if (self.legends[legendIndex] !== undefined &&
+                        self.legends[legendIndex].elems[id] !== undefined)
+                    {
+                        self.elemOut(self.legends[legendIndex].elems[id]);
+                    }
                 }
             });
 
