@@ -1539,7 +1539,6 @@
             var height = 0;
             var title = null;
             var legendElems = {};
-            var legendElemBBox = {};
             var i = 0;
             var x = 0;
             var y = 0;
@@ -1622,11 +1621,10 @@
 
             // Draw legend elements (circle, square or image in vertical or horizontal mode)
             for (i = 0, length = sliceOptions.length; i < length; ++i) {
-                // Init element content
-                legendElems[i] = {
-                    elem: {},
-                    label: {}
-                };
+                var legendElem = {};
+                var legendElemBBox = {};
+                var legendLabel = {};
+
                 if (sliceOptions[i].display === undefined || sliceOptions[i].display === true) {
                     if (legendType == "area") {
                         if (legendOptions.mode == "horizontal") {
@@ -1637,7 +1635,7 @@
                             y = height;
                         }
 
-                        legendElems[i].elem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
+                        legendElem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
                     } else if (sliceOptions[i].type == "square") {
                         if (legendOptions.mode == "horizontal") {
                             x = width + legendOptions.marginLeft;
@@ -1647,7 +1645,7 @@
                             y = height;
                         }
 
-                        legendElems[i].elem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
+                        legendElem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
 
                     } else if (sliceOptions[i].type == "image" || sliceOptions[i].type == "svg") {
                         if (legendOptions.mode == "horizontal") {
@@ -1659,15 +1657,15 @@
                         }
 
                         if (sliceOptions[i].type == "image") {
-                            legendElems[i].elem = legendPaper.image(
+                            legendElem = legendPaper.image(
                                 sliceOptions[i].url, x, y, scale * sliceOptions[i].attrs.width, scale * sliceOptions[i].attrs.height);
                         } else {
-                            legendElems[i].elem = legendPaper.path(sliceOptions[i].path);
+                            legendElem = legendPaper.path(sliceOptions[i].path);
 
                             if (sliceOptions[i].attrs.transform === undefined) {
                                 sliceOptions[i].attrs.transform = "";
                             }
-                            legendElemBBox = legendElems[i].elem.getBBox();
+                            legendElemBBox = legendElem.getBBox();
                             sliceOptions[i].attrs.transform = "m" + ((scale * sliceOptions[i].width) / legendElemBBox.width) + ",0,0," + ((scale * sliceOptions[i].height) / legendElemBBox.height) + "," + x + "," + y + sliceOptions[i].attrs.transform;
                         }
                     } else {
@@ -1678,15 +1676,15 @@
                             x = legendOptions.marginLeft + scale * (sliceOptions[i].attrs.r);
                             y = height + scale * (sliceOptions[i].attrs.r);
                         }
-                        legendElems[i].elem = legendPaper.circle(x, y, scale * (sliceOptions[i].attrs.r));
+                        legendElem = legendPaper.circle(x, y, scale * (sliceOptions[i].attrs.r));
                     }
 
                     // Set attrs to the element drawn above
                     delete sliceOptions[i].attrs.width;
                     delete sliceOptions[i].attrs.height;
                     delete sliceOptions[i].attrs.r;
-                    legendElems[i].elem.attr(sliceOptions[i].attrs);
-                    legendElemBBox = legendElems[i].elem.getBBox();
+                    legendElem.attr(sliceOptions[i].attrs);
+                    legendElemBBox = legendElem.getBBox();
 
                     // Draw the label associated with the element
                     if (legendOptions.mode == "horizontal") {
@@ -1697,12 +1695,12 @@
                         y = height + (legendElemBBox.height / 2);
                     }
 
-                    legendElems[i].label = legendPaper.text(x, y, sliceOptions[i].label).attr(legendOptions.labelAttrs);
+                    legendLabel = legendPaper.text(x, y, sliceOptions[i].label).attr(legendOptions.labelAttrs);
 
                     // Update the width and height for the paper
                     if (legendOptions.mode == "horizontal") {
                         var currentHeight = legendOptions.marginBottom + legendElemBBox.height;
-                        width += legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel + legendElems[i].label.getBBox().width;
+                        width += legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel + legendLabel.getBBox().width;
                         if (sliceOptions[i].type != "image" && legendType != "area") {
                             currentHeight += legendOptions.marginBottomTitle;
                         }
@@ -1712,23 +1710,41 @@
                         }
                         height = Math.max(height, currentHeight);
                     } else {
-                        width = Math.max(width, legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel + legendElems[i].label.getBBox().width);
+                        width = Math.max(width, legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel + legendLabel.getBBox().width);
                         height += legendOptions.marginBottom + legendElemBBox.height;
                     }
 
-                    $(legendElems[i].elem.node).attr({"data-type": "legend-elem", "data-id": i, "data-hidden": 0});
-                    $(legendElems[i].label.node).attr({"data-type": "legend-label", "data-id": i, "data-hidden": 0});
+                    // Set some data to elements
+                    $(legendElem.node).attr({
+                        "data-legend-id": legendIndex,
+                        "data-type": "legend-elem",
+                        "data-id": i,
+                        "data-hidden": 0
+                    });
+                    $(legendLabel.node).attr({
+                        "data-legend-id": legendIndex,
+                        "data-type": "legend-label",
+                        "data-id": i,
+                        "data-hidden": 0
+                    });
 
                     // Hide map elements when the user clicks on a legend item
                     if (legendOptions.hideElemsOnClick.enabled) {
                         // Hide/show elements when user clicks on a legend element
-                        legendElems[i].label.attr({cursor: "pointer"});
-                        legendElems[i].elem.attr({cursor: "pointer"});
+                        legendLabel.attr({cursor: "pointer"});
+                        legendElem.attr({cursor: "pointer"});
 
-                        self.setHoverOptions(legendElems[i].elem, sliceOptions[i].attrs, sliceOptions[i].attrs);
-                        self.setHoverOptions(legendElems[i].label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
-                        self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], legendElems[i].label, legendElems[i].elem, elems, legendIndex);
+                        self.setHoverOptions(legendElem, sliceOptions[i].attrs, sliceOptions[i].attrs);
+                        self.setHoverOptions(legendLabel, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
+                        self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], legendLabel, legendElem, elems, legendIndex);
                     }
+
+                    // Set array content
+                    // We use similar names like map/plots/links
+                    legendElems[i] = {
+                        mapElem: legendElem,
+                        textElem: legendLabel
+                    };
                 }
             }
 
