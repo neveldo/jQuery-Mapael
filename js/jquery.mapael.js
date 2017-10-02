@@ -243,6 +243,9 @@
                 self.onShowElementsInRange(e, opt);
             });
 
+            // Attach delegated events
+            self.initDelegatedMapEvents();
+
             // Hook that allows to add custom processing on the map
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
@@ -361,6 +364,83 @@
         },
 
         /*
+         * Init all delegated events for the whole map:
+         *  mouseover
+         *  mousemove
+         *  mouseout
+         */
+        initDelegatedMapEvents: function() {
+            var self = this;
+
+            /* Attach mouseover event delegation
+             * Note: we filter the event with a timeout to reduce the firing when the mouse moves quickly
+             */
+            var mapMouseOverTimeoutID;
+            self.$map.on("mouseover." + pluginName, "[data-id]", function () {
+                var elem = this;
+                clearTimeout(mapMouseOverTimeoutID);
+                mapMouseOverTimeoutID = setTimeout(function(){
+                    var $elem = $(elem);
+                    var id = $elem.attr('data-id');
+                    var type = $elem.attr('data-type');
+
+                    if (type === 'area' || type === 'area-text') {
+                        self.elemEnter(self.areas[id]);
+                    } else if (type === 'plot' || type === 'plot-text') {
+                        self.elemEnter(self.plots[id]);
+                    } else if (type === 'link' || type === 'link-text') {
+                        self.elemEnter(self.links[id]);
+                    }
+                }, 120);
+            });
+
+            /* Attach mousemove event delegation
+             * Note: timeout filtering is small to update the Tooltip position fast
+             */
+            var mapMouseMoveTimeoutID;
+            self.$map.on("mousemove." + pluginName, "[data-id]", function (event) {
+                var elem = this;
+                clearTimeout(mapMouseMoveTimeoutID);
+                mapMouseMoveTimeoutID = setTimeout(function(){
+                    var $elem = $(elem);
+                    var id = $elem.attr('data-id');
+                    var type = $elem.attr('data-type');
+
+                    if (type === 'area' || type === 'area-text') {
+                        self.elemHover(self.areas[id], event);
+                    } else if (type === 'plot' || type === 'plot-text') {
+                        self.elemHover(self.plots[id], event);
+                    } else if (type === 'link' || type === 'link-text') {
+                        self.elemHover(self.links[id], event);
+                    }
+
+                }, 10);
+            });
+
+            /* Attach mouseout event delegation
+             * Note: we don't perform any timeout filtering to clear & reset elem ASAP
+             * Otherwise an element may be stuck in 'hover' state (which is NOT good)
+             */
+            self.$map.on("mouseout." + pluginName, "[data-id]", function () {
+                var elem = this;
+                // Clear any
+                clearTimeout(mapMouseOverTimeoutID);
+                clearTimeout(mapMouseMoveTimeoutID);
+                var $elem = $(elem);
+                var id = $elem.attr('data-id');
+                var type = $elem.attr('data-type');
+
+                if (type === 'area' || type === 'area-text') {
+                    self.elemOut(self.areas[id]);
+                } else if (type === 'plot' || type === 'plot-text') {
+                    self.elemOut(self.plots[id]);
+                } else if (type === 'link' || type === 'link-text') {
+                    self.elemOut(self.links[id]);
+                }
+            });
+        },
+
+        /*
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
         initElem: function (elem, elemOptions, id, type) {
@@ -393,22 +473,9 @@
             // Set hover option for textElem
             if (elem.textElem) self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
 
-            // Set hover behavior only if attrsHover is set for area or for text
-            if (($.isEmptyObject(elemOptions.attrsHover) === false) ||
-                (elem.textElem && $.isEmptyObject(elemOptions.text.attrsHover) === false)) {
-                // Set hover behavior
-                self.setHover(elem.mapElem, elem.textElem);
-            }
-
             // Init the tooltip
             if (elemOptions.tooltip) {
-                elem.mapElem.tooltip = elemOptions.tooltip;
-                self.setTooltip(elem.mapElem);
-
-                if (elemOptions.text && elemOptions.text.content !== undefined) {
-                    elem.textElem.tooltip = elemOptions.tooltip;
-                    self.setTooltip(elem.textElem);
-                }
+                elem.tooltip = elemOptions.tooltip;
             }
 
             // Init the link
@@ -912,8 +979,6 @@
             // This function remove an element using animation (or not, depending on animDuration)
             // Used for deletePlotKeys and deleteLinkKeys
             var fnRemoveElement = function (elem) {
-                // Unset all event handlers
-                self.unsetHover(elem.mapElem, elem.textElem);
                 if (animDuration > 0) {
                     elem.mapElem.animate({"opacity": 0}, animDuration, "linear", function () {
                         elem.mapElem.remove();
@@ -1335,12 +1400,7 @@
 
             // Update the tooltip
             if (elemOptions.tooltip) {
-                if (elem.mapElem.tooltip === undefined) {
-                    self.setTooltip(elem.mapElem);
-                    if (elem.textElem) self.setTooltip(elem.textElem);
-                }
-                elem.mapElem.tooltip = elemOptions.tooltip;
-                if (elem.textElem) elem.textElem.tooltip = elemOptions.tooltip;
+                elem.tooltip = elemOptions.tooltip;
             }
 
             // Update the link
@@ -1435,74 +1495,6 @@
             $(elem.node).on("click." + pluginName, function () {
                 if (!self.panning && elem.href)
                     window.open(elem.href, elem.target);
-            });
-        },
-
-        /*
-         * Set a tooltip for the areas and plots
-         * @param elem area or plot element
-         * @param content the content to set in the tooltip
-         */
-        setTooltip: function (elem) {
-            var self = this;
-            var tooltipTO = 0;
-            var cssClass = self.$tooltip.attr('class');
-
-
-
-            var updateTooltipPosition = function (x, y) {
-
-                var offsetLeft = 10;
-                var offsetTop = 20;
-
-                if (typeof elem.tooltip.offset === "object") {
-                    if (typeof elem.tooltip.offset.left !== "undefined") {
-                        offsetLeft = elem.tooltip.offset.left;
-                    }
-                    if (typeof elem.tooltip.offset.top !== "undefined") {
-                        offsetTop = elem.tooltip.offset.top;
-                    }
-                }
-
-                var tooltipPosition = {
-                    "left": Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5, x - self.$map.offset().left + offsetLeft),
-                    "top": Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5, y - self.$map.offset().top + offsetTop)
-                };
-
-                if (typeof elem.tooltip.overflow === "object") {
-                    if (elem.tooltip.overflow.right === true) {
-                        tooltipPosition.left = x - self.$map.offset().left + 10;
-                    }
-                    if (selem.tooltip.overflow.bottom === true) {
-                        tooltipPosition.top = y - self.$map.offset().top + 20;
-                    }
-                }
-
-                self.$tooltip.css(tooltipPosition);
-            };
-
-            $(elem.node).on("mouseover." + pluginName, function (e) {
-                tooltipTO = setTimeout(
-                    function () {
-                        self.$tooltip.attr("class", cssClass);
-                        if (elem.tooltip !== undefined) {
-                            if (elem.tooltip.content !== undefined) {
-                                // if tooltip.content is function, call it. Otherwise, assign it directly.
-                                var content = (typeof elem.tooltip.content === "function") ? elem.tooltip.content(elem) : elem.tooltip.content;
-                                self.$tooltip.html(content).css("display", "block");
-                            }
-                            if (elem.tooltip.cssClass !== undefined) {
-                                self.$tooltip.addClass(elem.tooltip.cssClass);
-                            }
-                        }
-                        updateTooltipPosition(e.pageX, e.pageY);
-                    }, 120
-                );
-            }).on("mouseout." + pluginName, function () {
-                clearTimeout(tooltipTO);
-                self.$tooltip.css("display", "none");
-            }).on("mousemove." + pluginName, function (e) {
-                updateTooltipPosition(e.pageX, e.pageY);
             });
         },
 
@@ -1732,7 +1724,6 @@
 
                         self.setHoverOptions(elem, sliceOptions[i].attrs, sliceOptions[i].attrs);
                         self.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
-                        self.setHover(elem, label);
                         self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
                     }
                 }
@@ -1880,87 +1871,129 @@
         },
 
         /*
-         * Set the hover behavior (mouseover & mouseout) for plots and areas
-         * @param mapElem the map element
-         * @param textElem the optional text element (within the map element)
+         * Set the behaviour when mouse enters element ("mouseover" event)
+         * @param elem the map element
          */
-        setHover: function (mapElem, textElem) {
+        elemEnter: function (elem) {
             var self = this;
-            var $mapElem = {};
-            var $textElem = {};
-            var mouseoverTimeout = 0;
-            var mouseoutTimeout = 0;
-            var overBehaviour = function () {
-                clearTimeout(mouseoutTimeout);
-                mouseoverTimeout = setTimeout(function () {
-                    self.elemHover(mapElem, textElem);
-                }, 120);
-            };
-            var outBehaviour = function () {
-                clearTimeout(mouseoverTimeout);
-                mouseoutTimeout = setTimeout(function(){
-                    self.elemOut(mapElem, textElem);
-                }, 120);
-            };
+            if (elem === undefined) return;
 
-            $mapElem = $(mapElem.node);
-            $mapElem.on("mouseover." + pluginName, overBehaviour);
-            $mapElem.on("mouseout." + pluginName, outBehaviour);
-
-            if (textElem) {
-                $textElem = $(textElem.node);
-                $textElem.on("mouseover." + pluginName, overBehaviour);
-                $(textElem.node).on("mouseout." + pluginName, outBehaviour);
+            /* Handle mapElem Hover attributes */
+            if (elem.mapElem !== undefined) {
+                // Set mapElem
+                if (elem.mapElem.attrsHover.animDuration > 0) elem.mapElem.animate(elem.mapElem.attrsHover, elem.mapElem.attrsHover.animDuration);
+                else elem.mapElem.attr(elem.mapElem.attrsHover);
             }
-        },
 
-        /*
-         * Remove the hover behavior for plots and areas
-         * @param mapElem the map element
-         * @param textElem the optional text element (within the map element)
-         */
-        unsetHover: function (mapElem, textElem) {
-            $(mapElem.node).off("." + pluginName);
-            if (textElem) $(textElem.node).off("." + pluginName);
-        },
-
-        /*
-         * Set he behaviour for "mouseover" event
-         * @param mapElem mapElem the map element
-         * @param textElem the optional text element (within the map element)
-         */
-        elemHover: function (mapElem, textElem) {
-            var self = this;
-            // Set mapElem
-            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
-            else mapElem.attr(mapElem.attrsHover);
-            // Set textElem
-            if (textElem) {
-                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
-                else textElem.attr(textElem.attrsHover);
+            /* Handle textElem Hover attributes */
+            if (elem.textElem !== undefined) {
+                if (elem.textElem.attrsHover.animDuration > 0) elem.textElem.animate(elem.textElem.attrsHover, elem.textElem.attrsHover.animDuration);
+                else elem.textElem.attr(elem.textElem.attrsHover);
             }
-            // workaround for older version of Raphael
-            if (self.paper.safari) self.paper.safari();
-        },
 
-        /*
-         * Set he behaviour for "mouseout" event
-         * @param mapElem the map element
-         * @param textElem the optional text element (within the map element)
-         */
-        elemOut: function (mapElem, textElem) {
-            var self = this;
-            // Set mapElem
-            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
-            else mapElem.attr(mapElem.originalAttrs);
-            // Set textElem
-            if (textElem) {
-                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
-                else textElem.attr(textElem.originalAttrs);
+            /* Handle tooltip init */
+            if (elem.tooltip !== undefined) {
+                var content = '';
+                // Reset classes
+                self.$tooltip.removeClass().addClass(self.options.map.tooltip.cssClass);
+                // Get content
+                if (elem.tooltip.content !== undefined) {
+                    // if tooltip.content is function, call it. Otherwise, assign it directly.
+                    if (typeof elem.tooltip.content === "function") content = elem.tooltip.content(elem.mapElem);
+                    else content = elem.tooltip.content;
+                }
+                if (elem.tooltip.cssClass !== undefined) {
+                    self.$tooltip.addClass(elem.tooltip.cssClass);
+                }
+                self.$tooltip.html(content).css("display", "block");
             }
 
             // workaround for older version of Raphael
-            if (self.paper.safari) self.paper.safari();
+            if (elem.mapElem !== undefined || elem.textElem !== undefined) {
+                if (self.paper.safari) self.paper.safari();
+            }
+        },
+
+        /*
+         * Set the behaviour when mouse moves in element ("mousemove" event)
+         * @param elem the map element
+         */
+        elemHover: function (elem, event) {
+            var self = this;
+            if (elem === undefined) return;
+
+            /* Handle tooltip position update */
+            if (elem.tooltip !== undefined) {
+                console.log(elem);
+
+                var mouseX = event.pageX;
+                var mouseY = event.pageY;
+
+                var offsetLeft = 10;
+                var offsetTop = 20;
+                if (typeof elem.tooltip.offset === "object") {
+                    if (typeof elem.tooltip.offset.left !== "undefined") {
+                        offsetLeft = elem.tooltip.offset.left;
+                    }
+                    if (typeof elem.tooltip.offset.top !== "undefined") {
+                        offsetTop = elem.tooltip.offset.top;
+                    }
+                }
+
+                var tooltipPosition = {
+                    "left": Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5,
+                                     mouseX - self.$map.offset().left + offsetLeft),
+                    "top": Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5,
+                                    mouseY - self.$map.offset().top + offsetTop)
+                };
+
+                if (typeof elem.tooltip.overflow === "object") {
+                    if (elem.tooltip.overflow.right === true) {
+                        tooltipPosition.left = mouseX - self.$map.offset().left + 10;
+                    }
+                    if (selem.tooltip.overflow.bottom === true) {
+                        tooltipPosition.top = mouseY - self.$map.offset().top + 20;
+                    }
+                }
+
+                self.$tooltip.css(tooltipPosition);
+            }
+        },
+
+        /*
+         * Set the behaviour when mouse leaves element ("mouseout" event)
+         * @param elem the map element
+         */
+        elemOut: function (elem) {
+            var self = this;
+            if (elem === undefined) return;
+
+            /* reset mapElem attributes */
+            if (elem.mapElem !== undefined) {
+                // Set mapElem
+                if (elem.mapElem.attrsHover.animDuration > 0) elem.mapElem.animate(elem.mapElem.originalAttrs, elem.mapElem.attrsHover.animDuration);
+                else elem.mapElem.attr(elem.mapElem.originalAttrs);
+            }
+
+            /* reset textElem attributes */
+            if (elem.textElem !== undefined) {
+                if (elem.textElem.attrsHover.animDuration > 0) elem.textElem.animate(elem.textElem.originalAttrs, elem.textElem.attrsHover.animDuration);
+                else elem.textElem.attr(elem.textElem.originalAttrs);
+            }
+
+            /* reset tooltip */
+            if (elem.tooltip !== undefined) {
+                self.$tooltip.css({
+                    'display': 'none',
+                    'top': -1000,
+                    'left': -1000
+                });
+            }
+
+            // workaround for older version of Raphael
+            if (elem.mapElem !== undefined || elem.textElem !== undefined) {
+                if (self.paper.safari) self.paper.safari();
+            }
         },
 
         /*
