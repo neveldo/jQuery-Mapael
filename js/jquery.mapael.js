@@ -1350,6 +1350,11 @@
                     elem.textElem.target = elemOptions.target;
                 }
             }
+
+            // Update the cssClass
+            if (elemOptions.cssClass !== undefined) {
+                $(elem.mapElem.node).removeClass().addClass(elemOptions.cssClass);
+            }
         },
 
         /*
