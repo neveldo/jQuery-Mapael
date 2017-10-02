@@ -438,6 +438,29 @@
                     self.elemOut(self.links[id]);
                 }
             });
+
+            /* Attach click event delegation
+             * Note: we filter the event with a timeout to avoid double click
+             */
+            var mapClickTimeoutID;
+            self.$map.on("click." + pluginName, "[data-id]", function () {
+                var elem = this;
+                clearTimeout(mapClickTimeoutID);
+                mapClickTimeoutID = setTimeout(function(){
+                    var $elem = $(elem);
+                    var id = $elem.attr('data-id');
+                    var type = $elem.attr('data-type');
+
+                    if (type === 'area' || type === 'area-text') {
+                        self.elemClick(self.areas[id]);
+                    } else if (type === 'plot' || type === 'plot-text') {
+                        self.elemClick(self.plots[id]);
+                    } else if (type === 'link' || type === 'link-text') {
+                        self.elemClick(self.links[id]);
+                    }
+
+                }, 200);
+            });
         },
 
         /*
@@ -480,15 +503,10 @@
 
             // Init the link
             if (elemOptions.href) {
-                elem.mapElem.href = elemOptions.href;
-                elem.mapElem.target = elemOptions.target;
-                self.setHref(elem.mapElem);
-
-                if (elemOptions.text && elemOptions.text.content !== undefined) {
-                    elem.textElem.href = elemOptions.href;
-                    elem.textElem.target = elemOptions.target;
-                    self.setHref(elem.textElem);
-                }
+                elem.href = elemOptions.href;
+                elem.target = elemOptions.target;
+                elem.mapElem.attr({cursor: "pointer"});
+                if (elem.textElem) elem.textElem.attr({cursor: "pointer"});
             }
 
             if (elemOptions.cssClass !== undefined) {
@@ -1405,16 +1423,13 @@
 
             // Update the link
             if (elemOptions.href !== undefined) {
-                if (elem.mapElem.href === undefined) {
-                    self.setHref(elem.mapElem);
-                    if (elem.textElem) self.setHref(elem.textElem);
-                }
-                elem.mapElem.href = elemOptions.href;
-                elem.mapElem.target = elemOptions.target;
-                if (elem.textElem) {
-                    elem.textElem.href = elemOptions.href;
-                    elem.textElem.target = elemOptions.target;
-                }
+                elem.href = elemOptions.href;
+                elem.target = elemOptions.target;
+                elem.mapElem.attr({cursor: "pointer"});
+                if (elem.textElem) elem.textElem.attr({cursor: "pointer"});
+            } else {
+                elem.mapElem.attr({cursor: "auto"});
+                if (elem.textElem) elem.textElem.attr({cursor: "auto"});
             }
 
             // Update the cssClass
@@ -1484,18 +1499,6 @@
             }
             self.initElem(plot, elemOptions, id, 'plot');
             return plot;
-        },
-
-        /*
-         * Set target link on elem
-         */
-        setHref: function (elem) {
-            var self = this;
-            elem.attr({cursor: "pointer"});
-            $(elem.node).on("click." + pluginName, function () {
-                if (!self.panning && elem.href)
-                    window.open(elem.href, elem.target);
-            });
         },
 
         /*
@@ -1993,6 +1996,20 @@
             // workaround for older version of Raphael
             if (elem.mapElem !== undefined || elem.textElem !== undefined) {
                 if (self.paper.safari) self.paper.safari();
+            }
+        },
+
+        /*
+         * Set the behaviour when mouse clicks element ("click" event)
+         * @param elem the map element
+         */
+        elemClick: function (elem) {
+            var self = this;
+            if (elem === undefined) return;
+            
+            /* Handle click when href defined */
+            if (!self.panning && elem.href !== undefined) {
+                window.open(elem.href, elem.target);
             }
         },
 
