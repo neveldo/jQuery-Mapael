@@ -376,7 +376,7 @@
              * Note: we filter the event with a timeout to reduce the firing when the mouse moves quickly
              */
             var mapMouseOverTimeoutID;
-            self.$map.on("mouseover." + pluginName, "[data-id]", function () {
+            self.$container.on("mouseover." + pluginName, "[data-id]", function () {
                 var elem = this;
                 clearTimeout(mapMouseOverTimeoutID);
                 mapMouseOverTimeoutID = setTimeout(function(){
@@ -398,7 +398,7 @@
              * Note: timeout filtering is small to update the Tooltip position fast
              */
             var mapMouseMoveTimeoutID;
-            self.$map.on("mousemove." + pluginName, "[data-id]", function (event) {
+            self.$container.on("mousemove." + pluginName, "[data-id]", function (event) {
                 var elem = this;
                 clearTimeout(mapMouseMoveTimeoutID);
                 mapMouseMoveTimeoutID = setTimeout(function(){
@@ -421,7 +421,7 @@
              * Note: we don't perform any timeout filtering to clear & reset elem ASAP
              * Otherwise an element may be stuck in 'hover' state (which is NOT good)
              */
-            self.$map.on("mouseout." + pluginName, "[data-id]", function () {
+            self.$container.on("mouseout." + pluginName, "[data-id]", function () {
                 var elem = this;
                 // Clear any
                 clearTimeout(mapMouseOverTimeoutID);
@@ -443,7 +443,7 @@
              * Note: we filter the event with a timeout to avoid double click
              */
             var mapClickTimeoutID;
-            self.$map.on("click." + pluginName, "[data-id]", function () {
+            self.$container.on("click." + pluginName, "[data-id]", function () {
                 var elem = this;
                 clearTimeout(mapClickTimeoutID);
                 mapClickTimeoutID = setTimeout(function(){
