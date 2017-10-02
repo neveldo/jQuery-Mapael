@@ -201,7 +201,7 @@
                     (self.options.areas[id] ? self.options.areas[id] : {}),
                     self.options.legend.area
                 );
-                self.initElem(self.areas[id], elemOptions, id);
+                self.initElem(self.areas[id], elemOptions, id, 'area');
             });
 
             // Draw links
@@ -363,7 +363,7 @@
         /*
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
-        initElem: function (elem, elemOptions, id) {
+        initElem: function (elem, elemOptions, id, type) {
             var self = this;
             var bbox = {};
             var textPosition = {};
@@ -381,6 +381,7 @@
                 elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
                 elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
                 $(elem.textElem.node).attr("data-id", id);
+                $(elem.textElem.node).attr("data-type", type + '-text');
             }
 
             // Set user event handlers
@@ -428,6 +429,7 @@
             }
 
             $(elem.mapElem.node).attr("data-id", id);
+            $(elem.mapElem.node).attr("data-type", type);
         },
 
         /*
@@ -1237,7 +1239,7 @@
             }
 
             elem.mapElem = self.paper.path("m " + xa + "," + ya + " C " + x + "," + y + " " + xb + "," + yb + " " + xb + "," + yb + "").attr(elemOptions.attrs);
-            self.initElem(elem, elemOptions, id);
+            self.initElem(elem, elemOptions, id, 'link');
 
             return elem;
         },
@@ -1420,7 +1422,7 @@
             } else { // Default = circle
                 plot = {"mapElem": self.paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
             }
-            self.initElem(plot, elemOptions, id);
+            self.initElem(plot, elemOptions, id, 'plot');
             return plot;
         },
 
