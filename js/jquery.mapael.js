@@ -461,7 +461,7 @@
             /* Attach click event delegation
              * Note: we filter the event with a timeout to avoid double click
              */
-            self.$container.on("click." + pluginName, "[data-id]", function () {
+            self.$container.on("click." + pluginName, "[data-id]", function (evt, opts) {
                 var $elem = $(this);
                 var id = $elem.attr('data-id');
                 var type = $elem.attr('data-type');
@@ -472,6 +472,10 @@
                     self.elemClick(self.plots[id]);
                 } else if (type === 'link' || type === 'link-text') {
                     self.elemClick(self.links[id]);
+                } else if (type === 'legend-elem' || type === 'legend-label') {
+                    var legendIndex = $elem.attr('data-legend-id');
+                    var legendType = $elem.attr('data-legend-type');
+                    self.handleClickOnLegendElem(self.legends[legendType][legendIndex].elems[id], id, legendIndex, legendType, opts);
                 }
             });
         },
@@ -1050,7 +1054,7 @@
                     $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                         if ($(elem).attr('data-hidden') === "1") {
                             // Toggle state of element by clicking
-                            $(elem).trigger("click", [false, animDuration]);
+                            $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                         }
                     });
                 }
@@ -1202,7 +1206,7 @@
                 // Show all elements on the map before updating the legends
                 $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                     if ($(elem).attr('data-hidden') === "1") {
-                        $(elem).trigger("click", [false, animDuration]);
+                        $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                     }
                 });
 
@@ -1229,7 +1233,7 @@
                             if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                                 ($(elem).attr('data-hidden') === "1" && action === "show")) {
                                 // Toggle state of element by clicking
-                                $(elem).trigger("click", [false, animDuration]);
+                                $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                             }
                         });
                     }
@@ -1243,7 +1247,7 @@
                     if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                         ($(elem).attr('data-hidden') === "1" && action === "show")) {
                         // Toggle state of element by clicking
-                        $(elem).trigger("click", [false, animDuration]);
+                        $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                     }
                 });
             }
@@ -1730,16 +1734,25 @@
                     // Set some data to elements
                     $(legendElem.node).attr({
                         "data-legend-id": legendIndex,
+                        "data-legend-type": legendType,
                         "data-type": "legend-elem",
                         "data-id": i,
                         "data-hidden": 0
                     });
                     $(legendLabel.node).attr({
                         "data-legend-id": legendIndex,
+                        "data-legend-type": legendType,
                         "data-type": "legend-label",
                         "data-id": i,
                         "data-hidden": 0
                     });
+
+                    // Set array content
+                    // We use similar names like map/plots/links
+                    legendElems[i] = {
+                        mapElem: legendElem,
+                        textElem: legendLabel
+                    };
 
                     // Hide map elements when the user clicks on a legend item
                     if (legendOptions.hideElemsOnClick.enabled) {
@@ -1749,15 +1762,11 @@
 
                         self.setHoverOptions(legendElem, sliceOptions[i].attrs, sliceOptions[i].attrs);
                         self.setHoverOptions(legendLabel, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
-                        self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], legendLabel, legendElem, elems, legendIndex);
-                    }
 
-                    // Set array content
-                    // We use similar names like map/plots/links
-                    legendElems[i] = {
-                        mapElem: legendElem,
-                        textElem: legendLabel
-                    };
+                        if (sliceOptions[i].clicked !== undefined && sliceOptions[i].clicked === true) {
+                            self.handleClickOnLegendElem(legendElems[i], i, legendIndex, legendType, {hideOtherElems: false});
+                        }
+                    }
                 }
             }
 
@@ -1777,95 +1786,93 @@
 
         /*
          * Allow to hide elements of the map when the user clicks on a related legend item
-         * @param legendOptions options for the legend to draw
-         * @param sliceOptions options of the slice
-         * @param label label of the legend item
-         * @param elem element of the legend item
-         * @param elems collection of plots or areas displayed on the map
-         * @param legendIndex index of the legend in the conf array
+         * @param elem legend element
+         * @param id legend element ID
+         * @param legendIndex corresponding legend index
+         * @param legendType corresponding legend type (area or plot)
+         * @param opts object additionnal options
+         *          hideOtherElems boolean, if other elems shall be hidden
+         *          animDuration duration of animation
          */
-        handleClickOnLegendElem: function (legendOptions, sliceOptions, label, elem, elems, legendIndex) {
+        handleClickOnLegendElem: function(elem, id, legendIndex, legendType, opts) {
             var self = this;
+            var legendOptions;
+            opts = opts || {};
 
-            /**
-             *
-             * @param e
-             * @param hideOtherElems : option used for the 'exclusive' mode to enabled only one item from the legend
-             * at once
-             * @param animDuration : used in the 'update' event in order to apply the same animDuration on the legend items
-             */
-            var hideMapElems = function (e, hideOtherElems, animDuration) {
-                var elemValue = 0;
-                var hidden = $(label.node).attr('data-hidden');
-                var hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
+            if (!$.isArray(self.options.legend[legendType])) {
+                legendOptions = self.options.legend[legendType];
+            } else {
+                legendOptions = self.options.legend[legendType][legendIndex];
+            }
 
-                // Check animDuration: if not set, this is a regular click, use the value specified in options
-                if (animDuration === undefined) animDuration = legendOptions.hideElemsOnClick.animDuration;
+            var legendElem = elem.mapElem;
+            var legendLabel = elem.textElem;
+            var $legendElem = $(legendElem.node);
+            var $legendLabel = $(legendLabel.node);
+            var sliceOptions = legendOptions.slices[id];
+            var mapElems = legendType === 'area' ? self.areas : self.plots;
+            // Check animDuration: if not set, this is a regular click, use the value specified in options
+            var animDuration = opts.animDuration !== undefined ? opts.animDuration : legendOptions.hideElemsOnClick.animDuration ;
 
-                if (hidden === '0') {
-                    if (animDuration > 0) label.animate({"opacity": 0.5}, animDuration);
-                    else label.attr({"opacity": 0.5});
+            var hidden = $legendElem.attr('data-hidden');
+            var hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
+
+            if (hidden === '0') {
+                if (animDuration > 0) legendLabel.animate({"opacity": 0.5}, animDuration);
+                else legendLabel.attr({"opacity": 0.5});
+            } else {
+                if (animDuration > 0) legendLabel.animate({"opacity": 1}, animDuration);
+                else legendLabel.attr({"opacity": 1});
+            }
+
+            $.each(mapElems, function (y) {
+                var elemValue;
+
+                // Retreive stored data of element
+                //      'hidden-by' contains the list of legendIndex that is hiding this element
+                var hiddenBy = mapElems[y].mapElem.data('hidden-by');
+                // Set to empty object if undefined
+                if (hiddenBy === undefined) hiddenBy = {};
+
+                if ($.isArray(mapElems[y].value)) {
+                    elemValue = mapElems[y].value[legendIndex];
                 } else {
-                    if (animDuration > 0) label.animate({"opacity": 1}, animDuration);
-                    else label.attr({"opacity": 1});
+                    elemValue = mapElems[y].value;
                 }
 
-                $.each(elems, function (id) {
-                    // Retreive stored data of element
-                    //      'hidden-by' contains the list of legendIndex that is hiding this element
-                    var hiddenBy = elems[id].mapElem.data('hidden-by');
-                    // Set to empty object if undefined
-                    if (hiddenBy === undefined) hiddenBy = {};
-
-                    if ($.isArray(elems[id].value)) {
-                        elemValue = elems[id].value[legendIndex];
-                    } else {
-                        elemValue = elems[id].value;
+                // Hide elements whose value matches with the slice of the clicked legend item
+                if (self.getLegendSlice(elemValue, legendOptions) === sliceOptions) {
+                    if (hidden === '0') { // we want to hide this element
+                        hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
+                        self.setElementOpacity(mapElems[y], legendOptions.hideElemsOnClick.opacity, animDuration);
+                    } else { // We want to show this element
+                        delete hiddenBy[legendIndex]; // Remove this legendIndex from object
+                        // Check if another legendIndex is defined
+                        // We will show this element only if no legend is no longer hiding it
+                        if ($.isEmptyObject(hiddenBy)) {
+                            self.setElementOpacity(
+                                mapElems[y],
+                                mapElems[y].mapElem.originalAttrs.opacity !== undefined ? mapElems[y].mapElem.originalAttrs.opacity : 1,
+                                animDuration
+                            );
+                        }
                     }
+                    // Update elem data with new values
+                    mapElems[y].mapElem.data('hidden-by', hiddenBy);
+                }
+            });
 
-                    // Hide elements whose value matches with the slice of the clicked legend item
-                    if (self.getLegendSlice(elemValue, legendOptions) === sliceOptions) {
-                        (function (id) {
-                            if (hidden === '0') { // we want to hide this element
-                                hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
-                                self.setElementOpacity(elems[id], legendOptions.hideElemsOnClick.opacity, animDuration);
-                            } else { // We want to show this element
-                                delete hiddenBy[legendIndex]; // Remove this legendIndex from object
-                                // Check if another legendIndex is defined
-                                // We will show this element only if no legend is no longer hiding it
-                                if ($.isEmptyObject(hiddenBy)) {
-                                    self.setElementOpacity(
-                                        elems[id],
-                                        elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1,
-                                        animDuration
-                                    );
-                                }
-                            }
-                            // Update elem data with new values
-                            elems[id].mapElem.data('hidden-by', hiddenBy);
-                        })(id);
+            $legendElem.attr(hiddenNewAttr);
+            $legendLabel.attr(hiddenNewAttr);
+
+            if ((opts.hideOtherElems === undefined || opts.hideOtherElems === true) && legendOptions.exclusive === true ) {
+                $("[data-type='legend-elem'][data-hidden=0]", self.$container).each(function () {
+                    if ($(this).attr('data-id') !== id) {
+                        $(this).trigger("click", {hideOtherElems: false});
                     }
                 });
-
-                $(elem.node).attr(hiddenNewAttr);
-                $(label.node).attr(hiddenNewAttr);
-
-                if ((hideOtherElems === undefined || hideOtherElems === true)
-                    && legendOptions.exclusive !== undefined && legendOptions.exclusive === true
-                ) {
-                    $("[data-type='legend-elem'][data-hidden=0]", self.$container).each(function () {
-                        if ($(this).attr('data-id') !== $(elem.node).attr('data-id')) {
-                            $(this).trigger("click", false);
-                        }
-                    });
-                }
-            };
-            $(label.node).on("click." + pluginName, hideMapElems);
-            $(elem.node).on("click." + pluginName, hideMapElems);
-
-            if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
-                $(elem.node).trigger("click", false);
             }
+
         },
 
         /*
