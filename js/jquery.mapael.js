@@ -118,12 +118,6 @@
      * Each mapael object inherits their properties and methods from this prototype
      */
     Mapael.prototype = {
-
-        /*
-         * Version number
-         */
-        version: version,
-
         /*
          * Initialize the plugin
          * Called by the constructor
@@ -2305,6 +2299,10 @@
 
     };
 
+    // Mapael version number
+    // Accessible as $.mapael.version
+    Mapael.version = version;
+    
     // Extend jQuery with Mapael
     if ($[pluginName] === undefined) $[pluginName] = Mapael;
 
