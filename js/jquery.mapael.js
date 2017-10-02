@@ -1034,7 +1034,7 @@
 
                 // IF we update areas, plots or legend, then reset all legend state to "show"
                 if (opt.mapOptions.areas !== undefined || opt.mapOptions.plots !== undefined || opt.mapOptions.legend !== undefined) {
-                    $("[data-type='elem']", self.$container).each(function (id, elem) {
+                    $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                         if ($(elem).attr('data-hidden') === "1") {
                             // Toggle state of element by clicking
                             $(elem).trigger("click", [false, animDuration]);
@@ -1187,7 +1187,7 @@
                     || (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object")
                 )) {
                 // Show all elements on the map before updating the legends
-                $("[data-type='elem']", self.$container).each(function (id, elem) {
+                $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                     if ($(elem).attr('data-hidden') === "1") {
                         $(elem).trigger("click", [false, animDuration]);
                     }
@@ -1212,7 +1212,7 @@
                     var $legend = self.$container.find("." + legendCSSClass)[0];
                     if ($legend !== undefined) {
                         // Select all elem inside this legend
-                        $("[data-type='elem']", $legend).each(function (id, elem) {
+                        $("[data-type='legend-elem']", $legend).each(function (id, elem) {
                             if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                                 ($(elem).attr('data-hidden') === "1" && action === "show")) {
                                 // Toggle state of element by clicking
@@ -1226,7 +1226,7 @@
                 // Default : "show"
                 var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
 
-                $("[data-type='elem']", self.$container).each(function (id, elem) {
+                $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                     if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                         ($(elem).attr('data-hidden') === "1" && action === "show")) {
                         // Toggle state of element by clicking
@@ -1561,7 +1561,7 @@
 
             legendPaper = new Raphael($legend.get(0));
             // Set some data to object
-            $(legendPaper.canvas).attr({"data-type": legendType, "data-index": legendIndex});
+            $(legendPaper.canvas).attr({"data-legend-type": legendType, "data-legend-id": legendIndex});
 
             height = width = 0;
 
@@ -1716,8 +1716,8 @@
                         height += legendOptions.marginBottom + elemBBox.height;
                     }
 
-                    $(elem.node).attr({"data-type": "elem", "data-index": i, "data-hidden": 0});
-                    $(label.node).attr({"data-type": "label", "data-index": i, "data-hidden": 0});
+                    $(elem.node).attr({"data-type": "legend-elem", "data-id": i, "data-hidden": 0});
+                    $(label.node).attr({"data-type": "legend-label", "data-id": i, "data-hidden": 0});
 
                     // Hide map elements when the user clicks on a legend item
                     if (legendOptions.hideElemsOnClick.enabled) {
@@ -1818,8 +1818,8 @@
                 if ((hideOtherElems === undefined || hideOtherElems === true)
                     && legendOptions.exclusive !== undefined && legendOptions.exclusive === true
                 ) {
-                    $("[data-type='elem'][data-hidden=0]", self.$container).each(function () {
-                        if ($(this).attr('data-index') !== $(elem.node).attr('data-index')) {
+                    $("[data-type='legend-elem'][data-hidden=0]", self.$container).each(function () {
+                        if ($(this).attr('data-id') !== $(elem.node).attr('data-id')) {
                             $(this).trigger("click", false);
                         }
                     });
@@ -2004,7 +2004,7 @@
         elemClick: function (elem) {
             var self = this;
             if (elem === undefined) return;
-            
+
             /* Handle click when href defined */
             if (!self.panning && elem.href !== undefined) {
                 window.open(elem.href, elem.target);
