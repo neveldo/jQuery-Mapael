@@ -458,24 +458,18 @@
             /* Attach click event delegation
              * Note: we filter the event with a timeout to avoid double click
              */
-            var mapClickTimeoutID;
             self.$container.on("click." + pluginName, "[data-id]", function () {
-                var elem = this;
-                clearTimeout(mapClickTimeoutID);
-                mapClickTimeoutID = setTimeout(function(){
-                    var $elem = $(elem);
-                    var id = $elem.attr('data-id');
-                    var type = $elem.attr('data-type');
+                var $elem = $(this);
+                var id = $elem.attr('data-id');
+                var type = $elem.attr('data-type');
 
-                    if (type === 'area' || type === 'area-text') {
-                        self.elemClick(self.areas[id]);
-                    } else if (type === 'plot' || type === 'plot-text') {
-                        self.elemClick(self.plots[id]);
-                    } else if (type === 'link' || type === 'link-text') {
-                        self.elemClick(self.links[id]);
-                    }
-
-                }, 200);
+                if (type === 'area' || type === 'area-text') {
+                    self.elemClick(self.areas[id]);
+                } else if (type === 'plot' || type === 'plot-text') {
+                    self.elemClick(self.plots[id]);
+                } else if (type === 'link' || type === 'link-text') {
+                    self.elemClick(self.links[id]);
+                }
             });
         },
 
