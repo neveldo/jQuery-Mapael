@@ -1029,7 +1029,7 @@
                         (self.options.areas[id] ? self.options.areas[id] : {}),
                         self.options.legend.area
                     );
-                    self.updateElem(elemOptions, self.areas[id], animDuration);
+                    self.updateElem(self.areas[id], elemOptions, animDuration);
                 }
             });
 
@@ -1067,7 +1067,7 @@
                         elemOptions.attrs.r = elemOptions.size / 2;
                     }
 
-                    self.updateElem(elemOptions, self.plots[id], animDuration);
+                    self.updateElem(self.plots[id], elemOptions, animDuration);
                 }
             });
 
@@ -1087,7 +1087,7 @@
                         {}
                     );
 
-                    self.updateElem(elemOptions, self.links[id], animDuration);
+                    self.updateElem(self.links[id], elemOptions, animDuration);
                 }
             });
 
@@ -1253,7 +1253,7 @@
         /*
          * Update the element "elem" on the map with the new elemOptions options
          */
-        updateElem: function (elemOptions, elem, animDuration) {
+        updateElem: function (elem, elemOptions, animDuration) {
             var self = this;
             var bbox;
             var textPosition;
@@ -1349,6 +1349,11 @@
                     elem.textElem.href = elemOptions.href;
                     elem.textElem.target = elemOptions.target;
                 }
+            }
+
+            // Update the cssClass
+            if (elemOptions.cssClass !== undefined) {
+                $(elem.mapElem.node).removeClass().addClass(elemOptions.cssClass);
             }
         },
 
