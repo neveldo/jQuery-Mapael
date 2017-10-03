@@ -420,8 +420,12 @@
             }
 
             if (elemOptions.cssClass !== undefined) {
-                $(elem.mapElem.node).addClass(elemOptions.cssClass);
-            }
+                if (elemOptions.cssClass) {
+                    $(elem.mapElem.node).addClass(elemOptions.cssClass);
+                }
+                else if (self.options.map.defaultArea.cssClass !== undefined) {
+                    $(elem.mapElem.node).addClass(self.options.map.defaultArea.cssClass);
+                }
 
             $(elem.mapElem.node).attr("data-id", id);
         },
