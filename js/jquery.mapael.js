@@ -278,10 +278,10 @@
             self.$map.html(self.initialMapHTMLContent);
 
             // Empty legend containers and replace initial HTML content
-            for (var id in self.createdLegends) {
+            $.each(self.createdLegends, function(id) {
                 self.createdLegends[id].container.empty();
                 self.createdLegends[id].container.html(self.createdLegends[id].initialHTMLContent);
-            }
+            });
 
             // Remove mapael class
             self.$container.removeClass(pluginName);
@@ -653,10 +653,10 @@
                     // level is a string, either "n", "+n" or "-n"
                     if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
                         // zoomLevel is relative
-                        newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level);
+                        newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level, 10);
                     } else {
                         // zoomLevel is absolute
-                        newLevel = parseInt(zoomOptions.level);
+                        newLevel = parseInt(zoomOptions.level, 10);
                     }
                 } else {
                     // level is integer
@@ -1247,7 +1247,7 @@
          */
         isAttrsChanged: function(originalAttrs, newAttrs) {
             for (var key in newAttrs) {
-                if (typeof originalAttrs[key] === 'undefined' || newAttrs[key] !== originalAttrs[key]) {
+                if (newAttrs.hasOwnProperty(key) && typeof originalAttrs[key] === 'undefined' || newAttrs[key] !== originalAttrs[key]) {
                     return true;
                 }
             }
@@ -1471,7 +1471,7 @@
                     if (elem.tooltip.overflow.right === true) {
                         tooltipPosition.left = x - self.$map.offset().left + 10;
                     }
-                    if (selem.tooltip.overflow.bottom === true) {
+                    if (elem.tooltip.overflow.bottom === true) {
                         tooltipPosition.top = y - self.$map.offset().top + 20;
                     }
                 }
@@ -1549,7 +1549,6 @@
             var y = 0;
             var yCenter = 0;
             var sliceOptions = [];
-            var length = 0;
 
             $legend = $("." + legendOptions.cssClass, self.$container);
 
@@ -1579,7 +1578,7 @@
 
             // Calculate attrs (and width, height and r (radius)) for legend elements, and yCenter for horizontal legends
 
-            for (i = 0, length = legendOptions.slices.length; i < length; ++i) {
+            for (i = 0; i < legendOptions.slices.length; ++i) {
                 var yCenterCurrent = 0;
 
                 sliceOptions[i] = $.extend(true, {}, (legendType == "plot") ? self.options.map.defaultPlot : self.options.map.defaultArea, legendOptions.slices[i]);
@@ -1630,7 +1629,7 @@
             }
 
             // Draw legend elements (circle, square or image in vertical or horizontal mode)
-            for (i = 0, length = sliceOptions.length; i < length; ++i) {
+            for (i = 0; i < sliceOptions.length; ++i) {
                 if (sliceOptions[i].display === undefined || sliceOptions[i].display === true) {
                     if (legendType == "area") {
                         if (legendOptions.mode == "horizontal") {
@@ -1972,7 +1971,7 @@
             var options = $.extend(true, {}, defaultOptions, elemOptions);
             if (options.value !== undefined) {
                 if ($.isArray(legendOptions)) {
-                    for (var i = 0, length = legendOptions.length; i < length; ++i) {
+                    for (var i = 0; i < legendOptions.length; ++i) {
                         options = $.extend(true, {}, options, self.getLegendSlice(options.value[i], legendOptions[i]));
                     }
                 } else {
@@ -2039,7 +2038,7 @@
          * @return the legend slice matching with the value
          */
         getLegendSlice: function (value, legend) {
-            for (var i = 0, length = legend.slices.length; i < length; ++i) {
+            for (var i = 0; i < legend.slices.length; ++i) {
                 if ((legend.slices[i].sliceValue !== undefined && value == legend.slices[i].sliceValue)
                     || ((legend.slices[i].sliceValue === undefined)
                     && (legend.slices[i].min === undefined || value >= legend.slices[i].min)
