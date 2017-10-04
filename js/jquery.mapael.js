@@ -1022,11 +1022,10 @@
                 // Avoid updating unchanged elements
                 if ((typeof opt.mapOptions === "object" &&
                     (
-                        (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultArea === "object")
-                        || (typeof opt.mapOptions.areas === "object" && typeof opt.mapOptions.areas[id] === "object")
-                        || (typeof opt.mapOptions.legend === "object" && typeof opt.mapOptions.legend.area === "object")
-                    ))
-                    || opt.replaceOptions === true
+                        (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultArea === "object") ||
+                        (typeof opt.mapOptions.areas === "object" && typeof opt.mapOptions.areas[id] === "object") ||
+                        (typeof opt.mapOptions.legend === "object" && typeof opt.mapOptions.legend.area === "object")
+                    )) || opt.replaceOptions === true
                 ) {
                     var elemOptions = self.getElemOptions(
                         self.options.map.defaultArea,
@@ -1042,11 +1041,10 @@
                 // Avoid updating unchanged elements
                 if ((typeof opt.mapOptions ==="object" &&
                     (
-                        (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object")
-                        || (typeof opt.mapOptions.plots === "object" && typeof opt.mapOptions.plots[id] === "object")
-                        || (typeof opt.mapOptions.legend === "object" && typeof opt.mapOptions.legend.plot === "object")
-                    ))
-                    || opt.replaceOptions === true
+                        (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object") ||
+                        (typeof opt.mapOptions.plots === "object" && typeof opt.mapOptions.plots[id] === "object") ||
+                        (typeof opt.mapOptions.legend === "object" && typeof opt.mapOptions.legend.plot === "object")
+                    )) || opt.replaceOptions === true
                 ) {
                     var elemOptions = self.getElemOptions(
                         self.options.map.defaultPlot,
@@ -1080,10 +1078,9 @@
                 // Avoid updating unchanged elements
                 if ((typeof opt.mapOptions === "object" &&
                     (
-                        (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultLink === "object")
-                        || (typeof opt.mapOptions.links === "object" && typeof opt.mapOptions.links[id] === "object")
-                    ))
-                    || opt.replaceOptions === true
+                        (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultLink === "object") ||
+                        (typeof opt.mapOptions.links === "object" && typeof opt.mapOptions.links[id] === "object")
+                    )) || opt.replaceOptions === true
                 ) {
                     var elemOptions = self.getElemOptions(
                         self.options.map.defaultLink,
@@ -1097,9 +1094,9 @@
 
             // Update legends
             if (opt.mapOptions && (
-                    (typeof opt.mapOptions.legend === "object")
-                    || (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultArea === "object")
-                    || (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object")
+                    (typeof opt.mapOptions.legend === "object") ||
+                    (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultArea === "object") ||
+                    (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object")
                 )) {
                 // Show all elements on the map before updating the legends
                 $("[data-type='elem']", self.$container).each(function (id, elem) {
@@ -1817,8 +1814,8 @@
                 $(elem.node).attr(hiddenNewAttr);
                 $(label.node).attr(hiddenNewAttr);
 
-                if ((hideOtherElems === undefined || hideOtherElems === true)
-                    && legendOptions.exclusive !== undefined && legendOptions.exclusive === true
+                if ((hideOtherElems === undefined || hideOtherElems === true) &&
+                    legendOptions.exclusive !== undefined && legendOptions.exclusive === true
                 ) {
                     $("[data-type='elem'][data-hidden=0]", self.$container).each(function () {
                         if ($(this).attr('data-index') !== $(elem.node).attr('data-index')) {
@@ -2038,10 +2035,10 @@
          */
         getLegendSlice: function (value, legend) {
             for (var i = 0; i < legend.slices.length; ++i) {
-                if ((legend.slices[i].sliceValue !== undefined && value === legend.slices[i].sliceValue)
-                    || ((legend.slices[i].sliceValue === undefined)
-                    && (legend.slices[i].min === undefined || value >= legend.slices[i].min)
-                    && (legend.slices[i].max === undefined || value <= legend.slices[i].max))
+                if ((legend.slices[i].sliceValue !== undefined && value === legend.slices[i].sliceValue) ||
+                    ((legend.slices[i].sliceValue === undefined) &&
+                        (legend.slices[i].min === undefined || value >= legend.slices[i].min) &&
+                        (legend.slices[i].max === undefined || value <= legend.slices[i].max))
                 ) {
                     return legend.slices[i];
                 }
