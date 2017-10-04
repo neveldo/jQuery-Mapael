@@ -69,6 +69,10 @@
             panY: 0
         };
 
+        self.currentViewBox = {
+            x: 0, y: 0, w: 0, h: 0
+        };
+
         // resize TimeOut handler (used to set and clear)
         self.resizeTO = 0;
 
@@ -163,7 +167,7 @@
             self.$container.addClass(pluginName);
 
             if (self.options.map.tooltip.css) self.$tooltip.css(self.options.map.tooltip.css);
-            self.paper.setViewBox(0, 0, self.mapConf.width, self.mapConf.height, false);
+            self.setViewBox(0, 0, self.mapConf.width, self.mapConf.height);
 
             // Handle map size
             if (self.options.map.width) {
@@ -564,25 +568,25 @@
                 if (mousedown && currentLevel !== 0) {
                     var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / self.paper.width);
                     var offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / self.paper.height);
-                    var panX = Math.min(Math.max(0, self.paper._viewBox[0] + offsetX), (mapWidth - self.paper._viewBox[2]));
-                    var panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
+                    var panX = Math.min(Math.max(0, self.currentViewBox.x + offsetX), (mapWidth - self.currentViewBox.w));
+                    var panY = Math.min(Math.max(0, self.currentViewBox.y + offsetY), (mapHeight - self.currentViewBox.h));
 
                     if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
                         $.extend(self.zoomData, {
                             panX: panX,
                             panY: panY,
-                            zoomX: panX + self.paper._viewBox[2] / 2,
-                            zoomY: panY + self.paper._viewBox[3] / 2
+                            zoomX: panX + self.currentViewBox.w / 2,
+                            zoomY: panY + self.currentViewBox.h / 2
                         });
-                        self.paper.setViewBox(panX, panY, self.paper._viewBox[2], self.paper._viewBox[3]);
+                        self.setViewBox(panX, panY, self.currentViewBox.w, self.currentViewBox.h);
 
                         clearTimeout(self.panningTO);
                         self.panningTO = setTimeout(function () {
                             self.$map.trigger("afterPanning", {
                                 x1: panX,
                                 y1: panY,
-                                x2: (panX + self.paper._viewBox[2]),
-                                y2: (panY + self.paper._viewBox[3])
+                                x2: (panX + self.currentViewBox.w),
+                                y2: (panY + self.currentViewBox.h)
                             });
                         }, 150);
 
@@ -677,10 +681,10 @@
             }
 
             if (zoomOptions.x === undefined)
-                zoomOptions.x = self.paper._viewBox[0] + self.paper._viewBox[2] / 2;
+                zoomOptions.x = self.currentViewBox.x + self.currentViewBox.w / 2;
 
             if (zoomOptions.y === undefined)
-                zoomOptions.y = (self.paper._viewBox[1] + self.paper._viewBox[3] / 2);
+                zoomOptions.y = (self.currentViewBox.y + self.currentViewBox.h / 2);
 
             if (newLevel === 0) {
                 panX = 0;
@@ -702,7 +706,7 @@
             if (animDuration > 0) {
                 self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
             } else {
-                self.paper.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
+                self.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
                 clearTimeout(self.zoomTO);
                 self.zoomTO = setTimeout(function () {
                     self.$map.trigger("afterZoom", {
@@ -718,8 +722,8 @@
                 zoomLevel: newLevel,
                 panX: panX,
                 panY: panY,
-                zoomX: panX + self.paper._viewBox[2] / 2,
-                zoomY: panY + self.paper._viewBox[3] / 2
+                zoomX: panX + self.currentViewBox.w / 2,
+                zoomY: panY + self.currentViewBox.h / 2
             });
         },
 
@@ -2061,13 +2065,13 @@
          */
         animateViewBox: function (x, y, w, h, duration, easingFunction) {
             var self = this;
-            var cx = self.paper._viewBox ? self.paper._viewBox[0] : 0;
+            var cx = self.currentViewBox.x;
             var dx = x - cx;
-            var cy = self.paper._viewBox ? self.paper._viewBox[1] : 0;
+            var cy = self.currentViewBox.y;
             var dy = y - cy;
-            var cw = self.paper._viewBox ? self.paper._viewBox[2] : self.paper.width;
+            var cw = self.currentViewBox.w;
             var dw = w - cw;
-            var ch = self.paper._viewBox ? self.paper._viewBox[3] : self.paper.height;
+            var ch = self.currentViewBox.h;
             var dh = h - ch;
             var interval = 25;
             var steps = duration / interval;
@@ -2094,6 +2098,24 @@
                     }
                 }, interval
             );
+        },
+
+        /*
+         * SetViewBox wrapper
+         * Apply new viewbox values and keep track of them
+         *
+         * This avoid using the internal variable paper._viewBox which
+         * may not be present in future version of Raphael
+         */
+        setViewBox: function(x, y, w, h) {
+            var self = this;
+            // Update current value
+            self.currentViewBox.x = x;
+            self.currentViewBox.y = y;
+            self.currentViewBox.w = w;
+            self.currentViewBox.h = h;
+            // Perform set view box
+            self.paper.setViewBox(x, y, w, h, false);
         },
 
         /*
