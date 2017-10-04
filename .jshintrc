@@ -12,6 +12,8 @@
     "laxcomma": true,     // true: allow unsafe line breakings
     "laxbreak": true,     // true: allow comma-first coding style
 
+    "eqeqeq": true,       // true: enforce stric equality
+
     "forin": true,        // true: requires all for in loops to filter object's items
     "freeze" : true,      // true: prohibits overwriting prototypes of native objects
     "nocomma" : true,     // true: prohibits the use of the comma operator

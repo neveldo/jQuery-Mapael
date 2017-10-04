@@ -324,7 +324,7 @@
             self.$map.on("resizeEnd." + pluginName, function (e, isInit) {
                 var containerWidth = self.$map.width();
 
-                if (self.paper.width != containerWidth) {
+                if (self.paper.width !== containerWidth) {
                     var newScale = containerWidth / self.mapConf.width;
                     // Set new size
                     self.paper.setSize(containerWidth, self.mapConf.height * newScale);
@@ -701,7 +701,7 @@
             }
 
             // Update zoom level of the map
-            if (zoomLevel == previousZoomLevel && panX == self.zoomData.panX && panY == self.zoomData.panY) return;
+            if (zoomLevel === previousZoomLevel && panX === self.zoomData.panX && panY === self.zoomData.panY) return;
 
             if (animDuration > 0) {
                 self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
@@ -1053,17 +1053,17 @@
                         (self.options.plots[id] ? self.options.plots[id] : {}),
                         self.options.legend.plot
                     );
-                    if (elemOptions.type == "square") {
+                    if (elemOptions.type === "square") {
                         elemOptions.attrs.width = elemOptions.size;
                         elemOptions.attrs.height = elemOptions.size;
                         elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.size - self.plots[id].mapElem.attrs.width) / 2;
                         elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.size - self.plots[id].mapElem.attrs.height) / 2;
-                    } else if (elemOptions.type == "image") {
+                    } else if (elemOptions.type === "image") {
                         elemOptions.attrs.width = elemOptions.width;
                         elemOptions.attrs.height = elemOptions.height;
                         elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
                         elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
-                    } else if (elemOptions.type == "svg") {
+                    } else if (elemOptions.type === "svg") {
                         if (elemOptions.attrs.transform !== undefined) {
                             elemOptions.attrs.transform = self.plots[id].mapElem.baseTransform + elemOptions.attrs.transform;
                         }
@@ -1166,13 +1166,13 @@
             $.each(linksCollection, function (id) {
                 var elemOptions = self.getElemOptions(self.options.map.defaultLink, linksCollection[id], {});
 
-                if (typeof linksCollection[id].between[0] == 'string') {
+                if (typeof linksCollection[id].between[0] === 'string') {
                     p1 = self.options.plots[linksCollection[id].between[0]];
                 } else {
                     p1 = linksCollection[id].between[0];
                 }
 
-                if (typeof linksCollection[id].between[1] == 'string') {
+                if (typeof linksCollection[id].between[1] === 'string') {
                     p2 = self.options.plots[linksCollection[id].between[1]];
                 } else {
                     p2 = linksCollection[id].between[1];
@@ -1273,13 +1273,13 @@
 
             // Update the label
             if (elem.textElem) {
-                if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content != elem.textElem.attrs.text)
+                if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content !== elem.textElem.attrs.text)
                     elem.textElem.attr({text: elemOptions.text.content});
 
                 bbox = elem.mapElem.getBBox();
 
                 if (elemOptions.size || (elemOptions.width && elemOptions.height)) {
-                    if (elemOptions.type == "image" || elemOptions.type == "svg") {
+                    if (elemOptions.type === "image" || elemOptions.type === "svg") {
                         plotOffsetX = (elemOptions.width - bbox.width) / 2;
                         plotOffsetY = (elemOptions.height - bbox.height) / 2;
                     } else {
@@ -1293,7 +1293,7 @@
                 }
 
                 textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
-                if (textPosition.x != elem.textElem.attrs.x || textPosition.y != elem.textElem.attrs.y) {
+                if (textPosition.x !== elem.textElem.attrs.x || textPosition.y !== elem.textElem.attrs.y) {
                     if (animDuration > 0) {
                         elem.textElem.attr({"text-anchor": textPosition.textAnchor});
                         elem.textElem.animate({x: textPosition.x, y: textPosition.y}, animDuration);
@@ -1323,7 +1323,7 @@
             }
 
             // Update dimensions of SVG plots
-            if (elemOptions.type == "svg") {
+            if (elemOptions.type === "svg") {
 
                 if (bbox === undefined) {
                     bbox = elem.mapElem.getBBox();
@@ -1386,7 +1386,7 @@
             else
                 coords = self.mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
 
-            if (elemOptions.type == "square") {
+            if (elemOptions.type === "square") {
                 plot = {
                     "mapElem": self.paper.rect(
                         coords.x - (elemOptions.size / 2),
@@ -1395,7 +1395,7 @@
                         elemOptions.size
                     ).attr(elemOptions.attrs)
                 };
-            } else if (elemOptions.type == "image") {
+            } else if (elemOptions.type === "image") {
                 plot = {
                     "mapElem": self.paper.image(
                         elemOptions.url,
@@ -1405,7 +1405,7 @@
                         elemOptions.height
                     ).attr(elemOptions.attrs)
                 };
-            } else if (elemOptions.type == "svg") {
+            } else if (elemOptions.type === "svg") {
                 if (elemOptions.attrs.transform === undefined) {
                     elemOptions.attrs.transform = "";
                 }
@@ -1581,7 +1581,7 @@
             for (i = 0; i < legendOptions.slices.length; ++i) {
                 var yCenterCurrent = 0;
 
-                sliceOptions[i] = $.extend(true, {}, (legendType == "plot") ? self.options.map.defaultPlot : self.options.map.defaultArea, legendOptions.slices[i]);
+                sliceOptions[i] = $.extend(true, {}, (legendType === "plot") ? self.options.map.defaultPlot : self.options.map.defaultArea, legendOptions.slices[i]);
 
                 if (legendOptions.slices[i].legendSpecificAttrs === undefined) {
                     legendOptions.slices[i].legendSpecificAttrs = {};
@@ -1589,17 +1589,17 @@
 
                 $.extend(true, sliceOptions[i].attrs, legendOptions.slices[i].legendSpecificAttrs);
 
-                if (legendType == "area") {
+                if (legendType === "area") {
                     if (sliceOptions[i].attrs.width === undefined)
                         sliceOptions[i].attrs.width = 30;
                     if (sliceOptions[i].attrs.height === undefined)
                         sliceOptions[i].attrs.height = 20;
-                } else if (sliceOptions[i].type == "square") {
+                } else if (sliceOptions[i].type === "square") {
                     if (sliceOptions[i].attrs.width === undefined)
                         sliceOptions[i].attrs.width = sliceOptions[i].size;
                     if (sliceOptions[i].attrs.height === undefined)
                         sliceOptions[i].attrs.height = sliceOptions[i].size;
-                } else if (sliceOptions[i].type == "image" || sliceOptions[i].type == "svg") {
+                } else if (sliceOptions[i].type === "image" || sliceOptions[i].type === "svg") {
                     if (sliceOptions[i].attrs.width === undefined)
                         sliceOptions[i].attrs.width = sliceOptions[i].width;
                     if (sliceOptions[i].attrs.height === undefined)
@@ -1615,7 +1615,7 @@
                 if (title) {
                     yCenterCurrent += title.getBBox().height;
                 }
-                if (legendType == "plot" && (sliceOptions[i].type === undefined || sliceOptions[i].type == "circle")) {
+                if (legendType === "plot" && (sliceOptions[i].type === undefined || sliceOptions[i].type === "circle")) {
                     yCenterCurrent += scale * sliceOptions[i].attrs.r;
                 } else {
                     yCenterCurrent += scale * sliceOptions[i].attrs.height / 2;
@@ -1624,15 +1624,15 @@
                 yCenter = Math.max(yCenter, yCenterCurrent);
             }
 
-            if (legendOptions.mode == "horizontal") {
+            if (legendOptions.mode === "horizontal") {
                 width = legendOptions.marginLeft;
             }
 
             // Draw legend elements (circle, square or image in vertical or horizontal mode)
             for (i = 0; i < sliceOptions.length; ++i) {
                 if (sliceOptions[i].display === undefined || sliceOptions[i].display === true) {
-                    if (legendType == "area") {
-                        if (legendOptions.mode == "horizontal") {
+                    if (legendType === "area") {
+                        if (legendOptions.mode === "horizontal") {
                             x = width + legendOptions.marginLeft;
                             y = yCenter - (0.5 * scale * sliceOptions[i].attrs.height);
                         } else {
@@ -1641,8 +1641,8 @@
                         }
 
                         elem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
-                    } else if (sliceOptions[i].type == "square") {
-                        if (legendOptions.mode == "horizontal") {
+                    } else if (sliceOptions[i].type === "square") {
+                        if (legendOptions.mode === "horizontal") {
                             x = width + legendOptions.marginLeft;
                             y = yCenter - (0.5 * scale * sliceOptions[i].attrs.height);
                         } else {
@@ -1652,8 +1652,8 @@
 
                         elem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
 
-                    } else if (sliceOptions[i].type == "image" || sliceOptions[i].type == "svg") {
-                        if (legendOptions.mode == "horizontal") {
+                    } else if (sliceOptions[i].type === "image" || sliceOptions[i].type === "svg") {
+                        if (legendOptions.mode === "horizontal") {
                             x = width + legendOptions.marginLeft;
                             y = yCenter - (0.5 * scale * sliceOptions[i].attrs.height);
                         } else {
@@ -1661,7 +1661,7 @@
                             y = height;
                         }
 
-                        if (sliceOptions[i].type == "image") {
+                        if (sliceOptions[i].type === "image") {
                             elem = legendPaper.image(
                                 sliceOptions[i].url, x, y, scale * sliceOptions[i].attrs.width, scale * sliceOptions[i].attrs.height);
                         } else {
@@ -1673,7 +1673,7 @@
                             sliceOptions[i].attrs.transform = "m" + ((scale * sliceOptions[i].width) / elem.getBBox().width) + ",0,0," + ((scale * sliceOptions[i].height) / elem.getBBox().height) + "," + x + "," + y + sliceOptions[i].attrs.transform;
                         }
                     } else {
-                        if (legendOptions.mode == "horizontal") {
+                        if (legendOptions.mode === "horizontal") {
                             x = width + legendOptions.marginLeft + scale * (sliceOptions[i].attrs.r);
                             y = yCenter;
                         } else {
@@ -1691,7 +1691,7 @@
                     elemBBox = elem.getBBox();
 
                     // Draw the label associated with the element
-                    if (legendOptions.mode == "horizontal") {
+                    if (legendOptions.mode === "horizontal") {
                         x = width + legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel;
                         y = yCenter;
                     } else {
@@ -1702,10 +1702,10 @@
                     label = legendPaper.text(x, y, sliceOptions[i].label).attr(legendOptions.labelAttrs);
 
                     // Update the width and height for the paper
-                    if (legendOptions.mode == "horizontal") {
+                    if (legendOptions.mode === "horizontal") {
                         var currentHeight = legendOptions.marginBottom + elemBBox.height;
                         width += legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width;
-                        if (sliceOptions[i].type != "image" && legendType != "area") {
+                        if (sliceOptions[i].type !== "image" && legendType !== "area") {
                             currentHeight += legendOptions.marginBottomTitle;
                         }
                         // Add title height if it exists
@@ -1737,7 +1737,7 @@
 
             // VMLWidth option allows you to set static width for the legend
             // only for VML render because text.getBBox() returns wrong values on IE6/7
-            if (Raphael.type != "SVG" && legendOptions.VMLWidth)
+            if (Raphael.type !== "SVG" && legendOptions.VMLWidth)
                 width = legendOptions.VMLWidth;
 
             legendPaper.setSize(width, height);
@@ -1868,7 +1868,7 @@
          */
         setHoverOptions: function (elem, originalAttrs, attrsHover) {
             // Disable transform option on hover for VML (IE<9) because of several bugs
-            if (Raphael.type != "SVG") delete attrsHover.transform;
+            if (Raphael.type !== "SVG") delete attrsHover.transform;
             elem.attrsHover = attrsHover;
 
             if (elem.attrsHover.transform) elem.originalAttrs = $.extend({transform: "s1"}, originalAttrs);
@@ -2038,7 +2038,7 @@
          */
         getLegendSlice: function (value, legend) {
             for (var i = 0; i < legend.slices.length; ++i) {
-                if ((legend.slices[i].sliceValue !== undefined && value == legend.slices[i].sliceValue)
+                if ((legend.slices[i].sliceValue !== undefined && value === legend.slices[i].sliceValue)
                     || ((legend.slices[i].sliceValue === undefined)
                     && (legend.slices[i].min === undefined || value >= legend.slices[i].min)
                     && (legend.slices[i].max === undefined || value <= legend.slices[i].max))
