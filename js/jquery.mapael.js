@@ -885,8 +885,8 @@
         },
 
         /*
-         *
          * Update the current map
+         *
          * Refresh attributes and tooltips for areas and plots
          * @param opt option for the refresh :
          *  opt.mapOptions: options to update for plots and areas
@@ -897,7 +897,7 @@
          *  opt.deleteLinkKeys links to remove from the map (array, or "all" to remove all links)
          *  opt.setLegendElemsState the state of legend elements to be set : show (default) or hide
          *  opt.animDuration animation duration in ms (default = 0)
-         *  opt.afterUpdate Hook that allows to add custom processing on the map
+         *  opt.afterUpdate hook that allows to add custom processing on the map
          */
         onUpdateEvent: function (e, opt) {
             var self = this;
@@ -1756,11 +1756,10 @@
             var self = this;
 
             /**
-             *
-             * @param e
-             * @param hideOtherElems : option used for the 'exclusive' mode to enabled only one item from the legend
+             * @param e event object
+             * @param hideOtherElems option used for the 'exclusive' mode to enabled only one item from the legend
              * at once
-             * @param animDuration : used in the 'update' event in order to apply the same animDuration on the legend items
+             * @param animDuration used in the 'update' event in order to apply the same animDuration on the legend items
              */
             var hideMapElems = function (e, hideOtherElems, animDuration) {
                 var elemValue = 0;
