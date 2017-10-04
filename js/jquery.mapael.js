@@ -2061,10 +2061,10 @@
          * @param h map defined height
          * @param duration defined length of time for animation
          * @param easingFunction defined Raphael supported easing_formula to use
-         * @param callback method when animated action is complete
          */
         animateViewBox: function (x, y, w, h, duration, easingFunction) {
             var self = this;
+
             var cx = self.currentViewBox.x;
             var dx = x - cx;
             var cy = self.currentViewBox.y;
@@ -2073,31 +2073,92 @@
             var dw = w - cw;
             var ch = self.currentViewBox.h;
             var dh = h - ch;
-            var interval = 25;
-            var steps = duration / interval;
-            var currentStep = 0;
-            var easingFormula;
 
-            easingFunction = easingFunction || "linear";
-            easingFormula = Raphael.easing_formulas[easingFunction];
+            var easingFormula = Raphael.easing_formulas[easingFunction || "linear"];
 
-            clearInterval(self.animationIntervalID);
+            // To avoid another frame when elapsed time approach end (2%)
+            var durationWithMargin = duration - (duration * 2 / 100);
 
-            self.animationIntervalID = setInterval(function () {
-                    var ratio = currentStep / steps;
-                    self.paper.setViewBox(cx + dx * easingFormula(ratio),
-                        cy + dy * easingFormula(ratio),
-                        cw + dw * easingFormula(ratio),
-                        ch + dh * easingFormula(ratio), false);
-                    if (currentStep++ >= steps) {
-                        clearInterval(self.animationIntervalID);
-                        clearTimeout(self.zoomTO);
-                        self.zoomTO = setTimeout(function () {
-                            self.$map.trigger("afterZoom", {x1: x, y1: y, x2: (x + w), y2: (y + h)});
-                        }, 150);
+            var tStart = (new Date()).getTime();
+            var computeNextStep = function () {
+                // Cancel any remaining animationFrame
+                self.cancelAnimationFrame(self.animationIntervalID);
+
+                var elapsed = (new Date()).getTime() - tStart;
+                if (elapsed < durationWithMargin) {
+                    // Compute ratio according to elasped time and easing formula
+                    var ratio = easingFormula(elapsed / duration);
+                    self.setViewBox(
+                        cx + dx * ratio, cy + dy * ratio,
+                        cw + dw * ratio, ch + dh * ratio
+                    );
+                    self.animationIntervalID = self.requestAnimationFrame(computeNextStep);
+                } else {
+                    // Set the viewbox to final state
+                    self.setViewBox(x, y, w, h);
+                    // Trigger afterZoom event
+                    self.$map.trigger("afterZoom", {x1: x, y1: y, x2: (x + w), y2: (y + h)});
+                }
+            };
+
+            self.cancelAnimationFrame(self.animationIntervalID);
+            self.animationIntervalID = self.requestAnimationFrame(computeNextStep);
+        },
+
+        /*
+         * requestAnimationFrame polyfill
+         * Based on https://gist.github.com/jlmakes/47eba84c54bc306186ac1ab2ffd336d4
+         * and also https://gist.github.com/paulirish/1579671
+         *
+         * _requestAnimationFrameFn and _cancelAnimationFrameFn hold the current functions
+         * But requestAnimationFrame and cancelAnimationFrame shall be called since
+         * in order to be in window context
+         */
+        // The requestAnimationFrame polyfill'd function
+        _requestAnimationFrameFn: (function () {
+            var polyfill = (function () {
+                var clock = (new Date()).getTime();
+
+                return function (callback) {
+                    var currentTime = (new Date()).getTime();
+
+                    if (currentTime - clock > 16) {
+                        clock = currentTime;
+                        callback(currentTime);
+                    } else {
+                        return setTimeout(function () {
+                            polyfill(callback);
+                        }, 0);
                     }
-                }, interval
-            );
+                };
+            })();
+            return window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.msRequestAnimationFrame ||
+                window.oRequestAnimationFrame ||
+                polyfill;
+        })(),
+        // The function to use for requestAnimationFrame
+        requestAnimationFrame: function(callback) {
+            return this._requestAnimationFrameFn.call(window, callback);
+        },
+        // The CancelAnimationFrame polyfill'd function
+        _cancelAnimationFrameFn: (function () {
+            return window.cancelAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.webkitCancelRequestAnimationFrame ||
+                window.mozCancelAnimationFrame ||
+                window.mozCancelRequestAnimationFrame ||
+                window.msCancelAnimationFrame ||
+                window.msCancelRequestAnimationFrame ||
+                window.oCancelAnimationFrame ||
+                window.oCancelRequestAnimationFrame ||
+                clearTimeout;
+        })(),
+        // The function to use for cancelAnimationFrame
+        cancelAnimationFrame: function(id) {
+            this._cancelAnimationFrameFn.call(window, id);
         },
 
         /*
