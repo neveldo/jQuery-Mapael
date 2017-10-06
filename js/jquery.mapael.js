@@ -112,6 +112,9 @@
         // The map configuration object (taken from map file)
         self.mapConf = {};
 
+        // Holds all custom event handlers
+        self.customEventHandlers = {};
+
         // Let's start the initialization
         self.init();
     };
@@ -245,6 +248,8 @@
 
             // Attach delegated events
             self.initDelegatedMapEvents();
+            // Attach delegated custom events
+            self.initDelegatedCustomEvents();
 
             // Hook that allows to add custom processing on the map
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
@@ -481,6 +486,40 @@
         },
 
         /*
+         * Init all delegated custom events
+         */
+        initDelegatedCustomEvents: function() {
+            var self = this;
+
+            $.each(self.customEventHandlers, function(eventName) {
+                // Namespace the custom event
+                // This allow to easily unbound only custom events and not regular ones
+                var fullEventName = eventName + '.' + pluginName + ".custom";
+                self.$container.off(fullEventName).on(fullEventName, "[data-id]", function (e) {
+                    var $elem = $(this);
+                    var id = $elem.attr('data-id');
+                    var type = $elem.attr('data-type');
+
+                    if (!self.panning &&
+                        self.customEventHandlers[eventName][type] !== undefined &&
+                        self.customEventHandlers[eventName][type][id] !== undefined)
+                    {
+                        var customEventHandler = self.customEventHandlers[eventName][type][id];
+                        // Run callback provided by user
+                        customEventHandler.elemOptions.eventHandlers[eventName](
+                            e, id,
+                            customEventHandler.mapElem,
+                            customEventHandler.textElem,
+                            customEventHandler.elemOptions
+                        );
+                    }
+                });
+            });
+
+
+        },
+
+        /*
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
         initElem: function (elem, elemOptions, id, type) {
@@ -505,7 +544,7 @@
             }
 
             // Set user event handlers
-            if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem, elem.textElem);
+            if (elemOptions.eventHandlers) self.setEventHandlers(id, type, elemOptions, elem.mapElem, elem.textElem);
 
             // Set hover option for mapElem
             self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
@@ -1251,6 +1290,10 @@
                     }
                 });
             }
+
+            // Always rebind custom events on update
+            self.initDelegatedCustomEvents();
+
             if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, self.plots, self.options);
         },
 
@@ -1521,23 +1564,21 @@
         /*
          * Set user defined handlers for events on areas and plots
          * @param id the id of the element
+         * @param type the type of the element (area, plot, link)
          * @param elemOptions the element parameters
          * @param mapElem the map element to set callback on
          * @param textElem the optional text within the map element
          */
-        setEventHandlers: function (id, elemOptions, mapElem, textElem) {
+        setEventHandlers: function (id, type, elemOptions, mapElem, textElem) {
             var self = this;
             $.each(elemOptions.eventHandlers, function (event) {
-                (function (event) {
-                    $(mapElem.node).on(event, function (e) {
-                        if (!self.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
-                    });
-                    if (textElem) {
-                        $(textElem.node).on(event, function (e) {
-                            if (!self.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
-                        });
-                    }
-                })(event);
+                if (self.customEventHandlers[event] === undefined) self.customEventHandlers[event] = {};
+                if (self.customEventHandlers[event][type] === undefined) self.customEventHandlers[event][type] = {};
+                self.customEventHandlers[event][type][id] = {
+                    mapElem: mapElem,
+                    textElem: textElem,
+                    elemOptions: elemOptions
+                };
             });
         },
 
