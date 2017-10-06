@@ -2106,7 +2106,7 @@
         },
 
         /*
-         * requestAnimationFrame polyfill
+         * requestAnimationFrame/cancelAnimationFrame polyfill
          * Based on https://gist.github.com/jlmakes/47eba84c54bc306186ac1ab2ffd336d4
          * and also https://gist.github.com/paulirish/1579671
          *
@@ -2114,7 +2114,16 @@
          * But requestAnimationFrame and cancelAnimationFrame shall be called since
          * in order to be in window context
          */
+        // The function to use for requestAnimationFrame
+        requestAnimationFrame: function(callback) {
+            return this._requestAnimationFrameFn.call(window, callback);
+        },
+        // The function to use for cancelAnimationFrame
+        cancelAnimationFrame: function(id) {
+            this._cancelAnimationFrameFn.call(window, id);
+        },
         // The requestAnimationFrame polyfill'd function
+        // Value set by self-invoking function, will be run only once
         _requestAnimationFrameFn: (function () {
             var polyfill = (function () {
                 var clock = (new Date()).getTime();
@@ -2122,16 +2131,20 @@
                 return function (callback) {
                     var currentTime = (new Date()).getTime();
 
+                    // requestAnimationFrame strive to run @60FPS
+                    // (e.g. every 16 ms)
                     if (currentTime - clock > 16) {
                         clock = currentTime;
                         callback(currentTime);
                     } else {
+                        // Ask browser to schedule next callback when possible
                         return setTimeout(function () {
                             polyfill(callback);
                         }, 0);
                     }
                 };
             })();
+
             return window.requestAnimationFrame ||
                 window.webkitRequestAnimationFrame ||
                 window.mozRequestAnimationFrame ||
@@ -2139,11 +2152,8 @@
                 window.oRequestAnimationFrame ||
                 polyfill;
         })(),
-        // The function to use for requestAnimationFrame
-        requestAnimationFrame: function(callback) {
-            return this._requestAnimationFrameFn.call(window, callback);
-        },
         // The CancelAnimationFrame polyfill'd function
+        // Value set by self-invoking function, will be run only once
         _cancelAnimationFrameFn: (function () {
             return window.cancelAnimationFrame ||
                 window.webkitCancelAnimationFrame ||
@@ -2156,10 +2166,6 @@
                 window.oCancelRequestAnimationFrame ||
                 clearTimeout;
         })(),
-        // The function to use for cancelAnimationFrame
-        cancelAnimationFrame: function(id) {
-            this._cancelAnimationFrameFn.call(window, id);
-        },
 
         /*
          * SetViewBox wrapper
@@ -2390,7 +2396,7 @@
     // Mapael version number
     // Accessible as $.mapael.version
     Mapael.version = version;
-    
+
     // Extend jQuery with Mapael
     if ($[pluginName] === undefined) $[pluginName] = Mapael;
 
