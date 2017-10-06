@@ -848,6 +848,8 @@
          * @param animDuration the animation duration to use
          */
         setElementOpacity: function(elem, opacity, animDuration) {
+            var self = this;
+
             // Ensure no animation is running
             //elem.mapElem.stop();
             //if (elem.textElem) elem.textElem.stop();
@@ -857,32 +859,18 @@
                 elem.mapElem.show();
                 if (elem.textElem) elem.textElem.show();
             }
-            if (animDuration > 0) {
-                // Animate attribute
-                elem.mapElem.animate({"opacity": opacity}, animDuration, "linear", function () {
-                    // If final attribute is 0, hide
-                    if (opacity === 0) elem.mapElem.hide();
-                });
-                // Handle text element
-                if (elem.textElem) {
-                    // Animate attribute
-                    elem.textElem.animate({"opacity": opacity}, animDuration, "linear", function () {
-                        // If final attribute is 0, hide
-                        if (opacity === 0) elem.textElem.hide();
-                    });
-                }
-            } else {
-                // Set attribute
-                elem.mapElem.attr({"opacity": opacity});
-                // For null opacity, hide it
+
+            self.animate(elem.mapElem, {"opacity": opacity}, animDuration, function () {
+                // If final attribute is 0, hide
                 if (opacity === 0) elem.mapElem.hide();
-                // Handle text elemen
-                if (elem.textElem) {
-                    // Set attribute
-                    elem.textElem.attr({"opacity": opacity});
-                    // For null opacity, hide it
+            });
+
+            // Handle text element
+            if (elem.textElem) {
+                self.animate(elem.textElem, {"opacity": opacity}, animDuration, function () {
+                    // If final attribute is 0, hide
                     if (opacity === 0) elem.textElem.hide();
-                }
+                });
             }
         },
 
@@ -914,20 +902,15 @@
             var fnRemoveElement = function (elem) {
                 // Unset all event handlers
                 self.unsetHover(elem.mapElem, elem.textElem);
-                if (animDuration > 0) {
-                    elem.mapElem.animate({"opacity": 0}, animDuration, "linear", function () {
-                        elem.mapElem.remove();
-                    });
-                    if (elem.textElem) {
-                        elem.textElem.animate({"opacity": 0}, animDuration, "linear", function () {
-                            elem.textElem.remove();
-                        });
-                    }
-                } else {
+
+                self.animate(elem.mapElem, {"opacity": 0}, animDuration, function () {
                     elem.mapElem.remove();
-                    if (elem.textElem) {
+                });
+
+                if (elem.textElem) {
+                    self.animate(elem.textElem, {"opacity": 0}, animDuration, function () {
                         elem.textElem.remove();
-                    }
+                    });
                 }
             };
 
@@ -1293,32 +1276,18 @@
 
                 textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
                 if (textPosition.x !== elem.textElem.attrs.x || textPosition.y !== elem.textElem.attrs.y) {
-                    if (animDuration > 0) {
-                        elem.textElem.attr({"text-anchor": textPosition.textAnchor});
-                        elem.textElem.animate({x: textPosition.x, y: textPosition.y}, animDuration);
-                    } else
-                        elem.textElem.attr({
-                            x: textPosition.x,
-                            y: textPosition.y,
-                            "text-anchor": textPosition.textAnchor
-                        });
+                    self.animate(elem.textElem, {x: textPosition.x, y: textPosition.y}, animDuration);
                 }
 
                 self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
-                if (animDuration > 0)
-                    elem.textElem.animate(elemOptions.text.attrs, animDuration);
-                else
-                    elem.textElem.attr(elemOptions.text.attrs);
+                self.animate(elem.textElem, elemOptions.text.attrs, animDuration);
             }
 
             // Update elements attrs and attrsHover
             self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
 
             if (self.isAttrsChanged(elem.mapElem.attrs, elemOptions.attrs)) {
-                if (animDuration > 0)
-                    elem.mapElem.animate(elemOptions.attrs, animDuration);
-                else
-                    elem.mapElem.attr(elemOptions.attrs);
+                self.animate(elem.mapElem, elemOptions.attrs, animDuration);
             }
 
             // Update dimensions of SVG plots
@@ -1769,11 +1738,9 @@
                 if (animDuration === undefined) animDuration = legendOptions.hideElemsOnClick.animDuration;
 
                 if (hidden === '0') {
-                    if (animDuration > 0) label.animate({"opacity": 0.5}, animDuration);
-                    else label.attr({"opacity": 0.5});
+                    self.animate(label, {"opacity": 0.5}, animDuration);
                 } else {
-                    if (animDuration > 0) label.animate({"opacity": 1}, animDuration);
-                    else label.attr({"opacity": 1});
+                    self.animate(label, {"opacity": 1}, animDuration);
                 }
 
                 $.each(elems, function (id) {
@@ -1927,12 +1894,10 @@
         elemHover: function (mapElem, textElem) {
             var self = this;
             // Set mapElem
-            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.attrsHover, mapElem.attrsHover.animDuration);
-            else mapElem.attr(mapElem.attrsHover);
+            self.animate(mapElem, mapElem.attrsHover, mapElem.attrsHover.animDuration);
             // Set textElem
             if (textElem) {
-                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.attrsHover, textElem.attrsHover.animDuration);
-                else textElem.attr(textElem.attrsHover);
+                self.animate(textElem, textElem.attrsHover, textElem.attrsHover.animDuration);
             }
             // workaround for older version of Raphael
             if (self.paper.safari) self.paper.safari();
@@ -1946,12 +1911,10 @@
         elemOut: function (mapElem, textElem) {
             var self = this;
             // Set mapElem
-            if (mapElem.attrsHover.animDuration > 0) mapElem.animate(mapElem.originalAttrs, mapElem.attrsHover.animDuration);
-            else mapElem.attr(mapElem.originalAttrs);
+            self.animate(mapElem, mapElem.originalAttrs, mapElem.attrsHover.animDuration);
             // Set textElem
             if (textElem) {
-                if (textElem.attrsHover.animDuration > 0) textElem.animate(textElem.originalAttrs, textElem.attrsHover.animDuration);
-                else textElem.attr(textElem.originalAttrs);
+                self.animate(textElem, textElem.originalAttrs, textElem.attrsHover.animDuration);
             }
 
             // workaround for older version of Raphael
@@ -2277,6 +2240,57 @@
             self.currentViewBox.h = h;
             // Perform set view box
             self.paper.setViewBox(x, y, w, h, false);
+        },
+
+        /*
+         * Animate wrapper for Raphael element
+         *
+         * Perform an animation and ensure the non-animated attr are set.
+         * This is needed for specific attributes like cursor who will not
+         * be animated, and thus not set.
+         *
+         * If duration is set to 0 (or not set), no animation are performed
+         * and attributes are directly set (and the callback directly called)
+         */
+        // List extracted from Raphael internal vars
+        // Diff between Raphael.availableAttrs  and  Raphael._availableAnimAttrs
+        _nonAnimatedAttrs: [
+            "arrow-end", "arrow-start", "gradient",
+            "class", "cursor", "text-anchor",
+            "font", "font-family", "font-style", "font-weight", "letter-spacing",
+            "src", "href", "target", "title",
+            "stroke-dasharray", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit"
+        ],
+        /*
+         * @param element Raphael element
+         * @param attrs Attributes object to animate
+         * @param duration Animation duration in ms
+         * @param callback Callback to eventually call after animation is done
+         */
+        animate: function(element, attrs, duration, callback) {
+            var self = this;
+            if (duration > 0) {
+                // Filter out non-animated attributes
+                // Note: we don't need to delete from original attribute (they won't be set anyway)
+                var attrsNonAnimated = {};
+                for (var i=0 ; i < self._nonAnimatedAttrs.length ; i++) {
+                    var attrName = self._nonAnimatedAttrs[i];
+                    if (attrs[attrName] !== undefined) {
+                        attrsNonAnimated[attrName] = attrs[attrName];
+                    }
+                }
+                // Set non-animated attributes
+                element.attr(attrsNonAnimated);
+                // Start animation for all attributes
+                element.animate(attrs, duration, 'linear', function() {
+                    if (callback) callback();
+                });
+            } else {
+                // No animation: simply set all attributes...
+                element.attr(attrs);
+                // ... and call the callback if needed
+                if (callback) callback();
+            }
         },
 
         /*
