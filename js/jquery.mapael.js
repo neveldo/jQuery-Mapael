@@ -69,6 +69,10 @@
             panY: 0
         };
 
+        self.currentViewBox = {
+            x: 0, y: 0, w: 0, h: 0
+        };
+
         // resize TimeOut handler (used to set and clear)
         self.resizeTO = 0;
 
@@ -163,7 +167,7 @@
             self.$container.addClass(pluginName);
 
             if (self.options.map.tooltip.css) self.$tooltip.css(self.options.map.tooltip.css);
-            self.paper.setViewBox(0, 0, self.mapConf.width, self.mapConf.height, false);
+            self.setViewBox(0, 0, self.mapConf.width, self.mapConf.height);
 
             // Handle map size
             if (self.options.map.width) {
@@ -564,25 +568,25 @@
                 if (mousedown && currentLevel !== 0) {
                     var offsetX = (previousX - pageX) / (1 + (currentLevel * zoomOptions.step)) * (mapWidth / self.paper.width);
                     var offsetY = (previousY - pageY) / (1 + (currentLevel * zoomOptions.step)) * (mapHeight / self.paper.height);
-                    var panX = Math.min(Math.max(0, self.paper._viewBox[0] + offsetX), (mapWidth - self.paper._viewBox[2]));
-                    var panY = Math.min(Math.max(0, self.paper._viewBox[1] + offsetY), (mapHeight - self.paper._viewBox[3]));
+                    var panX = Math.min(Math.max(0, self.currentViewBox.x + offsetX), (mapWidth - self.currentViewBox.w));
+                    var panY = Math.min(Math.max(0, self.currentViewBox.y + offsetY), (mapHeight - self.currentViewBox.h));
 
                     if (Math.abs(offsetX) > 5 || Math.abs(offsetY) > 5) {
                         $.extend(self.zoomData, {
                             panX: panX,
                             panY: panY,
-                            zoomX: panX + self.paper._viewBox[2] / 2,
-                            zoomY: panY + self.paper._viewBox[3] / 2
+                            zoomX: panX + self.currentViewBox.w / 2,
+                            zoomY: panY + self.currentViewBox.h / 2
                         });
-                        self.paper.setViewBox(panX, panY, self.paper._viewBox[2], self.paper._viewBox[3]);
+                        self.setViewBox(panX, panY, self.currentViewBox.w, self.currentViewBox.h);
 
                         clearTimeout(self.panningTO);
                         self.panningTO = setTimeout(function () {
                             self.$map.trigger("afterPanning", {
                                 x1: panX,
                                 y1: panY,
-                                x2: (panX + self.paper._viewBox[2]),
-                                y2: (panY + self.paper._viewBox[3])
+                                x2: (panX + self.currentViewBox.w),
+                                y2: (panY + self.currentViewBox.h)
                             });
                         }, 150);
 
@@ -677,10 +681,10 @@
             }
 
             if (zoomOptions.x === undefined)
-                zoomOptions.x = self.paper._viewBox[0] + self.paper._viewBox[2] / 2;
+                zoomOptions.x = self.currentViewBox.x + self.currentViewBox.w / 2;
 
             if (zoomOptions.y === undefined)
-                zoomOptions.y = (self.paper._viewBox[1] + self.paper._viewBox[3] / 2);
+                zoomOptions.y = (self.currentViewBox.y + self.currentViewBox.h / 2);
 
             if (newLevel === 0) {
                 panX = 0;
@@ -702,7 +706,7 @@
             if (animDuration > 0) {
                 self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
             } else {
-                self.paper.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
+                self.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
                 clearTimeout(self.zoomTO);
                 self.zoomTO = setTimeout(function () {
                     self.$map.trigger("afterZoom", {
@@ -718,8 +722,8 @@
                 zoomLevel: newLevel,
                 panX: panX,
                 panY: panY,
-                zoomX: panX + self.paper._viewBox[2] / 2,
-                zoomY: panY + self.paper._viewBox[3] / 2
+                zoomX: panX + self.currentViewBox.w / 2,
+                zoomY: panY + self.currentViewBox.h / 2
             });
         },
 
@@ -2057,43 +2061,128 @@
          * @param h map defined height
          * @param duration defined length of time for animation
          * @param easingFunction defined Raphael supported easing_formula to use
-         * @param callback method when animated action is complete
          */
         animateViewBox: function (x, y, w, h, duration, easingFunction) {
             var self = this;
-            var cx = self.paper._viewBox ? self.paper._viewBox[0] : 0;
+
+            var cx = self.currentViewBox.x;
             var dx = x - cx;
-            var cy = self.paper._viewBox ? self.paper._viewBox[1] : 0;
+            var cy = self.currentViewBox.y;
             var dy = y - cy;
-            var cw = self.paper._viewBox ? self.paper._viewBox[2] : self.paper.width;
+            var cw = self.currentViewBox.w;
             var dw = w - cw;
-            var ch = self.paper._viewBox ? self.paper._viewBox[3] : self.paper.height;
+            var ch = self.currentViewBox.h;
             var dh = h - ch;
-            var interval = 25;
-            var steps = duration / interval;
-            var currentStep = 0;
-            var easingFormula;
 
-            easingFunction = easingFunction || "linear";
-            easingFormula = Raphael.easing_formulas[easingFunction];
+            var easingFormula = Raphael.easing_formulas[easingFunction || "linear"];
 
-            clearInterval(self.animationIntervalID);
+            // To avoid another frame when elapsed time approach end (2%)
+            var durationWithMargin = duration - (duration * 2 / 100);
 
-            self.animationIntervalID = setInterval(function () {
-                    var ratio = currentStep / steps;
-                    self.paper.setViewBox(cx + dx * easingFormula(ratio),
-                        cy + dy * easingFormula(ratio),
-                        cw + dw * easingFormula(ratio),
-                        ch + dh * easingFormula(ratio), false);
-                    if (currentStep++ >= steps) {
-                        clearInterval(self.animationIntervalID);
-                        clearTimeout(self.zoomTO);
-                        self.zoomTO = setTimeout(function () {
-                            self.$map.trigger("afterZoom", {x1: x, y1: y, x2: (x + w), y2: (y + h)});
-                        }, 150);
+            var tStart = (new Date()).getTime();
+            var computeNextStep = function () {
+                // Cancel any remaining animationFrame
+                self.cancelAnimationFrame(self.animationIntervalID);
+
+                var elapsed = (new Date()).getTime() - tStart;
+                if (elapsed < durationWithMargin) {
+                    // Compute ratio according to elasped time and easing formula
+                    var ratio = easingFormula(elapsed / duration);
+                    self.setViewBox(
+                        cx + dx * ratio, cy + dy * ratio,
+                        cw + dw * ratio, ch + dh * ratio
+                    );
+                    self.animationIntervalID = self.requestAnimationFrame(computeNextStep);
+                } else {
+                    // Set the viewbox to final state
+                    self.setViewBox(x, y, w, h);
+                    // Trigger afterZoom event
+                    self.$map.trigger("afterZoom", {x1: x, y1: y, x2: (x + w), y2: (y + h)});
+                }
+            };
+
+            self.cancelAnimationFrame(self.animationIntervalID);
+            self.animationIntervalID = self.requestAnimationFrame(computeNextStep);
+        },
+
+        /*
+         * requestAnimationFrame/cancelAnimationFrame polyfill
+         * Based on https://gist.github.com/jlmakes/47eba84c54bc306186ac1ab2ffd336d4
+         * and also https://gist.github.com/paulirish/1579671
+         *
+         * _requestAnimationFrameFn and _cancelAnimationFrameFn hold the current functions
+         * But requestAnimationFrame and cancelAnimationFrame shall be called since
+         * in order to be in window context
+         */
+        // The function to use for requestAnimationFrame
+        requestAnimationFrame: function(callback) {
+            return this._requestAnimationFrameFn.call(window, callback);
+        },
+        // The function to use for cancelAnimationFrame
+        cancelAnimationFrame: function(id) {
+            this._cancelAnimationFrameFn.call(window, id);
+        },
+        // The requestAnimationFrame polyfill'd function
+        // Value set by self-invoking function, will be run only once
+        _requestAnimationFrameFn: (function () {
+            var polyfill = (function () {
+                var clock = (new Date()).getTime();
+
+                return function (callback) {
+                    var currentTime = (new Date()).getTime();
+
+                    // requestAnimationFrame strive to run @60FPS
+                    // (e.g. every 16 ms)
+                    if (currentTime - clock > 16) {
+                        clock = currentTime;
+                        callback(currentTime);
+                    } else {
+                        // Ask browser to schedule next callback when possible
+                        return setTimeout(function () {
+                            polyfill(callback);
+                        }, 0);
                     }
-                }, interval
-            );
+                };
+            })();
+
+            return window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                window.msRequestAnimationFrame ||
+                window.oRequestAnimationFrame ||
+                polyfill;
+        })(),
+        // The CancelAnimationFrame polyfill'd function
+        // Value set by self-invoking function, will be run only once
+        _cancelAnimationFrameFn: (function () {
+            return window.cancelAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.webkitCancelRequestAnimationFrame ||
+                window.mozCancelAnimationFrame ||
+                window.mozCancelRequestAnimationFrame ||
+                window.msCancelAnimationFrame ||
+                window.msCancelRequestAnimationFrame ||
+                window.oCancelAnimationFrame ||
+                window.oCancelRequestAnimationFrame ||
+                clearTimeout;
+        })(),
+
+        /*
+         * SetViewBox wrapper
+         * Apply new viewbox values and keep track of them
+         *
+         * This avoid using the internal variable paper._viewBox which
+         * may not be present in future version of Raphael
+         */
+        setViewBox: function(x, y, w, h) {
+            var self = this;
+            // Update current value
+            self.currentViewBox.x = x;
+            self.currentViewBox.y = y;
+            self.currentViewBox.w = w;
+            self.currentViewBox.h = h;
+            // Perform set view box
+            self.paper.setViewBox(x, y, w, h, false);
         },
 
         /*
@@ -2307,7 +2396,7 @@
     // Mapael version number
     // Accessible as $.mapael.version
     Mapael.version = version;
-    
+
     // Extend jQuery with Mapael
     if ($[pluginName] === undefined) $[pluginName] = Mapael;
 
