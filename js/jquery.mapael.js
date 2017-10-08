@@ -865,13 +865,10 @@
                 if (opacity === 0) elem.mapElem.hide();
             });
 
-            // Handle text element
-            if (elem.textElem) {
-                self.animate(elem.textElem, {"opacity": opacity}, animDuration, function () {
-                    // If final attribute is 0, hide
-                    if (opacity === 0) elem.textElem.hide();
-                });
-            }
+            self.animate(elem.textElem, {"opacity": opacity}, animDuration, function () {
+                // If final attribute is 0, hide
+                if (opacity === 0) elem.textElem.hide();
+            });
         },
 
         /*
@@ -907,11 +904,9 @@
                     elem.mapElem.remove();
                 });
 
-                if (elem.textElem) {
-                    self.animate(elem.textElem, {"opacity": 0}, animDuration, function () {
-                        elem.textElem.remove();
-                    });
-                }
+                self.animate(elem.textElem, {"opacity": 0}, animDuration, function () {
+                    elem.textElem.remove();
+                });
             };
 
             // This function show an element using animation
@@ -2269,6 +2264,8 @@
          */
         animate: function(element, attrs, duration, callback) {
             var self = this;
+            // Check element
+            if (!element) return;
             if (duration > 0) {
                 // Filter out non-animated attributes
                 // Note: we don't need to delete from original attribute (they won't be set anyway)
