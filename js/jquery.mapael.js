@@ -1294,7 +1294,7 @@
             // Always rebind custom events on update
             self.initDelegatedCustomEvents();
 
-            if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, self.plots, self.options);
+            if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, self.plots, self.options, self.links);
         },
 
         /*
