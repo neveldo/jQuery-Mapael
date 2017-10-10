@@ -380,6 +380,18 @@
         initDelegatedMapEvents: function() {
             var self = this;
 
+            // Mapping between data-type value and the corresponding elements array
+            // Note: legend-elem and legend-label are not in this table because
+            //       they need a special processing
+            var dataTypeToElementMapping = {
+                'area'  : self.areas,
+                'area-text' : self.areas,
+                'plot' : self.plots,
+                'plot-text' : self.plots,
+                'link' : self.links,
+                'link-text' : self.links
+            };
+
             /* Attach mouseover event delegation
              * Note: we filter the event with a timeout to reduce the firing when the mouse moves quickly
              */
@@ -392,12 +404,8 @@
                     var id = $elem.attr('data-id');
                     var type = $elem.attr('data-type');
 
-                    if (type === 'area' || type === 'area-text') {
-                        self.elemEnter(self.areas[id]);
-                    } else if (type === 'plot' || type === 'plot-text') {
-                        self.elemEnter(self.plots[id]);
-                    } else if (type === 'link' || type === 'link-text') {
-                        self.elemEnter(self.links[id]);
+                    if (dataTypeToElementMapping[type] !== undefined) {
+                        self.elemEnter(dataTypeToElementMapping[type][id]);
                     } else if (type === 'legend-elem' || type === 'legend-label') {
                         var legendIndex = $elem.attr('data-legend-id');
                         if (self.legends[legendIndex] !== undefined &&
@@ -421,12 +429,8 @@
                     var id = $elem.attr('data-id');
                     var type = $elem.attr('data-type');
 
-                    if (type === 'area' || type === 'area-text') {
-                        self.elemHover(self.areas[id], event);
-                    } else if (type === 'plot' || type === 'plot-text') {
-                        self.elemHover(self.plots[id], event);
-                    } else if (type === 'link' || type === 'link-text') {
-                        self.elemHover(self.links[id], event);
+                    if (dataTypeToElementMapping[type] !== undefined) {
+                        self.elemHover(dataTypeToElementMapping[type][id], event);
                     } else if (type === 'legend-elem' || type === 'legend-label') {
                         /* Nothing to do */
                     }
@@ -447,12 +451,8 @@
                 var id = $elem.attr('data-id');
                 var type = $elem.attr('data-type');
 
-                if (type === 'area' || type === 'area-text') {
-                    self.elemOut(self.areas[id]);
-                } else if (type === 'plot' || type === 'plot-text') {
-                    self.elemOut(self.plots[id]);
-                } else if (type === 'link' || type === 'link-text') {
-                    self.elemOut(self.links[id]);
+                if (dataTypeToElementMapping[type] !== undefined) {
+                    self.elemOut(dataTypeToElementMapping[type][id]);
                 } else if (type === 'legend-elem' || type === 'legend-label') {
                     var legendIndex = $elem.attr('data-legend-id');
                     if (self.legends[legendIndex] !== undefined &&
