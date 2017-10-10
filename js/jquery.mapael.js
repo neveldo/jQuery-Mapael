@@ -431,7 +431,7 @@
                         /* Nothing to do */
                     }
 
-                }, 10);
+                }, 0);
             });
 
             /* Attach mouseout event delegation
