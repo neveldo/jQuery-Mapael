@@ -2064,27 +2064,27 @@
          * @param duration defined length of time for animation
          * @param easingFunction defined Raphael supported easing_formula to use
          */
-        animateViewBox: function (target_x, target_y, target_w, target_h, duration, easingFunction) {
+        animateViewBox: function (targetX, targetY, targetW, targetH, duration, easingFunction) {
             var self = this;
 
             var cx = self.currentViewBox.x;
-            var dx = target_x - cx;
+            var dx = targetX - cx;
             var cy = self.currentViewBox.y;
-            var dy = target_y - cy;
+            var dy = targetY - cy;
             var cw = self.currentViewBox.w;
-            var dw = target_w - cw;
+            var dw = targetW - cw;
             var ch = self.currentViewBox.h;
-            var dh = target_h - ch;
+            var dh = targetH - ch;
 
             // Init current ViewBox target if undefined
             if (!self.zoomAnimCVBTarget) {
                 self.zoomAnimCVBTarget = {
-                    x: target_x, y: target_y, w: target_w, h: target_h
+                    x: targetX, y: targetY, w: targetW, h: targetH
                 };
             }
 
             // Determine zoom direction by comparig current vs. target width
-            var zoomDir = (cw > target_w) ? 'in' : 'out';
+            var zoomDir = (cw > targetW) ? 'in' : 'out';
 
             var easingFormula = Raphael.easing_formulas[easingFunction || "linear"];
 
@@ -2130,7 +2130,7 @@
                     // experience for user.
 
                     // Change of target IF: an old animation start value exists AND the target has actually changed
-                    if (oldZoomAnimStartTime && self.zoomAnimCVBTarget && self.zoomAnimCVBTarget.w !== target_w) {
+                    if (oldZoomAnimStartTime && self.zoomAnimCVBTarget && self.zoomAnimCVBTarget.w !== targetW) {
                         // Compute the real time elapsed with the last step
                         var realElapsed = (new Date()).getTime() - oldZoomAnimStartTime;
                         // Compute then the actual ratio we're at
@@ -2150,7 +2150,7 @@
                         ch = h;
                         // Update the current ViewBox target
                         self.zoomAnimCVBTarget = {
-                            x: target_x, y: target_y, w: target_w, h: target_h
+                            x: targetX, y: targetY, w: targetW, h: targetH
                         };
                     } else {
                         // This is the classical approach when nothing come interrupting the zoom
@@ -2164,11 +2164,11 @@
                     }
 
                     // Some checks before applying the new viewBox
-                    if (zoomDir === 'in' && (w > self.currentViewBox.w || w < target_w)) {
+                    if (zoomDir === 'in' && (w > self.currentViewBox.w || w < targetW)) {
                         // Zooming IN and the new ViewBox seems larger than the current value, or smaller than target value
                         // We do NOT set the ViewBox with this value
                         // Otherwise, the user would see the camera going back and forth
-                    } else if (zoomDir === 'out' && (w < self.currentViewBox.w || w > target_w)) {
+                    } else if (zoomDir === 'out' && (w < self.currentViewBox.w || w > targetW)) {
                         // Zooming OUT and the new ViewBox seems smaller than the current value, or larger than target value
                         // We do NOT set the ViewBox with this value
                         // Otherwise, the user would see the camera going back and forth
@@ -2185,13 +2185,13 @@
                     self.zoomAnimStartTime = null;
                     self.zoomAnimCVBTarget = null;
                     // Make sure the ViewBox hits the target!
-                    if (self.currentViewBox.w !== target_w) {
-                        self.setViewBox(target_x, target_y, target_w, target_h);
+                    if (self.currentViewBox.w !== targetW) {
+                        self.setViewBox(targetX, targetY, targetW, targetH);
                     }
                     // Finally trigger afterZoom event
                     self.$map.trigger("afterZoom", {
-                        x1: target_x, y1: target_y,
-                        x2: (target_x + target_w), y2: (target_y + target_h)
+                        x1: targetX, y1: targetY,
+                        x2: (targetX + targetW), y2: (targetY + targetH)
                     });
                 }
             };
