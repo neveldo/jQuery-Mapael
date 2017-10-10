@@ -387,7 +387,7 @@
             self.$container.on("mouseover." + pluginName, "[data-id]", function () {
                 var elem = this;
                 clearTimeout(mapMouseOverTimeoutID);
-                mapMouseOverTimeoutID = setTimeout(function(){
+                mapMouseOverTimeoutID = setTimeout(function() {
                     var $elem = $(elem);
                     var id = $elem.attr('data-id');
                     var type = $elem.attr('data-type');
@@ -416,7 +416,7 @@
             self.$container.on("mousemove." + pluginName, "[data-id]", function (event) {
                 var elem = this;
                 clearTimeout(mapMouseMoveTimeoutID);
-                mapMouseMoveTimeoutID = setTimeout(function(){
+                mapMouseMoveTimeoutID = setTimeout(function() {
                     var $elem = $(elem);
                     var id = $elem.attr('data-id');
                     var type = $elem.attr('data-type');
@@ -2327,7 +2327,7 @@
          * Wants to override this behavior? Use prototype overriding:
          *     $.mapael.prototype.isRaphaelBBoxBugPresent = function() {return false;};
          */
-        isRaphaelBBoxBugPresent: function(){
+        isRaphaelBBoxBugPresent: function() {
             var self = this;
             // Draw text, then get its boundaries
             var text_elem = self.paper.text(-50, -50, "TEST");
