@@ -55,7 +55,7 @@ grunt jshint
 ## Test suite
 
 There is a test suite in the `/test` folder, power by [QUnit](http://qunitjs.com/).
-While not broken, it is however, it is very light. We sadly don't have the time to expand it for now.
+While not broken, it is, however, very light. We sadly don't have the time to expand it for now.
 
 When submitting a new PR, it is not expected from you to add any tests. 
 But if you feel like you can, please do so.
