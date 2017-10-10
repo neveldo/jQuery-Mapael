@@ -2145,9 +2145,13 @@
                         h = ch + (self.zoomAnimCVBTarget.h - ch) * realRatio;
                         // Update cw, cy, cw and ch so the next step take animation from here
                         cx = x;
+                        dx = targetX - cx;
                         cy = y;
+                        dy = targetY - cy;
                         cw = w;
+                        dw = targetW - cw;
                         ch = h;
+                        dh = targetH - ch;
                         // Update the current ViewBox target
                         self.zoomAnimCVBTarget = {
                             x: targetX, y: targetY, w: targetW, h: targetH
