@@ -82,8 +82,10 @@
         // Panning TimeOut handler (used to set and clear)
         self.panningTO = 0;
 
-        // Animate view box Interval handler (used to set and clear)
-        self.animationIntervalID = null;
+        // Animate view box
+        self.zoomAnimID = null; // Interval handler (used to set and clear)
+        self.zoomAnimStartTime = null; // Animation start time
+        self.zoomAnimCVBTarget = null; // Current ViewBox target
 
         // Map subcontainer jQuery object
         self.$map = $("." + self.options.map.cssClass, self.container);
@@ -2057,47 +2059,144 @@
          * @param duration defined length of time for animation
          * @param easingFunction defined Raphael supported easing_formula to use
          */
-        animateViewBox: function (x, y, w, h, duration, easingFunction) {
+        animateViewBox: function (targetX, targetY, targetW, targetH, duration, easingFunction) {
             var self = this;
 
             var cx = self.currentViewBox.x;
-            var dx = x - cx;
+            var dx = targetX - cx;
             var cy = self.currentViewBox.y;
-            var dy = y - cy;
+            var dy = targetY - cy;
             var cw = self.currentViewBox.w;
-            var dw = w - cw;
+            var dw = targetW - cw;
             var ch = self.currentViewBox.h;
-            var dh = h - ch;
+            var dh = targetH - ch;
+
+            // Init current ViewBox target if undefined
+            if (!self.zoomAnimCVBTarget) {
+                self.zoomAnimCVBTarget = {
+                    x: targetX, y: targetY, w: targetW, h: targetH
+                };
+            }
+
+            // Determine zoom direction by comparig current vs. target width
+            var zoomDir = (cw > targetW) ? 'in' : 'out';
 
             var easingFormula = Raphael.easing_formulas[easingFunction || "linear"];
 
             // To avoid another frame when elapsed time approach end (2%)
             var durationWithMargin = duration - (duration * 2 / 100);
 
-            var tStart = (new Date()).getTime();
+            // Save current zoomAnimStartTime before assigning a new one
+            var oldZoomAnimStartTime = self.zoomAnimStartTime;
+            self.zoomAnimStartTime = (new Date()).getTime();
+
+            /* Actual function to animate the ViewBox
+             * Uses requestAnimationFrame to schedule itself again until animation is over
+             */
             var computeNextStep = function () {
                 // Cancel any remaining animationFrame
-                self.cancelAnimationFrame(self.animationIntervalID);
-
-                var elapsed = (new Date()).getTime() - tStart;
+                // It means this new step will take precedence over the old one scheduled
+                // This is the case when the user is triggering the zoom fast (e.g. with a big mousewheel run)
+                // This actually does nothing when performing a single zoom action
+                self.cancelAnimationFrame(self.zoomAnimID);
+                // Compute elapsed time
+                var elapsed = (new Date()).getTime() - self.zoomAnimStartTime;
+                // Check if animation should finish
                 if (elapsed < durationWithMargin) {
-                    // Compute ratio according to elasped time and easing formula
-                    var ratio = easingFormula(elapsed / duration);
-                    self.setViewBox(
-                        cx + dx * ratio, cy + dy * ratio,
-                        cw + dw * ratio, ch + dh * ratio
-                    );
-                    self.animationIntervalID = self.requestAnimationFrame(computeNextStep);
+                    // Hold the future ViewBox values
+                    var x, y, w, h;
+
+                    // There are two ways to compute the next ViewBox size
+                    //  1. If the target ViewBox has changed between steps (=> ADAPTATION step)
+                    //  2. Or if the target ViewBox is the same (=> NORMAL step)
+                    //
+                    // A change of ViewBox target between steps means the user is triggering
+                    // the zoom fast (like a big scroll with its mousewheel)
+                    //
+                    // The new animation step with the new target will always take precedence over the
+                    // last one and start from 0 (we overwrite zoomAnimStartTime and cancel the scheduled frame)
+                    //
+                    // So if we don't detect the change of target and adapt our computation,
+                    // the user will see a delay at beginning the ratio will stays at 0 for some frames
+                    //
+                    // Hence when detecting the change of target, we animate from the previous target.
+                    //
+                    // The next step will then take the lead and continue from there, achieving a nicer
+                    // experience for user.
+
+                    // Change of target IF: an old animation start value exists AND the target has actually changed
+                    if (oldZoomAnimStartTime && self.zoomAnimCVBTarget && self.zoomAnimCVBTarget.w !== targetW) {
+                        // Compute the real time elapsed with the last step
+                        var realElapsed = (new Date()).getTime() - oldZoomAnimStartTime;
+                        // Compute then the actual ratio we're at
+                        var realRatio = easingFormula(realElapsed / duration);
+                        // Compute new ViewBox values
+                        // The difference with the normal function is regarding the delta  value used
+                        // We don't take the current (dx, dy, dw, dh) values yet because they are related to the new target
+                        // But we take the old target
+                        x = cx + (self.zoomAnimCVBTarget.x - cx) * realRatio;
+                        y = cy + (self.zoomAnimCVBTarget.y - cy) * realRatio;
+                        w = cw + (self.zoomAnimCVBTarget.w - cw) * realRatio;
+                        h = ch + (self.zoomAnimCVBTarget.h - ch) * realRatio;
+                        // Update cw, cy, cw and ch so the next step take animation from here
+                        cx = x;
+                        dx = targetX - cx;
+                        cy = y;
+                        dy = targetY - cy;
+                        cw = w;
+                        dw = targetW - cw;
+                        ch = h;
+                        dh = targetH - ch;
+                        // Update the current ViewBox target
+                        self.zoomAnimCVBTarget = {
+                            x: targetX, y: targetY, w: targetW, h: targetH
+                        };
+                    } else {
+                        // This is the classical approach when nothing come interrupting the zoom
+                        // Compute ratio according to elasped time and easing formula
+                        var ratio = easingFormula(elapsed / duration);
+                        // From the current value, we add a delta with a ratio that will leads us to the target
+                        x = cx + dx * ratio;
+                        y = cy + dy * ratio;
+                        w = cw + dw * ratio;
+                        h = ch + dh * ratio;
+                    }
+
+                    // Some checks before applying the new viewBox
+                    if (zoomDir === 'in' && (w > self.currentViewBox.w || w < targetW)) {
+                        // Zooming IN and the new ViewBox seems larger than the current value, or smaller than target value
+                        // We do NOT set the ViewBox with this value
+                        // Otherwise, the user would see the camera going back and forth
+                    } else if (zoomDir === 'out' && (w < self.currentViewBox.w || w > targetW)) {
+                        // Zooming OUT and the new ViewBox seems smaller than the current value, or larger than target value
+                        // We do NOT set the ViewBox with this value
+                        // Otherwise, the user would see the camera going back and forth
+                    } else {
+                        // New values look good, applying
+                        self.setViewBox(x, y, w, h);
+                    }
+
+                    // Schedule the next step
+                    self.zoomAnimID = self.requestAnimationFrame(computeNextStep);
                 } else {
-                    // Set the viewbox to final state
-                    self.setViewBox(x, y, w, h);
-                    // Trigger afterZoom event
-                    self.$map.trigger("afterZoom", {x1: x, y1: y, x2: (x + w), y2: (y + h)});
+                    /* Zoom animation done ! */
+                    // Perform some cleaning
+                    self.zoomAnimStartTime = null;
+                    self.zoomAnimCVBTarget = null;
+                    // Make sure the ViewBox hits the target!
+                    if (self.currentViewBox.w !== targetW) {
+                        self.setViewBox(targetX, targetY, targetW, targetH);
+                    }
+                    // Finally trigger afterZoom event
+                    self.$map.trigger("afterZoom", {
+                        x1: targetX, y1: targetY,
+                        x2: (targetX + targetW), y2: (targetY + targetH)
+                    });
                 }
             };
 
-            self.cancelAnimationFrame(self.animationIntervalID);
-            self.animationIntervalID = self.requestAnimationFrame(computeNextStep);
+            // Invoke the first step directly
+            computeNextStep();
         },
 
         /*
