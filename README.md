@@ -91,6 +91,10 @@ Here is the simplest example that shows how to display an empty map of the world
 *   [Map with some transformations performed on SVG plotted points](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/transformations_on_svg_plots.html)
 *   [Allow the user to add some cities by double-clicking on the map](https://rawgit.com/neveldo/jQuery-Mapael/master/examples/advanced/add_cities_on_map_by_double_click.html)
 
+## Contributing
+
+Want to contribute? See the [CONTRIBUTING](https://github.com/neveldo/jQuery-Mapael/blob/master/CONTRIBUTING.md) file.
+
 ## License
 
 Copyright (C) 2013-2017 [Vincent Brouté](https://www.vincentbroute.fr)
