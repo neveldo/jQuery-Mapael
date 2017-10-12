@@ -24,11 +24,11 @@
         "browser"
     ],
     "dependencies": {
-        "jquery": "^3.0",
-        "raphael": "^2.2"
+        "jquery": "3.x || 2.x || 1.x",
+        "raphael": "2.2.x || 2.1.x"
     },
     "peerDependencies": {
-        "jquery": "^3.0"
+        "jquery": "3.x || 2.x || 1.x"
     },
     "optionalDependencies": {
         "jquery-mousewheel": "^3.1"
