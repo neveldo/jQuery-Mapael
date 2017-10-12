@@ -33,23 +33,88 @@ Mapael supports all modern browsers and Internet Explorer 9+. For older versions
 *   **Resizable** Maps are easily resizable.
 *   **Zoom** Zoom and panning abilities (also on mobile devices).
 
+## Installation
+
+### Directly in your page
+
+**Note on dependencies**: [jQuery](http://jquery.com/) and [Raphael](http://raphaeljs.com) 
+(and [Mousewheel](https://github.com/jquery/jquery-mousewheel), if needed) 
+must be loaded **before** Mapael in order to work properly.
+
+**Note on maps**: map files must be loaded **after** Mapael in order to work properly.
+
+#### Using CDN
+
+Include in your project page one of these tags:
+```html
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mapael/2.1.0/js/jquery.mapael.js"></script>
+<script src="//cdn.jsdelivr.net/npm/jquery-mapael@2.1.0/js/jquery.mapael.min.js"></script>
+```
+
+#### Using self-hosted
+
+Download the [latest version](https://github.com/neveldo/jQuery-Mapael/releases/tag/2.1.0) 
+and extract `jquery.mapael.min.js` in your project.
+
+Then, add the script to your page (update the path as needed):
+```html
+<script src="path/to/jquery.mapael.min.js"></script>
+```
+
+### Using a package manager
+
+#### NPM / Yarn
+
+In your project root, run either commandline:
+```text
+npm i --save jquery-mapael
+yarn add jquery-mapael
+```
+
+However, if you don't need the optional Mousewheel feature (for Zoom feature), 
+then you can use the `--no-optional` flag to skip optional dependencies. 
+
+Use either:
+```text
+npm i --no-optional jquery-mapael
+yarn add --no-optional jquery-mapael
+```
+
+Then in your application:
+```js
+require('jquery-mapael');
+```
+Or, in ES6:
+```js
+import 'jquery-mapael';
+```
+
+#### Bower
+
+In your project root, run:
+```text
+bower install jquery-mapael --save
+```
+
 ## Basic code example
 
 Here is the simplest example that shows how to display an empty map of the world :
 
 **HTML :**
-
+```html
     <div class="container">
         <div class="map">Alternative content</div>
     </div>
+```
 
 **JS :**
-
+```js
     $(".container").mapael({
         map : {
             name : "world_countries"
         }
     });
+```
 
 ## Examples
 
