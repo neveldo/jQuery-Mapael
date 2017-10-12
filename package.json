@@ -25,7 +25,12 @@
     ],
     "dependencies": {
         "jquery": "^3.0",
-        "raphael": "^2.2",
+        "raphael": "^2.2"
+    },
+    "peerDependencies": {
+        "jquery": "^3.0"
+    },
+    "optionalDependencies": {
         "jquery-mousewheel": "^3.1"
     },
     "devDependencies": {
@@ -34,6 +39,9 @@
         "grunt-contrib-qunit": "^1.2",
         "grunt-contrib-uglify": "^2.0"
     },
+    "files": [
+        "js/"
+    ],
     "scripts": {
         "test": "grunt test"
     }
