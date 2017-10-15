@@ -1271,7 +1271,11 @@
 
                 textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
                 if (textPosition.x !== elem.textElem.attrs.x || textPosition.y !== elem.textElem.attrs.y) {
-                    self.animate(elem.textElem, {x: textPosition.x, y: textPosition.y}, animDuration);
+                    self.animate(elem.textElem, {
+                        x: textPosition.x,
+                        y: textPosition.y,
+                        'text-anchor': textPosition.textAnchor
+                    }, animDuration);
                 }
 
                 self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
