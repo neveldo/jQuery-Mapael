@@ -782,9 +782,15 @@
          */
         onZoomEvent: function (e, zoomOptions) {
             var self = this;
+
+            // new Top/Left corner coordinates
+            var panX;
+            var panY;
+            // new Width/Height viewbox size
+            var panWidth;
+            var panHeight;
+
             var newLevel = self.zoomData.zoomLevel;
-            var panX = 0;
-            var panY = 0;
             var previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
             var zoomLevel = 0;
             var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
@@ -864,6 +870,10 @@
             // Compute relative zoom level
             zoomLevel = (1 + newLevel * self.options.map.zoom.step);
 
+            // Compute panWidth / panHeight
+            panWidth = self.mapConf.width / zoomLevel;
+            panHeight = self.mapConf.height / zoomLevel;
+
             if (newLevel === 0) {
                 panX = 0;
                 panY = 0;
@@ -872,29 +882,29 @@
                     panX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
                     panY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
                 } else {
-                    panX = zoomOptions.x - (self.mapConf.width / zoomLevel) / 2;
-                    panY = zoomOptions.y - (self.mapConf.height / zoomLevel) / 2;
+                    panX = zoomOptions.x - panWidth / 2;
+                    panY = zoomOptions.y - panHeight / 2;
                 }
 
                 // Make sure we stay in the map boundaries
-                panX = Math.min(Math.max(0, panX), self.mapConf.width - (self.mapConf.width / zoomLevel));
-                panY = Math.min(Math.max(0, panY), self.mapConf.height - (self.mapConf.height / zoomLevel));
+                panX = Math.min(Math.max(0, panX), self.mapConf.width - panWidth);
+                panY = Math.min(Math.max(0, panY), self.mapConf.height - panHeight);
             }
 
             // Update zoom level of the map
             if (zoomLevel === previousZoomLevel && panX === self.zoomData.panX && panY === self.zoomData.panY) return;
 
             if (animDuration > 0) {
-                self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
+                self.animateViewBox(panX, panY, panWidth, panHeight, animDuration, self.options.map.zoom.animEasing);
             } else {
-                self.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
+                self.setViewBox(panX, panY, panWidth, panHeight);
                 clearTimeout(self.zoomTO);
                 self.zoomTO = setTimeout(function () {
                     self.$map.trigger("afterZoom", {
                         x1: panX,
                         y1: panY,
-                        x2: (panX + (self.mapConf.width / zoomLevel)),
-                        y2: (panY + (self.mapConf.height / zoomLevel))
+                        x2: panX + panWidth,
+                        y2: panY + panHeight
                     });
                 }, 150);
             }
@@ -903,8 +913,8 @@
                 zoomLevel: newLevel,
                 panX: panX,
                 panY: panY,
-                zoomX: panX + self.currentViewBox.w / 2,
-                zoomY: panY + self.currentViewBox.h / 2
+                zoomX: panX + panWidth / 2,
+                zoomY: panY + panHeight / 2
             });
         },
 
