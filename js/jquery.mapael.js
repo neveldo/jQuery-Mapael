@@ -790,9 +790,13 @@
             var panWidth;
             var panHeight;
 
-            var newLevel = self.zoomData.zoomLevel;
-            var previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
-            var zoomLevel = 0;
+            // Zoom level in absolute scale (from 0 to max, by step of 1)
+            var zoomLevel = self.zoomData.zoomLevel;
+
+            // Relative zoom level (from 1 to max, by step of 0.25 (default))
+            var previousRelativeZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
+            var relativeZoomLevel;
+
             var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
 
             if (zoomOptions.area !== undefined) {
@@ -807,8 +811,8 @@
                 zoomOptions.x = areaBBox.x + areaBBox.width / 2;
                 zoomOptions.y = areaBBox.y + areaBBox.height / 2;
 
-                newLevel = Math.min(Math.floor((self.mapConf.width / areaFullWidth - 1) / self.options.map.zoom.step),
-                                        Math.floor((self.mapConf.height / areaFullHeight - 1) / self.options.map.zoom.step));
+                zoomLevel = Math.min(Math.floor((self.mapConf.width / areaFullWidth - 1) / self.options.map.zoom.step),
+                                     Math.floor((self.mapConf.height / areaFullHeight - 1) / self.options.map.zoom.step));
 
             } else {
 
@@ -818,19 +822,19 @@
                         // level is a string, either "n", "+n" or "-n"
                         if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
                             // zoomLevel is relative
-                            newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level, 10);
+                            zoomLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level, 10);
                         } else {
                             // zoomLevel is absolute
-                            newLevel = parseInt(zoomOptions.level, 10);
+                            zoomLevel = parseInt(zoomOptions.level, 10);
                         }
                     } else {
                         // level is integer
                         if (zoomOptions.level < 0) {
                             // zoomLevel is relative
-                            newLevel = self.zoomData.zoomLevel + zoomOptions.level;
+                            zoomLevel = self.zoomData.zoomLevel + zoomOptions.level;
                         } else {
                             // zoomLevel is absolute
-                            newLevel = zoomOptions.level;
+                            zoomLevel = zoomOptions.level;
                         }
                     }
                 }
@@ -865,22 +869,22 @@
             }
 
             // Make sure we stay in the zoom level boundaries
-            newLevel = Math.min(Math.max(newLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
+            zoomLevel = Math.min(Math.max(zoomLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
 
             // Compute relative zoom level
-            zoomLevel = (1 + newLevel * self.options.map.zoom.step);
+            relativeZoomLevel = (1 + zoomLevel * self.options.map.zoom.step);
 
             // Compute panWidth / panHeight
-            panWidth = self.mapConf.width / zoomLevel;
-            panHeight = self.mapConf.height / zoomLevel;
+            panWidth = self.mapConf.width / relativeZoomLevel;
+            panHeight = self.mapConf.height / relativeZoomLevel;
 
-            if (newLevel === 0) {
+            if (zoomLevel === 0) {
                 panX = 0;
                 panY = 0;
             } else {
                 if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
-                    panX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                    panY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    panX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (relativeZoomLevel - previousRelativeZoomLevel)) / relativeZoomLevel;
+                    panY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (relativeZoomLevel - previousRelativeZoomLevel)) / relativeZoomLevel;
                 } else {
                     panX = zoomOptions.x - panWidth / 2;
                     panY = zoomOptions.y - panHeight / 2;
@@ -892,7 +896,7 @@
             }
 
             // Update zoom level of the map
-            if (zoomLevel === previousZoomLevel && panX === self.zoomData.panX && panY === self.zoomData.panY) return;
+            if (relativeZoomLevel === previousRelativeZoomLevel && panX === self.zoomData.panX && panY === self.zoomData.panY) return;
 
             if (animDuration > 0) {
                 self.animateViewBox(panX, panY, panWidth, panHeight, animDuration, self.options.map.zoom.animEasing);
@@ -910,7 +914,7 @@
             }
 
             $.extend(self.zoomData, {
-                zoomLevel: newLevel,
+                zoomLevel: zoomLevel,
                 panX: panX,
                 panY: panY,
                 zoomX: panX + panWidth / 2,
