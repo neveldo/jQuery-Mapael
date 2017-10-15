@@ -790,46 +790,81 @@
             var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
             var offsetX = 0;
             var offsetY = 0;
-            var coords = {};
 
-            // Get user defined zoom level
-            if (zoomOptions.level !== undefined) {
-                if (typeof zoomOptions.level === "string") {
-                    // level is a string, either "n", "+n" or "-n"
-                    if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
-                        // zoomLevel is relative
-                        newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level, 10);
+            if (zoomOptions.area !== undefined) {
+                /* An area is given
+                 * We will define x/y coordinate AND a new zoom level to fill the area
+                 */
+                if (self.areas[zoomOptions.area] === undefined) throw new Error("Unknown area '" + zoomOptions.area + "'");
+                var areaMargin = (zoomOptions.areaMargin !== undefined) ? zoomOptions.areaMargin : 10;
+                var areaBBox = self.areas[zoomOptions.area].mapElem.getBBox();
+                var areaFullWidth = areaBBox.width + 2 * areaMargin;
+                var areaFullHeight = areaBBox.height + 2 * areaMargin;
+                zoomOptions.x = areaBBox.x + areaBBox.width / 2;
+                zoomOptions.y = areaBBox.y + areaBBox.height / 2;
+
+                newLevel = Math.min(Math.floor((self.mapConf.width / areaFullWidth - 1) / self.options.map.zoom.step),
+                                        Math.floor((self.mapConf.height / areaFullHeight - 1) / self.options.map.zoom.step));
+
+            } else {
+
+                // Get user defined zoom level
+                if (zoomOptions.level !== undefined) {
+                    if (typeof zoomOptions.level === "string") {
+                        // level is a string, either "n", "+n" or "-n"
+                        if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
+                            // zoomLevel is relative
+                            newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level, 10);
+                        } else {
+                            // zoomLevel is absolute
+                            newLevel = parseInt(zoomOptions.level, 10);
+                        }
                     } else {
-                        // zoomLevel is absolute
-                        newLevel = parseInt(zoomOptions.level, 10);
-                    }
-                } else {
-                    // level is integer
-                    if (zoomOptions.level < 0) {
-                        // zoomLevel is relative
-                        newLevel = self.zoomData.zoomLevel + zoomOptions.level;
-                    } else {
-                        // zoomLevel is absolute
-                        newLevel = zoomOptions.level;
+                        // level is integer
+                        if (zoomOptions.level < 0) {
+                            // zoomLevel is relative
+                            newLevel = self.zoomData.zoomLevel + zoomOptions.level;
+                        } else {
+                            // zoomLevel is absolute
+                            newLevel = zoomOptions.level;
+                        }
                     }
                 }
-                // Make sure we stay in the boundaries
-                newLevel = Math.min(Math.max(newLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
+
+                if (zoomOptions.plot !== undefined) {
+                    if (self.plots[zoomOptions.plot] === undefined) throw new Error("Unknown plot '" + zoomOptions.plot + "'");
+                    var plotElem = self.plots[zoomOptions.plot].mapElem;
+
+                    if (plotElem.type === 'circle') {
+                        zoomOptions.x = plotElem.attr('cx');
+                        zoomOptions.y = plotElem.attr('cy');
+                    } else {
+                        var plotBBox = plotElem.getBBox();
+                        zoomOptions.x = plotBBox.x + plotBBox.width / 2;
+                        zoomOptions.y = plotBBox.y + plotBBox.height / 2;
+                    }
+                } else {
+                    if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
+                        var coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
+                        zoomOptions.x = coords.x;
+                        zoomOptions.y = coords.y;
+                    }
+
+                    if (zoomOptions.x === undefined) {
+                        zoomOptions.x = self.currentViewBox.x + self.currentViewBox.w / 2;
+                    }
+
+                    if (zoomOptions.y === undefined) {
+                        zoomOptions.y = (self.currentViewBox.y + self.currentViewBox.h / 2);
+                    }
+                }
             }
 
+            // Make sure we stay in the zoom level boundaries
+            newLevel = Math.min(Math.max(newLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
+
+            // Compute relative zoom level
             zoomLevel = (1 + newLevel * self.options.map.zoom.step);
-
-            if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
-                coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
-                zoomOptions.x = coords.x;
-                zoomOptions.y = coords.y;
-            }
-
-            if (zoomOptions.x === undefined)
-                zoomOptions.x = self.currentViewBox.x + self.currentViewBox.w / 2;
-
-            if (zoomOptions.y === undefined)
-                zoomOptions.y = (self.currentViewBox.y + self.currentViewBox.h / 2);
 
             if (newLevel === 0) {
                 panX = 0;
