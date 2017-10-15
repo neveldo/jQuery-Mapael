@@ -788,8 +788,6 @@
             var previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
             var zoomLevel = 0;
             var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
-            var offsetX = 0;
-            var offsetY = 0;
 
             if (zoomOptions.area !== undefined) {
                 /* An area is given
@@ -869,15 +867,18 @@
             if (newLevel === 0) {
                 panX = 0;
                 panY = 0;
-            } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
-                offsetX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                offsetY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-
-                panX = Math.min(Math.max(0, offsetX), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                panY = Math.min(Math.max(0, offsetY), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
             } else {
-                panX = Math.min(Math.max(0, zoomOptions.x - (self.mapConf.width / zoomLevel) / 2), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                panY = Math.min(Math.max(0, zoomOptions.y - (self.mapConf.height / zoomLevel) / 2), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
+                if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
+                    panX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                    panY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
+                } else {
+                    panX = zoomOptions.x - (self.mapConf.width / zoomLevel) / 2;
+                    panY = zoomOptions.y - (self.mapConf.height / zoomLevel) / 2;
+                }
+
+                // Make sure we stay in the map boundaries
+                panX = Math.min(Math.max(0, panX), self.mapConf.width - (self.mapConf.width / zoomLevel));
+                panY = Math.min(Math.max(0, panY), self.mapConf.height - (self.mapConf.height / zoomLevel));
             }
 
             // Update zoom level of the map
