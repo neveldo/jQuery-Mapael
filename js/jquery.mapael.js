@@ -526,8 +526,6 @@
          */
         initElem: function (elem, elemOptions, id, type) {
             var self = this;
-            var bbox = {};
-            var textPosition = {};
 
             // Assign value attribute to element
             if (elemOptions.value !== undefined){
@@ -537,8 +535,7 @@
             // Init the label related to the element
             if (elemOptions.text && elemOptions.text.content !== undefined) {
                 // Set a text label in the area
-                bbox = elem.mapElem.getBBox();
-                textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
+                var textPosition = self.getTextPosition(elem.mapElem.getBBox(), elemOptions.text.position, elemOptions.text.margin);
                 elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
                 elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
                 $(elem.textElem.node).attr("data-id", id);
@@ -1387,7 +1384,7 @@
          */
         updateElem: function (elem, elemOptions, animDuration) {
             var self = this;
-            var bbox;
+            var mapElemBBox;
             var textPosition;
             var plotOffsetX;
             var plotOffsetY;
@@ -1404,23 +1401,23 @@
                 if (elemOptions.text !== undefined && elemOptions.text.content !== undefined && elemOptions.text.content !== elem.textElem.attrs.text)
                     elem.textElem.attr({text: elemOptions.text.content});
 
-                bbox = elem.mapElem.getBBox();
+                mapElemBBox = elem.mapElem.getBBox();
 
                 if (elemOptions.size || (elemOptions.width && elemOptions.height)) {
                     if (elemOptions.type === "image" || elemOptions.type === "svg") {
-                        plotOffsetX = (elemOptions.width - bbox.width) / 2;
-                        plotOffsetY = (elemOptions.height - bbox.height) / 2;
+                        plotOffsetX = (elemOptions.width - mapElemBBox.width) / 2;
+                        plotOffsetY = (elemOptions.height - mapElemBBox.height) / 2;
                     } else {
-                        plotOffsetX = (elemOptions.size - bbox.width) / 2;
-                        plotOffsetY = (elemOptions.size - bbox.height) / 2;
+                        plotOffsetX = (elemOptions.size - mapElemBBox.width) / 2;
+                        plotOffsetY = (elemOptions.size - mapElemBBox.height) / 2;
                     }
-                    bbox.x -= plotOffsetX;
-                    bbox.x2 += plotOffsetX;
-                    bbox.y -= plotOffsetY;
-                    bbox.y2 += plotOffsetY;
+                    mapElemBBox.x -= plotOffsetX;
+                    mapElemBBox.x2 += plotOffsetX;
+                    mapElemBBox.y -= plotOffsetY;
+                    mapElemBBox.y2 += plotOffsetY;
                 }
 
-                textPosition = self.getTextPosition(bbox, elemOptions.text.position, elemOptions.text.margin);
+                textPosition = self.getTextPosition(mapElemBBox, elemOptions.text.position, elemOptions.text.margin);
                 if (textPosition.x !== elem.textElem.attrs.x || textPosition.y !== elem.textElem.attrs.y) {
                     self.animate(elem.textElem, {
                         x: textPosition.x,
@@ -1443,10 +1440,10 @@
             // Update dimensions of SVG plots
             if (elemOptions.type === "svg") {
 
-                if (bbox === undefined) {
-                    bbox = elem.mapElem.getBBox();
+                if (mapElemBBox === undefined) {
+                    mapElemBBox = elem.mapElem.getBBox();
                 }
-                elem.mapElem.transform("m" + (elemOptions.width / elem.mapElem.originalWidth) + ",0,0," + (elemOptions.height / elem.mapElem.originalHeight) + "," + bbox.x + "," + bbox.y);
+                elem.mapElem.transform("m" + (elemOptions.width / elem.mapElem.originalWidth) + ",0,0," + (elemOptions.height / elem.mapElem.originalHeight) + "," + mapElemBBox.x + "," + mapElemBBox.y);
             }
 
             // Update the tooltip
@@ -1517,8 +1514,9 @@
                 }
 
                 plot = {"mapElem": self.paper.path(elemOptions.path)};
-                plot.mapElem.originalWidth = plot.mapElem.getBBox().width;
-                plot.mapElem.originalHeight = plot.mapElem.getBBox().height;
+                var plotBBox = plot.mapElem.getBBox();
+                plot.mapElem.originalWidth = plotBBox.width;
+                plot.mapElem.originalHeight = plotBBox.height;
 
                 plot.mapElem.baseTransform = "m" + (elemOptions.width / plot.mapElem.originalWidth) + ",0,0," + (elemOptions.height / plot.mapElem.originalHeight) + "," + (coords.x - elemOptions.width / 2) + "," + (coords.y - elemOptions.height / 2);
                 elemOptions.attrs.transform = plot.mapElem.baseTransform + elemOptions.attrs.transform;
@@ -1565,6 +1563,7 @@
             var width = 0;
             var height = 0;
             var title = null;
+            var titleBBox = null;
             var legendElems = {};
             var i = 0;
             var x = 0;
@@ -1587,10 +1586,11 @@
             // Set the title of the legend
             if (legendOptions.title && legendOptions.title !== "") {
                 title = legendPaper.text(legendOptions.marginLeftTitle, 0, legendOptions.title).attr(legendOptions.titleAttrs);
-                title.attr({y: 0.5 * title.getBBox().height});
+                titleBBox = title.getBBox();
+                title.attr({y: 0.5 * titleBBox.height});
 
-                width = legendOptions.marginLeftTitle + title.getBBox().width;
-                height += legendOptions.marginBottomTitle + title.getBBox().height;
+                width = legendOptions.marginLeftTitle + titleBBox.width;
+                height += legendOptions.marginBottomTitle + titleBBox.height;
             }
 
             // Calculate attrs (and width, height and r (radius)) for legend elements, and yCenter for horizontal legends
@@ -1630,7 +1630,7 @@
                 yCenterCurrent = legendOptions.marginBottomTitle;
                 // Add title height if it exists
                 if (title) {
-                    yCenterCurrent += title.getBBox().height;
+                    yCenterCurrent += titleBBox.height;
                 }
                 if (legendType === "plot" && (sliceOptions[i].type === undefined || sliceOptions[i].type === "circle")) {
                     yCenterCurrent += scale * sliceOptions[i].attrs.r;
@@ -1732,7 +1732,7 @@
                         }
                         // Add title height if it exists
                         if (title) {
-                            currentHeight += title.getBBox().height;
+                            currentHeight += titleBBox.height;
                         }
                         height = Math.max(height, currentHeight);
                     } else {
@@ -2453,12 +2453,12 @@
         isRaphaelBBoxBugPresent: function() {
             var self = this;
             // Draw text, then get its boundaries
-            var text_elem = self.paper.text(-50, -50, "TEST");
-            var text_elem_bbox = text_elem.getBBox();
+            var textElem = self.paper.text(-50, -50, "TEST");
+            var textElemBBox = textElem.getBBox();
             // remove element
-            text_elem.remove();
+            textElem.remove();
             // If it has no height and width, then the paper is hidden
-            return (text_elem_bbox.width === 0 && text_elem_bbox.height === 0);
+            return (textElemBBox.width === 0 && textElemBBox.height === 0);
         },
 
         // Default map options
