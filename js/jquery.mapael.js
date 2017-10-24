@@ -1300,14 +1300,20 @@
                     p2 = linksCollection[id].between[1];
                 }
 
-                if (p1.latitude !== undefined && p1.longitude !== undefined) {
+                if (p1.plotsOn !== undefined && self.areas[p1.plotsOn] !== undefined) {
+                    coordsP1 = self.getCenterCoords(self.areas[p1.plotsOn].mapElem);
+                }
+                else if (p1.latitude !== undefined && p1.longitude !== undefined) {
                     coordsP1 = self.mapConf.getCoords(p1.latitude, p1.longitude);
                 } else {
                     coordsP1.x = p1.x;
                     coordsP1.y = p1.y;
                 }
 
-                if (p2.latitude !== undefined && p2.longitude !== undefined) {
+                if (p2.plotsOn !== undefined && self.areas[p2.plotsOn] !== undefined) {
+                    coordsP2 = self.getCenterCoords(self.areas[p2.plotsOn].mapElem);
+                }
+                else if (p2.latitude !== undefined && p2.longitude !== undefined) {
                     coordsP2 = self.mapConf.getCoords(p2.latitude, p2.longitude);
                 } else {
                     coordsP2.x = p2.x;
@@ -1478,17 +1484,13 @@
                 self.options.legend.plot
             );
 
-            if (elemOptions.x !== undefined && elemOptions.y !== undefined)
+            if (elemOptions.x !== undefined && elemOptions.y !== undefined) {
                 coords = {x: elemOptions.x, y: elemOptions.y};
-            else if (elemOptions.plotsOn !== undefined && self.areas[elemOptions.plotsOn].mapElem !== undefined){
-                var path = self.areas[elemOptions.plotsOn].mapElem;
-                var bbox = path.getBBox();
-                var _x = Math.floor(bbox.x + bbox.width/2.0);
-                var _y = Math.floor(bbox.y + bbox.height/2.0);
-                coords = {x: _x, y: _y};
-            }
-            else
+            } else if (elemOptions.plotsOn !== undefined && self.areas[elemOptions.plotsOn] !== undefined) {
+                coords = self.getCenterCoords(self.areas[elemOptions.plotsOn].mapElem);
+            } else {
                 coords = self.mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
+            }
 
             if (elemOptions.type === "square") {
                 plot = {
@@ -2072,6 +2074,19 @@
                 }
             }
             return options;
+        },
+
+        /*
+         * Get the center coordinates of the element
+         * @param elem the Raphael element
+         * @return object {x, y}
+         */
+        getCenterCoords: function(elem) {
+            var mapElemBBox = elem.getBBox();
+            return {
+                x: Math.floor(mapElemBBox.x + mapElemBBox.width / 2.0),
+                y: Math.floor(mapElemBBox.y + mapElemBBox.height / 2.0)
+            };
         },
 
         /*
