@@ -1941,26 +1941,29 @@
                 }
             });
 
+            // Get mapael object (to be used later)
+            var mapael = $(".mapcontainer").data("mapael");
+
             // Vars to keep track of current movement
              var mouseDragging = false;
              var mouseDown = false;
 
+             var $SVGMap = $(".mapcontainer .map svg");
+
             // Detect mousedown event
-            $(".mapcontainer svg").mousedown(function () {
+            $SVGMap.mousedown(function () {
                 mouseDown = true;
             });
 
             // If the mouse if moving, and mousedown was set, then user is dragging!
-            $(".mapcontainer svg").mousemove(function () {
+            $SVGMap.mousemove(function () {
                 mouseDragging = mouseDown;
             });
 
             // On mouse up, check if user was dragging or only clicking
             // If not dragging, then zoom on position!
-            $(".mapcontainer svg").mouseup(function (e) {
+            $SVGMap.mouseup(function (e) {
                 if (!mouseDragging) {
-                    // Get current mapael object
-                    var mapael = $(".mapcontainer").data("mapael");
                     // We need to convert the mouse coordinate to map coordinate
                     // Fortunately, Mapael provides a handy function to do this for us!
                     var newCoordinates = mapael.mapPagePositionToXY(e.pageX, e.pageY);
