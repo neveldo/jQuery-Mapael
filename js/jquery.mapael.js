@@ -820,13 +820,13 @@
                  */
                 if (self.areas[zoomOptions.area] === undefined) throw new Error("Unknown area '" + zoomOptions.area + "'");
                 var areaMargin = (zoomOptions.areaMargin !== undefined) ? zoomOptions.areaMargin : 10;
-                var areaBBox = self.areas[zoomOptions.area].mapElem.getBBox();
+                var areaBBox = self.getBBoxWithCenter(self.areas[zoomOptions.area].mapElem);
                 var areaFullWidth = areaBBox.width + 2 * areaMargin;
                 var areaFullHeight = areaBBox.height + 2 * areaMargin;
 
                 // Compute new x/y focus point (center of area)
-                zoomOptions.x = areaBBox.x + areaBBox.width / 2;
-                zoomOptions.y = areaBBox.y + areaBBox.height / 2;
+                zoomOptions.x = areaBBox.cx;
+                zoomOptions.y = areaBBox.cy;
 
                 // Compute a new absolute zoomLevel value (inverse of relative -> absolute)
                 // Take the min between zoomLevel on width vs. height to be able to see the whole area
@@ -866,9 +866,9 @@
                         zoomOptions.x = plotElem.attr('cx');
                         zoomOptions.y = plotElem.attr('cy');
                     } else {
-                        var plotBBox = plotElem.getBBox();
-                        zoomOptions.x = plotBBox.x + plotBBox.width / 2;
-                        zoomOptions.y = plotBBox.y + plotBBox.height / 2;
+                        var plotCenter = self.getBBoxWithCenter(plotElem);
+                        zoomOptions.x = plotCenter.cx;
+                        zoomOptions.y = plotCenter.cy;
                     }
                 } else {
                     if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
@@ -1370,7 +1370,11 @@
                 }
 
                 if (p1.plotsOn !== undefined && self.areas[p1.plotsOn] !== undefined) {
-                    coordsP1 = self.getCenterCoords(self.areas[p1.plotsOn].mapElem);
+                    var p1BBox = self.getBBoxWithCenter(self.areas[p1.plotsOn].mapElem);
+                    coordsP1 = {
+                        x: p1BBox.cx,
+                        y: p1BBox.cy
+                    };
                 }
                 else if (p1.latitude !== undefined && p1.longitude !== undefined) {
                     coordsP1 = self.mapConf.getCoords(p1.latitude, p1.longitude);
@@ -1380,7 +1384,11 @@
                 }
 
                 if (p2.plotsOn !== undefined && self.areas[p2.plotsOn] !== undefined) {
-                    coordsP2 = self.getCenterCoords(self.areas[p2.plotsOn].mapElem);
+                    var p2BBox = self.getBBoxWithCenter(self.areas[p2.plotsOn].mapElem);
+                    coordsP2 = {
+                        x: p2BBox.cx,
+                        y: p2BBox.cy
+                    };
                 }
                 else if (p2.latitude !== undefined && p2.longitude !== undefined) {
                     coordsP2 = self.mapConf.getCoords(p2.latitude, p2.longitude);
@@ -1556,7 +1564,11 @@
             if (elemOptions.x !== undefined && elemOptions.y !== undefined) {
                 coords = {x: elemOptions.x, y: elemOptions.y};
             } else if (elemOptions.plotsOn !== undefined && self.areas[elemOptions.plotsOn] !== undefined) {
-                coords = self.getCenterCoords(self.areas[elemOptions.plotsOn].mapElem);
+                var plotBBox = self.getBBoxWithCenter(self.areas[elemOptions.plotsOn].mapElem);
+                coords = {
+                    x: plotBBox.cx,
+                    y: plotBBox.cy
+                };
             } else {
                 coords = self.mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
             }
@@ -2146,16 +2158,15 @@
         },
 
         /*
-         * Get the center coordinates of the element
+         * Get the Boundary Box of an element along with its center coordinates (cx, cy)
          * @param elem the Raphael element
-         * @return object {x, y}
+         * @return object bbox
          */
-        getCenterCoords: function(elem) {
+        getBBoxWithCenter: function(elem) {
             var mapElemBBox = elem.getBBox();
-            return {
-                x: Math.floor(mapElemBBox.x + mapElemBBox.width / 2.0),
-                y: Math.floor(mapElemBBox.y + mapElemBBox.height / 2.0)
-            };
+            mapElemBBox.cx = Math.floor(mapElemBBox.x + mapElemBBox.width / 2.0);
+            mapElemBBox.cy = Math.floor(mapElemBBox.y + mapElemBBox.height / 2.0);
+            return mapElemBBox;
         },
 
         /*
