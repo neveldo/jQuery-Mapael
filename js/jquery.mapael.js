@@ -93,9 +93,6 @@
         // Save initial HTML content (used by destroy method)
         self.initialMapHTMLContent = self.$map.html();
 
-        // Allow to store legend containers and initial contents (used by destroy method)
-        self.createdLegends = {};
-
         // The tooltip jQuery object
         self.$tooltip = {};
 
@@ -111,8 +108,14 @@
         // The links object list
         self.links = {};
 
+        // The legends list
+        self.legends = {};
+
         // The map configuration object (taken from map file)
         self.mapConf = {};
+
+        // Holds all custom event handlers
+        self.customEventHandlers = {};
 
         // Let's start the initialization
         self.init();
@@ -203,7 +206,7 @@
                     (self.options.areas[id] ? self.options.areas[id] : {}),
                     self.options.legend.area
                 );
-                self.initElem(self.areas[id], elemOptions, id);
+                self.initElem(self.areas[id], elemOptions, id, 'area');
             });
 
             // Draw links
@@ -245,6 +248,11 @@
                 self.onShowElementsInRange(e, opt);
             });
 
+            // Attach delegated events
+            self.initDelegatedMapEvents();
+            // Attach delegated custom events
+            self.initDelegatedCustomEvents();
+
             // Hook that allows to add custom processing on the map
             if (self.options.map.afterInit) self.options.map.afterInit(self.$container, self.paper, self.areas, self.plots, self.options);
 
@@ -280,9 +288,12 @@
             self.$map.html(self.initialMapHTMLContent);
 
             // Empty legend containers and replace initial HTML content
-            $.each(self.createdLegends, function(id) {
-                self.createdLegends[id].container.empty();
-                self.createdLegends[id].container.html(self.createdLegends[id].initialHTMLContent);
+            $.each(self.legends, function(legendType) {
+                $.each(self.legends[legendType], function(legendIndex) {
+                    var legend = self.legends[legendType][legendIndex];
+                    legend.container.empty();
+                    legend.container.html(legend.initialHTMLContent);
+                });
             });
 
             // Remove mapael class
@@ -363,9 +374,157 @@
         },
 
         /*
+         * Init all delegated events for the whole map:
+         *  mouseover
+         *  mousemove
+         *  mouseout
+         */
+        initDelegatedMapEvents: function() {
+            var self = this;
+
+            // Mapping between data-type value and the corresponding elements array
+            // Note: legend-elem and legend-label are not in this table because
+            //       they need a special processing
+            var dataTypeToElementMapping = {
+                'area'  : self.areas,
+                'area-text' : self.areas,
+                'plot' : self.plots,
+                'plot-text' : self.plots,
+                'link' : self.links,
+                'link-text' : self.links
+            };
+
+            /* Attach mouseover event delegation
+             * Note: we filter the event with a timeout to reduce the firing when the mouse moves quickly
+             */
+            var mapMouseOverTimeoutID;
+            self.$container.on("mouseover." + pluginName, "[data-id]", function () {
+                var elem = this;
+                clearTimeout(mapMouseOverTimeoutID);
+                mapMouseOverTimeoutID = setTimeout(function() {
+                    var $elem = $(elem);
+                    var id = $elem.attr('data-id');
+                    var type = $elem.attr('data-type');
+
+                    if (dataTypeToElementMapping[type] !== undefined) {
+                        self.elemEnter(dataTypeToElementMapping[type][id]);
+                    } else if (type === 'legend-elem' || type === 'legend-label') {
+                        var legendIndex = $elem.attr('data-legend-id');
+                        if (self.legends[legendIndex] !== undefined &&
+                            self.legends[legendIndex].elems[id] !== undefined)
+                        {
+                            self.elemEnter(self.legends[legendIndex].elems[id]);
+                        }
+                    }
+                }, 120);
+            });
+
+            /* Attach mousemove event delegation
+             * Note: timeout filtering is small to update the Tooltip position fast
+             */
+            var mapMouseMoveTimeoutID;
+            self.$container.on("mousemove." + pluginName, "[data-id]", function (event) {
+                var elem = this;
+                clearTimeout(mapMouseMoveTimeoutID);
+                mapMouseMoveTimeoutID = setTimeout(function() {
+                    var $elem = $(elem);
+                    var id = $elem.attr('data-id');
+                    var type = $elem.attr('data-type');
+
+                    if (dataTypeToElementMapping[type] !== undefined) {
+                        self.elemHover(dataTypeToElementMapping[type][id], event);
+                    } else if (type === 'legend-elem' || type === 'legend-label') {
+                        /* Nothing to do */
+                    }
+
+                }, 0);
+            });
+
+            /* Attach mouseout event delegation
+             * Note: we don't perform any timeout filtering to clear & reset elem ASAP
+             * Otherwise an element may be stuck in 'hover' state (which is NOT good)
+             */
+            self.$container.on("mouseout." + pluginName, "[data-id]", function () {
+                var elem = this;
+                // Clear any
+                clearTimeout(mapMouseOverTimeoutID);
+                clearTimeout(mapMouseMoveTimeoutID);
+                var $elem = $(elem);
+                var id = $elem.attr('data-id');
+                var type = $elem.attr('data-type');
+
+                if (dataTypeToElementMapping[type] !== undefined) {
+                    self.elemOut(dataTypeToElementMapping[type][id]);
+                } else if (type === 'legend-elem' || type === 'legend-label') {
+                    var legendIndex = $elem.attr('data-legend-id');
+                    if (self.legends[legendIndex] !== undefined &&
+                        self.legends[legendIndex].elems[id] !== undefined)
+                    {
+                        self.elemOut(self.legends[legendIndex].elems[id]);
+                    }
+                }
+            });
+
+            /* Attach click event delegation
+             * Note: we filter the event with a timeout to avoid double click
+             */
+            self.$container.on("click." + pluginName, "[data-id]", function (evt, opts) {
+                var $elem = $(this);
+                var id = $elem.attr('data-id');
+                var type = $elem.attr('data-type');
+
+                if (type === 'area' || type === 'area-text') {
+                    self.elemClick(self.areas[id]);
+                } else if (type === 'plot' || type === 'plot-text') {
+                    self.elemClick(self.plots[id]);
+                } else if (type === 'link' || type === 'link-text') {
+                    self.elemClick(self.links[id]);
+                } else if (type === 'legend-elem' || type === 'legend-label') {
+                    var legendIndex = $elem.attr('data-legend-id');
+                    var legendType = $elem.attr('data-legend-type');
+                    self.handleClickOnLegendElem(self.legends[legendType][legendIndex].elems[id], id, legendIndex, legendType, opts);
+                }
+            });
+        },
+
+        /*
+         * Init all delegated custom events
+         */
+        initDelegatedCustomEvents: function() {
+            var self = this;
+
+            $.each(self.customEventHandlers, function(eventName) {
+                // Namespace the custom event
+                // This allow to easily unbound only custom events and not regular ones
+                var fullEventName = eventName + '.' + pluginName + ".custom";
+                self.$container.off(fullEventName).on(fullEventName, "[data-id]", function (e) {
+                    var $elem = $(this);
+                    var id = $elem.attr('data-id');
+                    var type = $elem.attr('data-type');
+
+                    if (!self.panning &&
+                        self.customEventHandlers[eventName][type] !== undefined &&
+                        self.customEventHandlers[eventName][type][id] !== undefined)
+                    {
+                        var customEventHandler = self.customEventHandlers[eventName][type][id];
+                        // Run callback provided by user
+                        customEventHandler.elemOptions.eventHandlers[eventName](
+                            e, id,
+                            customEventHandler.mapElem,
+                            customEventHandler.textElem,
+                            customEventHandler.elemOptions
+                        );
+                    }
+                });
+            });
+
+
+        },
+
+        /*
          * Init the element "elem" on the map (drawing, setting attributes, events, tooltip, ...)
          */
-        initElem: function (elem, elemOptions, id) {
+        initElem: function (elem, elemOptions, id, type) {
             var self = this;
             var bbox = {};
             var textPosition = {};
@@ -383,10 +542,11 @@
                 elemOptions.text.attrs["text-anchor"] = textPosition.textAnchor;
                 elem.textElem = self.paper.text(textPosition.x, textPosition.y, elemOptions.text.content).attr(elemOptions.text.attrs);
                 $(elem.textElem.node).attr("data-id", id);
+                $(elem.textElem.node).attr("data-type", type + '-text');
             }
 
             // Set user event handlers
-            if (elemOptions.eventHandlers) self.setEventHandlers(id, elemOptions, elem.mapElem, elem.textElem);
+            if (elemOptions.eventHandlers) self.setEventHandlers(id, type, elemOptions, elem.mapElem, elem.textElem);
 
             // Set hover option for mapElem
             self.setHoverOptions(elem.mapElem, elemOptions.attrs, elemOptions.attrsHover);
@@ -394,35 +554,17 @@
             // Set hover option for textElem
             if (elem.textElem) self.setHoverOptions(elem.textElem, elemOptions.text.attrs, elemOptions.text.attrsHover);
 
-            // Set hover behavior only if attrsHover is set for area or for text
-            if (($.isEmptyObject(elemOptions.attrsHover) === false) ||
-                (elem.textElem && $.isEmptyObject(elemOptions.text.attrsHover) === false)) {
-                // Set hover behavior
-                self.setHover(elem.mapElem, elem.textElem);
-            }
-
             // Init the tooltip
             if (elemOptions.tooltip) {
-                elem.mapElem.tooltip = elemOptions.tooltip;
-                self.setTooltip(elem.mapElem);
-
-                if (elemOptions.text && elemOptions.text.content !== undefined) {
-                    elem.textElem.tooltip = elemOptions.tooltip;
-                    self.setTooltip(elem.textElem);
-                }
+                elem.tooltip = elemOptions.tooltip;
             }
 
             // Init the link
             if (elemOptions.href) {
-                elem.mapElem.href = elemOptions.href;
-                elem.mapElem.target = elemOptions.target;
-                self.setHref(elem.mapElem);
-
-                if (elemOptions.text && elemOptions.text.content !== undefined) {
-                    elem.textElem.href = elemOptions.href;
-                    elem.textElem.target = elemOptions.target;
-                    self.setHref(elem.textElem);
-                }
+                elem.href = elemOptions.href;
+                elem.target = elemOptions.target;
+                elem.mapElem.attr({cursor: "pointer"});
+                if (elem.textElem) elem.textElem.attr({cursor: "pointer"});
             }
 
             if (elemOptions.cssClass !== undefined) {
@@ -430,6 +572,7 @@
             }
 
             $(elem.mapElem.node).attr("data-id", id);
+            $(elem.mapElem.node).attr("data-type", type);
         },
 
         /*
@@ -897,8 +1040,6 @@
             // This function remove an element using animation (or not, depending on animDuration)
             // Used for deletePlotKeys and deleteLinkKeys
             var fnRemoveElement = function (elem) {
-                // Unset all event handlers
-                self.unsetHover(elem.mapElem, elem.textElem);
 
                 self.animate(elem.mapElem, {"opacity": 0}, animDuration, function () {
                     elem.mapElem.remove();
@@ -929,10 +1070,10 @@
 
                 // IF we update areas, plots or legend, then reset all legend state to "show"
                 if (opt.mapOptions.areas !== undefined || opt.mapOptions.plots !== undefined || opt.mapOptions.legend !== undefined) {
-                    $("[data-type='elem']", self.$container).each(function (id, elem) {
+                    $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                         if ($(elem).attr('data-hidden') === "1") {
                             // Toggle state of element by clicking
-                            $(elem).trigger("click", [false, animDuration]);
+                            $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                         }
                     });
                 }
@@ -1079,9 +1220,9 @@
                     (typeof opt.mapOptions.map === "object" && typeof opt.mapOptions.map.defaultPlot === "object")
                 )) {
                 // Show all elements on the map before updating the legends
-                $("[data-type='elem']", self.$container).each(function (id, elem) {
+                $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                     if ($(elem).attr('data-hidden') === "1") {
-                        $(elem).trigger("click", [false, animDuration]);
+                        $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                     }
                 });
 
@@ -1104,11 +1245,11 @@
                     var $legend = self.$container.find("." + legendCSSClass)[0];
                     if ($legend !== undefined) {
                         // Select all elem inside this legend
-                        $("[data-type='elem']", $legend).each(function (id, elem) {
+                        $("[data-type='legend-elem']", $legend).each(function (id, elem) {
                             if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                                 ($(elem).attr('data-hidden') === "1" && action === "show")) {
                                 // Toggle state of element by clicking
-                                $(elem).trigger("click", [false, animDuration]);
+                                $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                             }
                         });
                     }
@@ -1118,14 +1259,18 @@
                 // Default : "show"
                 var action = (opt.setLegendElemsState === "hide") ? "hide" : "show";
 
-                $("[data-type='elem']", self.$container).each(function (id, elem) {
+                $("[data-type='legend-elem']", self.$container).each(function (id, elem) {
                     if (($(elem).attr('data-hidden') === "0" && action === "hide") ||
                         ($(elem).attr('data-hidden') === "1" && action === "show")) {
                         // Toggle state of element by clicking
-                        $(elem).trigger("click", [false, animDuration]);
+                        $(elem).trigger("click", {hideOtherElems: false, animDuration: animDuration});
                     }
                 });
             }
+
+            // Always rebind custom events on update
+            self.initDelegatedCustomEvents();
+
             if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, self.plots, self.options, self.links);
         },
 
@@ -1214,7 +1359,7 @@
             }
 
             elem.mapElem = self.paper.path("m " + xa + "," + ya + " C " + x + "," + y + " " + xb + "," + yb + " " + xb + "," + yb + "").attr(elemOptions.attrs);
-            self.initElem(elem, elemOptions, id);
+            self.initElem(elem, elemOptions, id, 'link');
 
             return elem;
         },
@@ -1300,26 +1445,18 @@
 
             // Update the tooltip
             if (elemOptions.tooltip) {
-                if (elem.mapElem.tooltip === undefined) {
-                    self.setTooltip(elem.mapElem);
-                    if (elem.textElem) self.setTooltip(elem.textElem);
-                }
-                elem.mapElem.tooltip = elemOptions.tooltip;
-                if (elem.textElem) elem.textElem.tooltip = elemOptions.tooltip;
+                elem.tooltip = elemOptions.tooltip;
             }
 
             // Update the link
             if (elemOptions.href !== undefined) {
-                if (elem.mapElem.href === undefined) {
-                    self.setHref(elem.mapElem);
-                    if (elem.textElem) self.setHref(elem.textElem);
-                }
-                elem.mapElem.href = elemOptions.href;
-                elem.mapElem.target = elemOptions.target;
-                if (elem.textElem) {
-                    elem.textElem.href = elemOptions.href;
-                    elem.textElem.target = elemOptions.target;
-                }
+                elem.href = elemOptions.href;
+                elem.target = elemOptions.target;
+                elem.mapElem.attr({cursor: "pointer"});
+                if (elem.textElem) elem.textElem.attr({cursor: "pointer"});
+            } else {
+                elem.mapElem.attr({cursor: "auto"});
+                if (elem.textElem) elem.textElem.attr({cursor: "auto"});
             }
 
             // Update the cssClass
@@ -1387,110 +1524,28 @@
             } else { // Default = circle
                 plot = {"mapElem": self.paper.circle(coords.x, coords.y, elemOptions.size / 2).attr(elemOptions.attrs)};
             }
-            self.initElem(plot, elemOptions, id);
+            self.initElem(plot, elemOptions, id, 'plot');
             return plot;
-        },
-
-        /*
-         * Set target link on elem
-         */
-        setHref: function (elem) {
-            var self = this;
-            elem.attr({cursor: "pointer"});
-            $(elem.node).on("click." + pluginName, function () {
-                if (!self.panning && elem.href)
-                    window.open(elem.href, elem.target);
-            });
-        },
-
-        /*
-         * Set a tooltip for the areas and plots
-         * @param elem area or plot element
-         * @param content the content to set in the tooltip
-         */
-        setTooltip: function (elem) {
-            var self = this;
-            var tooltipTO = 0;
-            var cssClass = self.$tooltip.attr('class');
-
-
-
-            var updateTooltipPosition = function (x, y) {
-
-                var offsetLeft = 10;
-                var offsetTop = 20;
-
-                if (typeof elem.tooltip.offset === "object") {
-                    if (typeof elem.tooltip.offset.left !== "undefined") {
-                        offsetLeft = elem.tooltip.offset.left;
-                    }
-                    if (typeof elem.tooltip.offset.top !== "undefined") {
-                        offsetTop = elem.tooltip.offset.top;
-                    }
-                }
-
-                var tooltipPosition = {
-                    "left": Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5, x - self.$map.offset().left + offsetLeft),
-                    "top": Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5, y - self.$map.offset().top + offsetTop)
-                };
-
-                if (typeof elem.tooltip.overflow === "object") {
-                    if (elem.tooltip.overflow.right === true) {
-                        tooltipPosition.left = x - self.$map.offset().left + 10;
-                    }
-                    if (elem.tooltip.overflow.bottom === true) {
-                        tooltipPosition.top = y - self.$map.offset().top + 20;
-                    }
-                }
-
-                self.$tooltip.css(tooltipPosition);
-            };
-
-            $(elem.node).on("mouseover." + pluginName, function (e) {
-                tooltipTO = setTimeout(
-                    function () {
-                        self.$tooltip.attr("class", cssClass);
-                        if (elem.tooltip !== undefined) {
-                            if (elem.tooltip.content !== undefined) {
-                                // if tooltip.content is function, call it. Otherwise, assign it directly.
-                                var content = (typeof elem.tooltip.content === "function") ? elem.tooltip.content(elem) : elem.tooltip.content;
-                                self.$tooltip.html(content).css("display", "block");
-                            }
-                            if (elem.tooltip.cssClass !== undefined) {
-                                self.$tooltip.addClass(elem.tooltip.cssClass);
-                            }
-                        }
-                        updateTooltipPosition(e.pageX, e.pageY);
-                    }, 120
-                );
-            }).on("mouseout." + pluginName, function () {
-                clearTimeout(tooltipTO);
-                self.$tooltip.css("display", "none");
-            }).on("mousemove." + pluginName, function (e) {
-                updateTooltipPosition(e.pageX, e.pageY);
-            });
         },
 
         /*
          * Set user defined handlers for events on areas and plots
          * @param id the id of the element
+         * @param type the type of the element (area, plot, link)
          * @param elemOptions the element parameters
          * @param mapElem the map element to set callback on
          * @param textElem the optional text within the map element
          */
-        setEventHandlers: function (id, elemOptions, mapElem, textElem) {
+        setEventHandlers: function (id, type, elemOptions, mapElem, textElem) {
             var self = this;
             $.each(elemOptions.eventHandlers, function (event) {
-                (function (event) {
-                    $(mapElem.node).on(event, function (e) {
-                        if (!self.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
-                    });
-                    if (textElem) {
-                        $(textElem.node).on(event, function (e) {
-                            if (!self.panning) elemOptions.eventHandlers[event](e, id, mapElem, textElem, elemOptions);
-                        });
-                    }
-                })(event);
+                if (self.customEventHandlers[event] === undefined) self.customEventHandlers[event] = {};
+                if (self.customEventHandlers[event][type] === undefined) self.customEventHandlers[event][type] = {};
+                self.customEventHandlers[event][type][id] = {
+                    mapElem: mapElem,
+                    textElem: textElem,
+                    elemOptions: elemOptions
+                };
             });
         },
 
@@ -1508,9 +1563,7 @@
             var width = 0;
             var height = 0;
             var title = null;
-            var elem = {};
-            var elemBBox = {};
-            var label = {};
+            var legendElems = {};
             var i = 0;
             var x = 0;
             var y = 0;
@@ -1519,18 +1572,13 @@
 
             $legend = $("." + legendOptions.cssClass, self.$container);
 
-            if (typeof self.createdLegends[legendOptions.cssClass] ==='undefined') {
-                self.createdLegends[legendOptions.cssClass] = {
-                    container: $legend,
-                    initialHTMLContent: $legend.html()
-                };
-            }
-
+            // Save content for later
+            var initialHTMLContent = $legend.html();
             $legend.empty();
 
             legendPaper = new Raphael($legend.get(0));
             // Set some data to object
-            $(legendPaper.canvas).attr({"data-type": legendType, "data-index": legendIndex});
+            $(legendPaper.canvas).attr({"data-legend-type": legendType, "data-legend-id": legendIndex});
 
             height = width = 0;
 
@@ -1597,6 +1645,10 @@
 
             // Draw legend elements (circle, square or image in vertical or horizontal mode)
             for (i = 0; i < sliceOptions.length; ++i) {
+                var legendElem = {};
+                var legendElemBBox = {};
+                var legendLabel = {};
+
                 if (sliceOptions[i].display === undefined || sliceOptions[i].display === true) {
                     if (legendType === "area") {
                         if (legendOptions.mode === "horizontal") {
@@ -1607,7 +1659,7 @@
                             y = height;
                         }
 
-                        elem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
+                        legendElem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
                     } else if (sliceOptions[i].type === "square") {
                         if (legendOptions.mode === "horizontal") {
                             x = width + legendOptions.marginLeft;
@@ -1617,7 +1669,7 @@
                             y = height;
                         }
 
-                        elem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
+                        legendElem = legendPaper.rect(x, y, scale * (sliceOptions[i].attrs.width), scale * (sliceOptions[i].attrs.height));
 
                     } else if (sliceOptions[i].type === "image" || sliceOptions[i].type === "svg") {
                         if (legendOptions.mode === "horizontal") {
@@ -1629,15 +1681,16 @@
                         }
 
                         if (sliceOptions[i].type === "image") {
-                            elem = legendPaper.image(
+                            legendElem = legendPaper.image(
                                 sliceOptions[i].url, x, y, scale * sliceOptions[i].attrs.width, scale * sliceOptions[i].attrs.height);
                         } else {
-                            elem = legendPaper.path(sliceOptions[i].path);
+                            legendElem = legendPaper.path(sliceOptions[i].path);
 
                             if (sliceOptions[i].attrs.transform === undefined) {
                                 sliceOptions[i].attrs.transform = "";
                             }
-                            sliceOptions[i].attrs.transform = "m" + ((scale * sliceOptions[i].width) / elem.getBBox().width) + ",0,0," + ((scale * sliceOptions[i].height) / elem.getBBox().height) + "," + x + "," + y + sliceOptions[i].attrs.transform;
+                            legendElemBBox = legendElem.getBBox();
+                            sliceOptions[i].attrs.transform = "m" + ((scale * sliceOptions[i].width) / legendElemBBox.width) + ",0,0," + ((scale * sliceOptions[i].height) / legendElemBBox.height) + "," + x + "," + y + sliceOptions[i].attrs.transform;
                         }
                     } else {
                         if (legendOptions.mode === "horizontal") {
@@ -1647,31 +1700,31 @@
                             x = legendOptions.marginLeft + scale * (sliceOptions[i].attrs.r);
                             y = height + scale * (sliceOptions[i].attrs.r);
                         }
-                        elem = legendPaper.circle(x, y, scale * (sliceOptions[i].attrs.r));
+                        legendElem = legendPaper.circle(x, y, scale * (sliceOptions[i].attrs.r));
                     }
 
                     // Set attrs to the element drawn above
                     delete sliceOptions[i].attrs.width;
                     delete sliceOptions[i].attrs.height;
                     delete sliceOptions[i].attrs.r;
-                    elem.attr(sliceOptions[i].attrs);
-                    elemBBox = elem.getBBox();
+                    legendElem.attr(sliceOptions[i].attrs);
+                    legendElemBBox = legendElem.getBBox();
 
                     // Draw the label associated with the element
                     if (legendOptions.mode === "horizontal") {
-                        x = width + legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel;
+                        x = width + legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel;
                         y = yCenter;
                     } else {
-                        x = legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel;
-                        y = height + (elemBBox.height / 2);
+                        x = legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel;
+                        y = height + (legendElemBBox.height / 2);
                     }
 
-                    label = legendPaper.text(x, y, sliceOptions[i].label).attr(legendOptions.labelAttrs);
+                    legendLabel = legendPaper.text(x, y, sliceOptions[i].label).attr(legendOptions.labelAttrs);
 
                     // Update the width and height for the paper
                     if (legendOptions.mode === "horizontal") {
-                        var currentHeight = legendOptions.marginBottom + elemBBox.height;
-                        width += legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width;
+                        var currentHeight = legendOptions.marginBottom + legendElemBBox.height;
+                        width += legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel + legendLabel.getBBox().width;
                         if (sliceOptions[i].type !== "image" && legendType !== "area") {
                             currentHeight += legendOptions.marginBottomTitle;
                         }
@@ -1681,23 +1734,45 @@
                         }
                         height = Math.max(height, currentHeight);
                     } else {
-                        width = Math.max(width, legendOptions.marginLeft + elemBBox.width + legendOptions.marginLeftLabel + label.getBBox().width);
-                        height += legendOptions.marginBottom + elemBBox.height;
+                        width = Math.max(width, legendOptions.marginLeft + legendElemBBox.width + legendOptions.marginLeftLabel + legendLabel.getBBox().width);
+                        height += legendOptions.marginBottom + legendElemBBox.height;
                     }
 
-                    $(elem.node).attr({"data-type": "elem", "data-index": i, "data-hidden": 0});
-                    $(label.node).attr({"data-type": "label", "data-index": i, "data-hidden": 0});
+                    // Set some data to elements
+                    $(legendElem.node).attr({
+                        "data-legend-id": legendIndex,
+                        "data-legend-type": legendType,
+                        "data-type": "legend-elem",
+                        "data-id": i,
+                        "data-hidden": 0
+                    });
+                    $(legendLabel.node).attr({
+                        "data-legend-id": legendIndex,
+                        "data-legend-type": legendType,
+                        "data-type": "legend-label",
+                        "data-id": i,
+                        "data-hidden": 0
+                    });
+
+                    // Set array content
+                    // We use similar names like map/plots/links
+                    legendElems[i] = {
+                        mapElem: legendElem,
+                        textElem: legendLabel
+                    };
 
                     // Hide map elements when the user clicks on a legend item
                     if (legendOptions.hideElemsOnClick.enabled) {
                         // Hide/show elements when user clicks on a legend element
-                        label.attr({cursor: "pointer"});
-                        elem.attr({cursor: "pointer"});
+                        legendLabel.attr({cursor: "pointer"});
+                        legendElem.attr({cursor: "pointer"});
 
-                        self.setHoverOptions(elem, sliceOptions[i].attrs, sliceOptions[i].attrs);
-                        self.setHoverOptions(label, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
-                        self.setHover(elem, label);
-                        self.handleClickOnLegendElem(legendOptions, legendOptions.slices[i], label, elem, elems, legendIndex);
+                        self.setHoverOptions(legendElem, sliceOptions[i].attrs, sliceOptions[i].attrs);
+                        self.setHoverOptions(legendLabel, legendOptions.labelAttrs, legendOptions.labelAttrsHover);
+
+                        if (sliceOptions[i].clicked !== undefined && sliceOptions[i].clicked === true) {
+                            self.handleClickOnLegendElem(legendElems[i], i, legendIndex, legendType, {hideOtherElems: false});
+                        }
                     }
                 }
             }
@@ -1708,96 +1783,101 @@
                 width = legendOptions.VMLWidth;
 
             legendPaper.setSize(width, height);
+
+            return {
+                container: $legend,
+                initialHTMLContent: initialHTMLContent,
+                elems: legendElems
+            };
         },
 
         /*
          * Allow to hide elements of the map when the user clicks on a related legend item
-         * @param legendOptions options for the legend to draw
-         * @param sliceOptions options of the slice
-         * @param label label of the legend item
-         * @param elem element of the legend item
-         * @param elems collection of plots or areas displayed on the map
-         * @param legendIndex index of the legend in the conf array
+         * @param elem legend element
+         * @param id legend element ID
+         * @param legendIndex corresponding legend index
+         * @param legendType corresponding legend type (area or plot)
+         * @param opts object additionnal options
+         *          hideOtherElems boolean, if other elems shall be hidden
+         *          animDuration duration of animation
          */
-        handleClickOnLegendElem: function (legendOptions, sliceOptions, label, elem, elems, legendIndex) {
+        handleClickOnLegendElem: function(elem, id, legendIndex, legendType, opts) {
             var self = this;
+            var legendOptions;
+            opts = opts || {};
 
-            /**
-             * @param e event object
-             * @param hideOtherElems option used for the 'exclusive' mode to enabled only one item from the legend
-             * at once
-             * @param animDuration used in the 'update' event in order to apply the same animDuration on the legend items
-             */
-            var hideMapElems = function (e, hideOtherElems, animDuration) {
-                var elemValue = 0;
-                var hidden = $(label.node).attr('data-hidden');
-                var hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
+            if (!$.isArray(self.options.legend[legendType])) {
+                legendOptions = self.options.legend[legendType];
+            } else {
+                legendOptions = self.options.legend[legendType][legendIndex];
+            }
 
-                // Check animDuration: if not set, this is a regular click, use the value specified in options
-                if (animDuration === undefined) animDuration = legendOptions.hideElemsOnClick.animDuration;
+            var legendElem = elem.mapElem;
+            var legendLabel = elem.textElem;
+            var $legendElem = $(legendElem.node);
+            var $legendLabel = $(legendLabel.node);
+            var sliceOptions = legendOptions.slices[id];
+            var mapElems = legendType === 'area' ? self.areas : self.plots;
+            // Check animDuration: if not set, this is a regular click, use the value specified in options
+            var animDuration = opts.animDuration !== undefined ? opts.animDuration : legendOptions.hideElemsOnClick.animDuration ;
 
-                if (hidden === '0') {
-                    self.animate(label, {"opacity": 0.5}, animDuration);
+            var hidden = $legendElem.attr('data-hidden');
+            var hiddenNewAttr = (hidden === '0') ? {"data-hidden": '1'} : {"data-hidden": '0'};
+
+            if (hidden === '0') {
+                self.animate(legendLabel, {"opacity": 0.5}, animDuration);
+            } else {
+                self.animate(legendLabel, {"opacity": 1}, animDuration);
+            }
+
+            $.each(mapElems, function (y) {
+                var elemValue;
+
+                // Retreive stored data of element
+                //      'hidden-by' contains the list of legendIndex that is hiding this element
+                var hiddenBy = mapElems[y].mapElem.data('hidden-by');
+                // Set to empty object if undefined
+                if (hiddenBy === undefined) hiddenBy = {};
+
+                if ($.isArray(mapElems[y].value)) {
+                    elemValue = mapElems[y].value[legendIndex];
                 } else {
-                    self.animate(label, {"opacity": 1}, animDuration);
+                    elemValue = mapElems[y].value;
                 }
 
-                $.each(elems, function (id) {
-                    // Retreive stored data of element
-                    //      'hidden-by' contains the list of legendIndex that is hiding this element
-                    var hiddenBy = elems[id].mapElem.data('hidden-by');
-                    // Set to empty object if undefined
-                    if (hiddenBy === undefined) hiddenBy = {};
-
-                    if ($.isArray(elems[id].value)) {
-                        elemValue = elems[id].value[legendIndex];
-                    } else {
-                        elemValue = elems[id].value;
+                // Hide elements whose value matches with the slice of the clicked legend item
+                if (self.getLegendSlice(elemValue, legendOptions) === sliceOptions) {
+                    if (hidden === '0') { // we want to hide this element
+                        hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
+                        self.setElementOpacity(mapElems[y], legendOptions.hideElemsOnClick.opacity, animDuration);
+                    } else { // We want to show this element
+                        delete hiddenBy[legendIndex]; // Remove this legendIndex from object
+                        // Check if another legendIndex is defined
+                        // We will show this element only if no legend is no longer hiding it
+                        if ($.isEmptyObject(hiddenBy)) {
+                            self.setElementOpacity(
+                                mapElems[y],
+                                mapElems[y].mapElem.originalAttrs.opacity !== undefined ? mapElems[y].mapElem.originalAttrs.opacity : 1,
+                                animDuration
+                            );
+                        }
                     }
+                    // Update elem data with new values
+                    mapElems[y].mapElem.data('hidden-by', hiddenBy);
+                }
+            });
 
-                    // Hide elements whose value matches with the slice of the clicked legend item
-                    if (self.getLegendSlice(elemValue, legendOptions) === sliceOptions) {
-                        (function (id) {
-                            if (hidden === '0') { // we want to hide this element
-                                hiddenBy[legendIndex] = true; // add legendIndex to the data object for later use
-                                self.setElementOpacity(elems[id], legendOptions.hideElemsOnClick.opacity, animDuration);
-                            } else { // We want to show this element
-                                delete hiddenBy[legendIndex]; // Remove this legendIndex from object
-                                // Check if another legendIndex is defined
-                                // We will show this element only if no legend is no longer hiding it
-                                if ($.isEmptyObject(hiddenBy)) {
-                                    self.setElementOpacity(
-                                        elems[id],
-                                        elems[id].mapElem.originalAttrs.opacity !== undefined ? elems[id].mapElem.originalAttrs.opacity : 1,
-                                        animDuration
-                                    );
-                                }
-                            }
-                            // Update elem data with new values
-                            elems[id].mapElem.data('hidden-by', hiddenBy);
-                        })(id);
+            $legendElem.attr(hiddenNewAttr);
+            $legendLabel.attr(hiddenNewAttr);
+
+            if ((opts.hideOtherElems === undefined || opts.hideOtherElems === true) && legendOptions.exclusive === true ) {
+                $("[data-type='legend-elem'][data-hidden=0]", self.$container).each(function () {
+                    if ($(this).attr('data-id') !== id) {
+                        $(this).trigger("click", {hideOtherElems: false});
                     }
                 });
-
-                $(elem.node).attr(hiddenNewAttr);
-                $(label.node).attr(hiddenNewAttr);
-
-                if ((hideOtherElems === undefined || hideOtherElems === true) &&
-                    legendOptions.exclusive !== undefined && legendOptions.exclusive === true
-                ) {
-                    $("[data-type='elem'][data-hidden=0]", self.$container).each(function () {
-                        if ($(this).attr('data-index') !== $(elem.node).attr('data-index')) {
-                            $(this).trigger("click", false);
-                        }
-                    });
-                }
-            };
-            $(label.node).on("click." + pluginName, hideMapElems);
-            $(elem.node).on("click." + pluginName, hideMapElems);
-
-            if (sliceOptions.clicked !== undefined && sliceOptions.clicked === true) {
-                $(elem.node).trigger("click", false);
             }
+
         },
 
         /*
@@ -1814,13 +1894,14 @@
                 legendsOptions = [self.options.legend[legendType]];
             }
 
+            self.legends[legendType] = {};
             for (var j = 0; j < legendsOptions.length; ++j) {
                 // Check for class existence
                 if (legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass, self.$container).length === 0) {
                     throw new Error("The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.");
                 }
                 if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
-                    self.drawLegend(legendsOptions[j], legendType, elems, scale, j);
+                    self.legends[legendType][j] = self.drawLegend(legendsOptions[j], legendType, elems, scale, j);
                 }
             }
         },
@@ -1841,83 +1922,135 @@
         },
 
         /*
-         * Set the hover behavior (mouseover & mouseout) for plots and areas
-         * @param mapElem the map element
-         * @param textElem the optional text element (within the map element)
+         * Set the behaviour when mouse enters element ("mouseover" event)
+         * @param elem the map element
          */
-        setHover: function (mapElem, textElem) {
+        elemEnter: function (elem) {
             var self = this;
-            var $mapElem = {};
-            var $textElem = {};
-            var mouseoverTimeout = 0;
-            var mouseoutTimeout = 0;
-            var overBehaviour = function () {
-                clearTimeout(mouseoutTimeout);
-                mouseoverTimeout = setTimeout(function () {
-                    self.elemHover(mapElem, textElem);
-                }, 120);
-            };
-            var outBehaviour = function () {
-                clearTimeout(mouseoverTimeout);
-                mouseoutTimeout = setTimeout(function(){
-                    self.elemOut(mapElem, textElem);
-                }, 120);
-            };
+            if (elem === undefined) return;
 
-            $mapElem = $(mapElem.node);
-            $mapElem.on("mouseover." + pluginName, overBehaviour);
-            $mapElem.on("mouseout." + pluginName, outBehaviour);
-
-            if (textElem) {
-                $textElem = $(textElem.node);
-                $textElem.on("mouseover." + pluginName, overBehaviour);
-                $(textElem.node).on("mouseout." + pluginName, outBehaviour);
+            /* Handle mapElem Hover attributes */
+            if (elem.mapElem !== undefined) {
+                self.animate(elem.mapElem, elem.mapElem.attrsHover, elem.mapElem.attrsHover.animDuration);
             }
-        },
 
-        /*
-         * Remove the hover behavior for plots and areas
-         * @param mapElem the map element
-         * @param textElem the optional text element (within the map element)
-         */
-        unsetHover: function (mapElem, textElem) {
-            $(mapElem.node).off("." + pluginName);
-            if (textElem) $(textElem.node).off("." + pluginName);
-        },
-
-        /*
-         * Set he behaviour for "mouseover" event
-         * @param mapElem mapElem the map element
-         * @param textElem the optional text element (within the map element)
-         */
-        elemHover: function (mapElem, textElem) {
-            var self = this;
-            // Set mapElem
-            self.animate(mapElem, mapElem.attrsHover, mapElem.attrsHover.animDuration);
-            // Set textElem
-            if (textElem) {
-                self.animate(textElem, textElem.attrsHover, textElem.attrsHover.animDuration);
+            /* Handle textElem Hover attributes */
+            if (elem.textElem !== undefined) {
+                self.animate(elem.textElem, elem.textElem.attrsHover, elem.textElem.attrsHover.animDuration);
             }
-            // workaround for older version of Raphael
-            if (self.paper.safari) self.paper.safari();
-        },
 
-        /*
-         * Set he behaviour for "mouseout" event
-         * @param mapElem the map element
-         * @param textElem the optional text element (within the map element)
-         */
-        elemOut: function (mapElem, textElem) {
-            var self = this;
-            // Set mapElem
-            self.animate(mapElem, mapElem.originalAttrs, mapElem.attrsHover.animDuration);
-            // Set textElem
-            if (textElem) {
-                self.animate(textElem, textElem.originalAttrs, textElem.attrsHover.animDuration);
+            /* Handle tooltip init */
+            if (elem.tooltip !== undefined) {
+                var content = '';
+                // Reset classes
+                self.$tooltip.removeClass().addClass(self.options.map.tooltip.cssClass);
+                // Get content
+                if (elem.tooltip.content !== undefined) {
+                    // if tooltip.content is function, call it. Otherwise, assign it directly.
+                    if (typeof elem.tooltip.content === "function") content = elem.tooltip.content(elem.mapElem);
+                    else content = elem.tooltip.content;
+                }
+                if (elem.tooltip.cssClass !== undefined) {
+                    self.$tooltip.addClass(elem.tooltip.cssClass);
+                }
+                self.$tooltip.html(content).css("display", "block");
             }
 
             // workaround for older version of Raphael
-            if (self.paper.safari) self.paper.safari();
+            if (elem.mapElem !== undefined || elem.textElem !== undefined) {
+                if (self.paper.safari) self.paper.safari();
+            }
+        },
+
+        /*
+         * Set the behaviour when mouse moves in element ("mousemove" event)
+         * @param elem the map element
+         */
+        elemHover: function (elem, event) {
+            var self = this;
+            if (elem === undefined) return;
+
+            /* Handle tooltip position update */
+            if (elem.tooltip !== undefined) {
+                var mouseX = event.pageX;
+                var mouseY = event.pageY;
+
+                var offsetLeft = 10;
+                var offsetTop = 20;
+                if (typeof elem.tooltip.offset === "object") {
+                    if (typeof elem.tooltip.offset.left !== "undefined") {
+                        offsetLeft = elem.tooltip.offset.left;
+                    }
+                    if (typeof elem.tooltip.offset.top !== "undefined") {
+                        offsetTop = elem.tooltip.offset.top;
+                    }
+                }
+
+                var tooltipPosition = {
+                    "left": Math.min(self.$map.width() - self.$tooltip.outerWidth() - 5,
+                                     mouseX - self.$map.offset().left + offsetLeft),
+                    "top": Math.min(self.$map.height() - self.$tooltip.outerHeight() - 5,
+                                    mouseY - self.$map.offset().top + offsetTop)
+                };
+
+                if (typeof elem.tooltip.overflow === "object") {
+                    if (elem.tooltip.overflow.right === true) {
+                        tooltipPosition.left = mouseX - self.$map.offset().left + 10;
+                    }
+                    if (elem.tooltip.overflow.bottom === true) {
+                        tooltipPosition.top = mouseY - self.$map.offset().top + 20;
+                    }
+                }
+
+                self.$tooltip.css(tooltipPosition);
+            }
+        },
+
+        /*
+         * Set the behaviour when mouse leaves element ("mouseout" event)
+         * @param elem the map element
+         */
+        elemOut: function (elem) {
+            var self = this;
+            if (elem === undefined) return;
+
+            /* reset mapElem attributes */
+            if (elem.mapElem !== undefined) {
+                self.animate(elem.mapElem, elem.mapElem.originalAttrs, elem.mapElem.attrsHover.animDuration);
+            }
+
+            /* reset textElem attributes */
+            if (elem.textElem !== undefined) {
+                self.animate(elem.textElem, elem.textElem.originalAttrs, elem.textElem.attrsHover.animDuration);
+            }
+
+            /* reset tooltip */
+            if (elem.tooltip !== undefined) {
+                self.$tooltip.css({
+                    'display': 'none',
+                    'top': -1000,
+                    'left': -1000
+                });
+            }
+
+            // workaround for older version of Raphael
+            if (elem.mapElem !== undefined || elem.textElem !== undefined) {
+                if (self.paper.safari) self.paper.safari();
+            }
+        },
+
+        /*
+         * Set the behaviour when mouse clicks element ("click" event)
+         * @param elem the map element
+         */
+        elemClick: function (elem) {
+            var self = this;
+            if (elem === undefined) return;
+
+            /* Handle click when href defined */
+            if (!self.panning && elem.href !== undefined) {
+                window.open(elem.href, elem.target);
+            }
         },
 
         /*
@@ -2302,7 +2435,7 @@
          * Wants to override this behavior? Use prototype overriding:
          *     $.mapael.prototype.isRaphaelBBoxBugPresent = function() {return false;};
          */
-        isRaphaelBBoxBugPresent: function(){
+        isRaphaelBBoxBugPresent: function() {
             var self = this;
             // Draw text, then get its boundaries
             var text_elem = self.paper.text(-50, -50, "TEST");

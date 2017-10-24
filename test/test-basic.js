@@ -1,14 +1,14 @@
 /*
  * Unit Test for Mapael
  * Module: Basic
- * 
+ *
  * Here are tested:
  *      - Basic map creation/destruction
  *      - Basic map interaction
  *      - options.map.name
  */
 $(function() {
-    
+
     QUnit.module("Basic");
 
     QUnit.test("Default instance creation", function(assert) {
@@ -31,38 +31,38 @@ $(function() {
         assert.ok($(".mapcontainer .map .mapTooltip")[0], "Has tooltip div" );
 
     });
-    
+
     QUnit.test("Instance destruction", function(assert) {
-        
+
         $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: { name: "france_departments" }
         }));
-        
+
         assert.ok($(".mapcontainer svg")[0], "Map existing" );
-        
+
         $(".mapcontainer").data("mapael").destroy();
-        
+
         assert.notOk($(".mapcontainer .map svg")[0], "SVG map not created" );
         assert.notOk($(".mapcontainer").hasClass("mapael"), "Has not mapael class" );
         assert.notOk(typeof $(".mapcontainer").data("mapael") === "object", "Has not mapael data" );
         assert.notOk($(".mapcontainer .map .mapTooltip")[0], "Has not tooltip div" );
     });
-    
+
     QUnit.test("Instance creation: existing map", function(assert) {
-        
+
         $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: { name: "france_departments" }
         }));
-        
+
         assert.ok($(".mapcontainer svg")[0], "First map existing" );
-        
+
         $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: { name: "france_departments" }
         }));
-        
+
         assert.ok($(".mapcontainer svg")[0], "Second map existing" );
     });
-    
+
     QUnit.test("Creation fail: wrong map", function(assert) {
 
         /* Error if wrong map name */
@@ -71,13 +71,13 @@ $(function() {
                 map: { name: "not_existing_map" }
             }));
         }, "Throw error" );
-        
+
         assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
-        
+
     });
-    
+
     QUnit.test("Creation fail: hidden map", function(assert) {
-        
+
         $(".container").hide();
 
         /* Error if map is hidden */
@@ -86,14 +86,14 @@ $(function() {
                 map: { name: "france_departments" }
             }));
         }, "Throw error" );
-        
+
         assert.notOk($(".mapcontainer svg")[0], "Map not existing" );
-        
+
     });
 
     QUnit.test("Mouseover", function(assert) {
-        var mouseover_async_done = assert.async(CST_NB_OF_FRANCE_DPTMT);
-        
+        var mouseover_async_done = assert.async(CST_NB_OF_HOVER_CHECK);
+
         /* Create the map */
         $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
@@ -103,36 +103,39 @@ $(function() {
 
         /* mouseover event check (background changement) */
         var default_fill = $(".mapcontainer svg path:first").attr("fill");
-        $(".mapcontainer svg path").each(function(id, elem) {
+        var counter = 0;
+        $(".mapcontainer svg path").slice(0, CST_NB_OF_HOVER_CHECK).each(function(id, elem) {
             var $elem = $(elem);
-            
-            $elem.trigger("mouseover");
             setTimeout(function() {
-                var new_fill = $elem.attr("fill");
-                assert.notEqual(default_fill, new_fill, "Check new background" );
-                assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden" );
-                
-                $elem.trigger("mouseout");
+                $elem.trigger("mouseover");
                 setTimeout(function() {
                     var new_fill = $elem.attr("fill");
-                    assert.equal(new_fill, default_fill, "Check old background" );
-                    mouseover_async_done();
-                }, 500);
-            }, 500);
+                    assert.notEqual(default_fill, new_fill, "Check new background" );
+                    assert.ok($(".mapcontainer .map .mapTooltip").is( ":hidden" ), "Check tooltip hidden" );
+
+                    $elem.trigger("mouseout");
+                    setTimeout(function() {
+                        var new_fill = $elem.attr("fill");
+                        assert.equal(new_fill, default_fill, "Check old background" );
+                        mouseover_async_done();
+                    }, CST_MOUSEOVER_TIMEOUT_MS);
+                }, CST_MOUSEOVER_TIMEOUT_MS);
+            }, counter * (CST_MOUSEOVER_TIMEOUT_MS * 2));
+            counter++;
         });
-        
+
     });
 
     QUnit.test("Responsive", function(assert) {
         var responsive_async_done = assert.async();
-        
+
         /* Create the map */
         $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             }
         }));
-        
+
         /* Responsive checks */
         $(".mapcontainer").width(CST_MAP_MAX_WIDTH/2);
         $(window).trigger('resize');
@@ -140,7 +143,7 @@ $(function() {
             var $svg = $(".mapcontainer .map svg");
             assert.equal($svg.attr("width"), CST_MAP_MAX_WIDTH/2, "Check new map width size" );
             assert.equal($svg.attr("height"), CST_MAP_MAX_HEIGHT/2, "Check new map height size" );
-            
+
             $(".mapcontainer").width(CST_MAP_MAX_WIDTH);
             $(window).trigger('resize');
             setTimeout(function() {
