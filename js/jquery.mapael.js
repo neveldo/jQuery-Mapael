@@ -771,14 +771,29 @@
         },
 
         /*
-         * Zoom on the map at a specific level focused on specific coordinates
-         * If no coordinates are specified, the zoom will be focused on the center of the map
-         * options :
-         *    "level" : level of the zoom between minLevel and maxLevel
-         *    "x" or "latitude" : x coordinate or latitude of the point to focus on
-         *    "y" or "longitude" : y coordinate or longitude of the point to focus on
-         *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
-         *    "animDuration" : zoom duration
+         * Zoom on the map
+         *
+         * zoomOptions.animDuration zoom duration
+         *
+         * zoomOptions.level        level of the zoom between minLevel and maxLevel (absolute number, or relative string +1 or -1)
+         * zoomOptions.fixedCenter  set to true in order to preserve the position of x,y in the canvas when zoomed
+         *
+         * zoomOptions.x            x coordinate of the point to focus on
+         * zoomOptions.y            y coordinate of the point to focus on
+         * - OR -
+         * zoomOptions.latitude     latitude of the point to focus on
+         * zoomOptions.longitude    longitude of the point to focus on
+         * - OR -
+         * zoomOptions.plot         plot ID to focus on
+         * - OR -
+         * zoomOptions.area         area ID to focus on
+         * zoomOptions.areaMargin   margin (in pixels) around the area
+         *
+         * If an area ID is specified, the algorithm will override the zoom level to focus on the area
+         * but it may be limited by the min/max zoom level limits set at initialization.
+         *
+         * If no coordinates are specified, the zoom will be focused on the center of the current view box
+         *
          */
         onZoomEvent: function (e, zoomOptions) {
             var self = this;
@@ -794,7 +809,7 @@
             var zoomLevel = self.zoomData.zoomLevel;
 
             // Relative zoom level (from 1 to max, by step of 0.25 (default))
-            var previousRelativeZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
+            var previousRelativeZoomLevel = 1 + self.zoomData.zoomLevel * self.options.map.zoom.step;
             var relativeZoomLevel;
 
             var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
@@ -808,9 +823,13 @@
                 var areaBBox = self.areas[zoomOptions.area].mapElem.getBBox();
                 var areaFullWidth = areaBBox.width + 2 * areaMargin;
                 var areaFullHeight = areaBBox.height + 2 * areaMargin;
+
+                // Compute new x/y focus point (center of area)
                 zoomOptions.x = areaBBox.x + areaBBox.width / 2;
                 zoomOptions.y = areaBBox.y + areaBBox.height / 2;
 
+                // Compute a new absolute zoomLevel value (inverse of relative -> absolute)
+                // Take the min between zoomLevel on width vs. height to be able to see the whole area
                 zoomLevel = Math.min(Math.floor((self.mapConf.width / areaFullWidth - 1) / self.options.map.zoom.step),
                                      Math.floor((self.mapConf.height / areaFullHeight - 1) / self.options.map.zoom.step));
 
@@ -863,7 +882,7 @@
                     }
 
                     if (zoomOptions.y === undefined) {
-                        zoomOptions.y = (self.currentViewBox.y + self.currentViewBox.h / 2);
+                        zoomOptions.y = self.currentViewBox.y + self.currentViewBox.h / 2;
                     }
                 }
             }
@@ -872,7 +891,7 @@
             zoomLevel = Math.min(Math.max(zoomLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
 
             // Compute relative zoom level
-            relativeZoomLevel = (1 + zoomLevel * self.options.map.zoom.step);
+            relativeZoomLevel = 1 + zoomLevel * self.options.map.zoom.step;
 
             // Compute panWidth / panHeight
             panWidth = self.mapConf.width / relativeZoomLevel;
