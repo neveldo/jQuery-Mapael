@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Map with a legend for images</title>
+    <title>Map with some transformations performed on SVG plotted points</title>
     <style type="text/css">
         body {
             color: #5d5d5d;
@@ -31,18 +31,57 @@
         }
 
         .mapael .mapTooltip {
-            position: absolute;
-            background-color: #474c4b;
-            moz-opacity: 0.70;
+            position : absolute;
+            background-color : #474c4b;
+            moz-opacity:0.70;
             opacity: 0.70;
-            filter: alpha(opacity=70);
-            border-radius: 10px;
-            padding: 10px;
+            filter:alpha(opacity=70);
+            border-radius:10px;
+            padding : 10px;
             z-index: 1000;
             max-width: 200px;
-            display: none;
-            color: #fff;
+            display:none;
+            color:#fff;
         }
+
+        /* For all zoom buttons */
+        .mapael .zoomButton {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            color: #000;
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+            text-align: center;
+            border-radius: 3px;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            font-weight: bold;
+            left: 10px;
+
+            -webkit-user-select: none;
+            -khtml-user-select : none;
+            -moz-user-select: none;
+            -o-user-select : none;
+            user-select: none;
+        }
+
+        /* Reset Zoom button first */
+        .mapael .zoomReset {
+            top: 10px;
+        }
+
+        /* Then Zoom In button */
+        .mapael .zoomIn {
+            top: 30px;
+        }
+
+        /* Then Zoom Out button */
+        .mapael .zoomOut {
+            top: 50px;
+        }
+        
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
@@ -59,6 +98,10 @@
             $(".mapcontainer").mapael({
                 map: {
                     name: "usa_states"
+                    , zoom: {
+                        enabled: true,
+                        maxLevel: 20
+                    }
                     , defaultArea: {
                         attrs: {
                             fill: "#f4f4e8"
@@ -68,30 +111,29 @@
                             fill: "#a4e100"
                         }
                     }
+                    , defaultPlot: {
+                        type: "svg",
+                        path: "M 7.5,0 C 2.48,0 0,3.5 0,7.81 0,12.12 7.5,22 7.5,22 7.5,22 15,12.13 15,7.81 15,3.49 12.52,0 7.5,0 Z",
+                        width: 30,
+                        height: 44,
+                        attrs: {
+                            fill: "#8AD12C",
+                            transform: "r25"
+                        },
+                        attrsHover: {
+                            transform: "...r360s2"
+                        }
+                    }
                 },
                 legend: {
                     plot: {
                         title: "American cities",
                         slices: [{
                             label: "Value 1",
-                            sliceValue: "Value 1",
-                            type: "image",
-                            url: "http://www.neveldo.fr/mapael/assets/img/marker.png",
-                            width: 18,
-                            height: 60,
-                            attrsHover: {
-                                transform: "s1.5"
-                            }
+                            sliceValue: "Value 1"
                         }, {
                             label: "Value 2",
-                            sliceValue: "Value 2",
-                            type: "image",
-                            url: "http://www.neveldo.fr/mapael/assets/img/marker1.png",
-                            width: 18,
-                            height: 60,
-                            attrsHover: {
-                                transform: "s1.5"
-                            }
+                            sliceValue: "Value 2"
                         }]
                     }
                 },
@@ -152,6 +194,20 @@
                     }
                 }
             });
+
+
+            $('#refresh').on('click', function () {
+
+                // and delete some others ...
+                var deletedPlots = ["paris", "lyon"];
+
+                $(".mapcontainer").trigger('update', [{
+                    mapOptions: {map: {defaultPlot:{attrs:{transform:'r55'}}}}, 
+                    animDuration: 1000
+                }]);
+            });
+
+
         });
     </script>
 
@@ -160,8 +216,8 @@
 <body>
 <div class="container">
 
-    <h1>Map with a legend for images</h1>
-
+    <h1>Map with some transformations performed on SVG plotted points</h1>
+<input type="button" value="Update elements" id="refresh"/>
     <div class="mapcontainer">
         <div class="map">
             <span>Alternative content for the map</span>

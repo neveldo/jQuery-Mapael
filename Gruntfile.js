@@ -27,28 +27,15 @@ module.exports = function(grunt) {
         qunit: {
             all: {
                 options: {
-                    urls: ['test/index.html?coverage=true&lcovReport']
+                    urls: ['test/index.html']
                 }
             }
-        },
-        coveralls: {
-            options: {
-                force: true
-            },
-            all: {
-                src: '.coverage-results/core.lcov',
-            }
         }
-    });
-
-    grunt.event.on('qunit.report', function(data) {
-        grunt.file.write('.coverage-results/core.lcov', data);
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-coveralls');
 
     grunt.registerTask('test', ['jshint', 'qunit']);
     grunt.registerTask('build', ['uglify']);

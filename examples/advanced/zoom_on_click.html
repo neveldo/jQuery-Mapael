@@ -89,8 +89,10 @@
         }
     </style>
 
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js" charset="utf-8"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.13/jquery.mousewheel.min.js"
+            charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js" charset="utf-8"></script>
     <script src="../../js/jquery.mapael.js" charset="utf-8"></script>
     <script src="../../js/maps/france_departments.js" charset="utf-8"></script>
 
@@ -1939,26 +1941,29 @@
                 }
             });
 
+            // Get mapael object (to be used later)
+            var mapael = $(".mapcontainer").data("mapael");
+
             // Vars to keep track of current movement
              var mouseDragging = false;
              var mouseDown = false;
 
+             var $SVGMap = $(".mapcontainer .map svg");
+
             // Detect mousedown event
-            $(".mapcontainer svg").mousedown(function () {
+            $SVGMap.mousedown(function () {
                 mouseDown = true;
             });
 
             // If the mouse if moving, and mousedown was set, then user is dragging!
-            $(".mapcontainer svg").mousemove(function () {
+            $SVGMap.mousemove(function () {
                 mouseDragging = mouseDown;
             });
 
             // On mouse up, check if user was dragging or only clicking
             // If not dragging, then zoom on position!
-            $(".mapcontainer svg").mouseup(function (e) {
+            $SVGMap.mouseup(function (e) {
                 if (!mouseDragging) {
-                    // Get current mapael object
-                    var mapael = $(".mapcontainer").data("mapael");
                     // We need to convert the mouse coordinate to map coordinate
                     // Fortunately, Mapael provides a handy function to do this for us!
                     var newCoordinates = mapael.mapPagePositionToXY(e.pageX, e.pageY);
@@ -1995,7 +2000,7 @@
         </div>
     </div>
 
-    <p><b>All example for jQuery Mapael are available <a href="http://www.vincentbroute.fr/mapael/">here</a>.</b></p>
+    <p><b>All example for jQuery Mapael are available <a href="https://www.vincentbroute.fr/mapael/">here</a>.</b></p>
 
 </div>
 

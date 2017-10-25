@@ -1,6 +1,6 @@
 # Upgrading Mapael
 
-## From 1.10.0 to 2.0.0
+## From 1.1.0 to 2.0.0
 
 ### A. Change your `update` event trigger ([#105](https://github.com/neveldo/jQuery-Mapael/issues/105))
 The `update` event has a new signature.
@@ -62,6 +62,7 @@ The current Mapael instance of each map was not accessible.
 - in `$.mapael`: the Mapael *prototype* (this is *not* an instance of mapael, this is only the prototype)
 - in `$.fn.mapael`: the DOM attachment method (this is only a wrapper to attach mapael to the element by creating a mapael instance).
 - in each DOM container data: the current instance of Mapael (accessible through `$(".mapcontainer").data("mapael")`)
+- The zoom data are no longer accessible through `$('.mapcontainer').data('zoomLevel');` for instance. They are now stored in `$(".mapcontainer").data("mapael").zoomData.zoomLevel` for instance.
 
 These internal changes have some external impacts:
 
@@ -134,5 +135,21 @@ zoom: {
         }
     }
 }
+```
 
+### E. Updated the CSS position of the tooltip
 
+In the CSS file related to mapael maps, the tooltip position should now be 'absolute' instead of 'fixed'. 
+
+**Old style:**
+```css
+.mapael .mapTooltip {
+    position: fixed;
+}
+```
+**New style:**
+```css
+.mapael .mapTooltip {
+    position: absolute;
+}
+```

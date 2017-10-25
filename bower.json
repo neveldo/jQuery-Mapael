@@ -1,13 +1,29 @@
 {
-  "name": "jquery-mapael",
-  "version": "1.1.0",
-  "main": "./js/jquery.mapael.js",
-  "description": "jQuery Mapael is a jQuery plugin based on raphael.js that allows you to display dynamic vector maps.",
-  "license": "MIT",
-  "ignore": [],
-  "dependencies": {
-    "raphael": ">=2.1.4",
-    "jquery": ">=1.7",
-    "jquery-mousewheel": ">=3.1.6"
-  }
+    "name": "jquery-mapael",
+    "version": "2.1.0",
+    "main": "./js/jquery.mapael.js",
+    "description": "jQuery Mapael is a jQuery plugin based on raphael.js that allows you to display dynamic vector maps.",
+    "license": "MIT",
+    "ignore": [
+        ".*",
+        "*.json",
+        "*.md",
+        "*.txt",
+        "Gruntfile.js",
+        "test",
+        "examples",
+        "!LICENSE",
+        "!CHANGELOG.md"
+    ],
+    "dependencies": {
+        "raphael": "^2.2",
+        "jquery": "^3.0",
+        "jquery-mousewheel": "^3.1"
+    },
+    "devDependencies": {
+        "grunt": "^1.0",
+        "grunt-contrib-jshint": "^1.0",
+        "grunt-contrib-qunit": "^1.2",
+        "grunt-contrib-uglify": "^2.0"
+    }
 }

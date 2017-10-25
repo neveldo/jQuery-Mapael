@@ -4,13 +4,13 @@
  * Requires jQuery and Mapael
  *
  * Map of USA by state
- * 
+ *
  * @source http://the55.net/_11/sketch/us_map
  */
 (function (factory) {
     if (typeof exports === 'object') {
         // CommonJS
-        module.exports = factory(require('jquery'), require('mapael'));
+        module.exports = factory(require('jquery'), require('jquery-mapael'));
     } else if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery', 'mapael'], factory);
@@ -21,7 +21,7 @@
 }(function ($, Mapael) {
 
     "use strict";
-    
+
     $.extend(true, Mapael,
         {
             maps :{
@@ -29,9 +29,9 @@
                     width : 959,
                     height : 593,
                     latLngToGrid: function(lat, lng, phi1, phi2, midLng, scale) {
-                        var pi =Math.PI
-                            , midLat = (phi1 + phi2) / 2
-                            , n, tmp1, tmp2, tmp3, x, y, p;
+                        var pi =Math.PI;
+                        var midLat = (phi1 + phi2) / 2;
+                        var n, tmp1, tmp2, tmp3, x, y, p;
 
                         n = (Math.sin(phi1 / 180 * pi) + Math.sin(phi2 / 180 * pi)) / 2;
                         tmp1 = Math.sqrt(Math.cos(phi1 / 180 * pi)) + 2 * n * Math.sin(phi1 / 180 * pi);
@@ -40,7 +40,7 @@
                         p = scale * Math.pow(tmp1 - 2 * n * Math.sin(lat / 180 * pi),0.5) / n;
                         x = p * Math.sin(tmp3 / 180 * pi);
                         y = tmp2 - p * Math.cos(tmp3 / 180 * pi);
-                        
+
                         return([x,y]);
                     },
                     getCoords : function (lat, lon) {

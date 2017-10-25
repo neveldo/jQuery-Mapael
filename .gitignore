@@ -2,4 +2,4 @@
 .fuse_hidden*
 .idea
 /node_modules
-.coverage-results
+/bower_components

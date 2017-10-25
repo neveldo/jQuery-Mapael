@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Use 'zoom.init' option in order to set an initial zoom level on a specific position</title>
+    <title>Allow the user to add some cities by double-clicking on the map</title>
     <style type="text/css">
         body {
             color: #5d5d5d;
@@ -20,26 +20,13 @@
             margin: auto;
         }
 
-        .mapcontainer {
-            margin: 10px;
-        }
-
         /* Specific mapael css class are below
          * 'mapael' class is added by plugin
         */
 
-        .mapael .mapTooltip {
-            position: absolute;
-            background-color: #fff;
-            moz-opacity: 0.70;
-            opacity: 0.70;
-            filter: alpha(opacity=70);
-            border-radius: 10px;
-            padding: 10px;
-            z-index: 1000;
-            max-width: 200px;
-            display: none;
-            color: #343434;
+        .mapael .map {
+            margin-bottom: 10px;
+            position: relative;
         }
 
         /* For all zoom buttons */
@@ -80,9 +67,18 @@
             top: 50px;
         }
 
-        .mapael .map {
-            position: relative;
-            background-color: #cddee0;
+        .mapael .mapTooltip {
+            position: absolute;
+            background-color: #474c4b;
+            moz-opacity: 0.70;
+            opacity: 0.70;
+            filter: alpha(opacity=70);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1000;
+            max-width: 200px;
+            display: none;
+            color: #fff;
         }
     </style>
 
@@ -97,26 +93,33 @@
 
     <script type="text/javascript">
         $(function () {
-            $mapcontainer = $(".mapcontainer");
-            $mapcontainer.mapael({
+
+            $(".mapcontainer").on('dblclick', function(e) {
+                var $this = $(this),
+
+                    // mapPagePositionToXY() allows to get the x,y coordinates 
+                    // on the map from a x,y coordinates on the page
+                    coords = $this.data('mapael').mapPagePositionToXY(e.pageX, e.pageY),
+
+                    // Each new plot must have its own unique ID
+                    plotId = 'plot-' + Math.round(Math.random() * 1000),
+                    updateOptions = {'newPlots': {}};
+
+                updateOptions.newPlots[plotId] = {
+                    x: coords.x,
+                    y: coords.y
+                };
+
+                $this.trigger('update', [updateOptions]);
+            });
+
+            $(".mapcontainer").mapael({
                 map: {
-                    name: "usa_states"
+                    name: "france_departments"
+                    // Enable zoom on the map
                     , zoom: {
                         enabled: true,
-                        maxLevel: 10,
-                        init: {
-                            latitude: 40.717079,
-                            longitude: -74.00116,
-                            level: 10
-                        }
-                    }
-                },
-                plots: {
-                    'ny': {
-                        latitude: 40.717079,
-                        longitude: -74.00116,
-                        tooltip: {content: "New York"},
-                        text: {content: "New-York", attrs: {fill: "#000"}}
+                        maxLevel: 10
                     }
                 }
             });
@@ -126,9 +129,9 @@
 </head>
 
 <body>
-<div class="container">
 
-    <h1>Use 'zoom.init' option in order to set an initial zoom level on a specific position</h1>
+<div class="container">
+    <h1>Allow the user to add some cities by double-clicking on the map</h1>
 
     <div class="mapcontainer">
         <div class="map">
@@ -137,9 +140,6 @@
     </div>
 
     <p><b>All example for jQuery Mapael are available <a href="https://www.vincentbroute.fr/mapael/">here</a>.</b></p>
-
 </div>
-
-
 </body>
 </html>
