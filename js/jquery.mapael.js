@@ -1709,8 +1709,8 @@
             }
 
             for (var j = 0; j < legendsOptions.length; ++j) {
-                if (legendsOptions[j].display === true  && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0
-                    && legendsOptions[j].cssClass !== "" && $("." + legendsOptions[j].cssClass, self.$container).length !== 0
+                if (legendsOptions[j].display === true  && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0 &&
+                    legendsOptions[j].cssClass !== "" && $("." + legendsOptions[j].cssClass, self.$container).length !== 0
                 ) {
                     self.drawLegend(legendsOptions[j], legendType, elems, scale, j);
                 }
