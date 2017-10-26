@@ -1898,11 +1898,9 @@
 
             self.legends[legendType] = {};
             for (var j = 0; j < legendsOptions.length; ++j) {
-                // Check for class existence
-                if (legendsOptions[j].cssClass === "" || $("." + legendsOptions[j].cssClass, self.$container).length === 0) {
-                    throw new Error("The legend class `" + legendsOptions[j].cssClass + "` doesn't exists.");
-                }
-                if (legendsOptions[j].display === true && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0) {
+                if (legendsOptions[j].display === true  && $.isArray(legendsOptions[j].slices) && legendsOptions[j].slices.length > 0 &&
+                    legendsOptions[j].cssClass !== "" && $("." + legendsOptions[j].cssClass, self.$container).length !== 0
+                ) {
                     self.legends[legendType][j] = self.drawLegend(legendsOptions[j], legendType, elems, scale, j);
                 }
             }
