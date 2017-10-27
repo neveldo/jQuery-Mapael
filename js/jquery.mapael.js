@@ -768,104 +768,173 @@
         },
 
         /*
-         * Zoom on the map at a specific level focused on specific coordinates
-         * If no coordinates are specified, the zoom will be focused on the center of the map
-         * options :
-         *    "level" : level of the zoom between minLevel and maxLevel
-         *    "x" or "latitude" : x coordinate or latitude of the point to focus on
-         *    "y" or "longitude" : y coordinate or longitude of the point to focus on
-         *    "fixedCenter" : set to true in order to preserve the position of x,y in the canvas when zoomed
-         *    "animDuration" : zoom duration
+         * Zoom on the map
+         *
+         * zoomOptions.animDuration zoom duration
+         *
+         * zoomOptions.level        level of the zoom between minLevel and maxLevel (absolute number, or relative string +1 or -1)
+         * zoomOptions.fixedCenter  set to true in order to preserve the position of x,y in the canvas when zoomed
+         *
+         * zoomOptions.x            x coordinate of the point to focus on
+         * zoomOptions.y            y coordinate of the point to focus on
+         * - OR -
+         * zoomOptions.latitude     latitude of the point to focus on
+         * zoomOptions.longitude    longitude of the point to focus on
+         * - OR -
+         * zoomOptions.plot         plot ID to focus on
+         * - OR -
+         * zoomOptions.area         area ID to focus on
+         * zoomOptions.areaMargin   margin (in pixels) around the area
+         *
+         * If an area ID is specified, the algorithm will override the zoom level to focus on the area
+         * but it may be limited by the min/max zoom level limits set at initialization.
+         *
+         * If no coordinates are specified, the zoom will be focused on the center of the current view box
+         *
          */
         onZoomEvent: function (e, zoomOptions) {
             var self = this;
-            var newLevel = self.zoomData.zoomLevel;
-            var panX = 0;
-            var panY = 0;
-            var previousZoomLevel = (1 + self.zoomData.zoomLevel * self.options.map.zoom.step);
-            var zoomLevel = 0;
-            var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
-            var offsetX = 0;
-            var offsetY = 0;
-            var coords = {};
 
-            // Get user defined zoom level
-            if (zoomOptions.level !== undefined) {
-                if (typeof zoomOptions.level === "string") {
-                    // level is a string, either "n", "+n" or "-n"
-                    if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
-                        // zoomLevel is relative
-                        newLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level, 10);
+            // new Top/Left corner coordinates
+            var panX;
+            var panY;
+            // new Width/Height viewbox size
+            var panWidth;
+            var panHeight;
+
+            // Zoom level in absolute scale (from 0 to max, by step of 1)
+            var zoomLevel = self.zoomData.zoomLevel;
+
+            // Relative zoom level (from 1 to max, by step of 0.25 (default))
+            var previousRelativeZoomLevel = 1 + self.zoomData.zoomLevel * self.options.map.zoom.step;
+            var relativeZoomLevel;
+
+            var animDuration = (zoomOptions.animDuration !== undefined) ? zoomOptions.animDuration : self.options.map.zoom.animDuration;
+
+            if (zoomOptions.area !== undefined) {
+                /* An area is given
+                 * We will define x/y coordinate AND a new zoom level to fill the area
+                 */
+                if (self.areas[zoomOptions.area] === undefined) throw new Error("Unknown area '" + zoomOptions.area + "'");
+                var areaMargin = (zoomOptions.areaMargin !== undefined) ? zoomOptions.areaMargin : 10;
+                var areaBBox = self.getBBoxWithCenter(self.areas[zoomOptions.area].mapElem);
+                var areaFullWidth = areaBBox.width + 2 * areaMargin;
+                var areaFullHeight = areaBBox.height + 2 * areaMargin;
+
+                // Compute new x/y focus point (center of area)
+                zoomOptions.x = areaBBox.cx;
+                zoomOptions.y = areaBBox.cy;
+
+                // Compute a new absolute zoomLevel value (inverse of relative -> absolute)
+                // Take the min between zoomLevel on width vs. height to be able to see the whole area
+                zoomLevel = Math.min(Math.floor((self.mapConf.width / areaFullWidth - 1) / self.options.map.zoom.step),
+                                     Math.floor((self.mapConf.height / areaFullHeight - 1) / self.options.map.zoom.step));
+
+            } else {
+
+                // Get user defined zoom level
+                if (zoomOptions.level !== undefined) {
+                    if (typeof zoomOptions.level === "string") {
+                        // level is a string, either "n", "+n" or "-n"
+                        if ((zoomOptions.level.slice(0, 1) === '+') || (zoomOptions.level.slice(0, 1) === '-')) {
+                            // zoomLevel is relative
+                            zoomLevel = self.zoomData.zoomLevel + parseInt(zoomOptions.level, 10);
+                        } else {
+                            // zoomLevel is absolute
+                            zoomLevel = parseInt(zoomOptions.level, 10);
+                        }
                     } else {
-                        // zoomLevel is absolute
-                        newLevel = parseInt(zoomOptions.level, 10);
-                    }
-                } else {
-                    // level is integer
-                    if (zoomOptions.level < 0) {
-                        // zoomLevel is relative
-                        newLevel = self.zoomData.zoomLevel + zoomOptions.level;
-                    } else {
-                        // zoomLevel is absolute
-                        newLevel = zoomOptions.level;
+                        // level is integer
+                        if (zoomOptions.level < 0) {
+                            // zoomLevel is relative
+                            zoomLevel = self.zoomData.zoomLevel + zoomOptions.level;
+                        } else {
+                            // zoomLevel is absolute
+                            zoomLevel = zoomOptions.level;
+                        }
                     }
                 }
-                // Make sure we stay in the boundaries
-                newLevel = Math.min(Math.max(newLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
+
+                if (zoomOptions.plot !== undefined) {
+                    if (self.plots[zoomOptions.plot] === undefined) throw new Error("Unknown plot '" + zoomOptions.plot + "'");
+                    var plotElem = self.plots[zoomOptions.plot].mapElem;
+
+                    if (plotElem.type === 'circle') {
+                        zoomOptions.x = plotElem.attr('cx');
+                        zoomOptions.y = plotElem.attr('cy');
+                    } else {
+                        var plotCenter = self.getBBoxWithCenter(plotElem);
+                        zoomOptions.x = plotCenter.cx;
+                        zoomOptions.y = plotCenter.cy;
+                    }
+                } else {
+                    if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
+                        var coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
+                        zoomOptions.x = coords.x;
+                        zoomOptions.y = coords.y;
+                    }
+
+                    if (zoomOptions.x === undefined) {
+                        zoomOptions.x = self.currentViewBox.x + self.currentViewBox.w / 2;
+                    }
+
+                    if (zoomOptions.y === undefined) {
+                        zoomOptions.y = self.currentViewBox.y + self.currentViewBox.h / 2;
+                    }
+                }
             }
 
-            zoomLevel = (1 + newLevel * self.options.map.zoom.step);
+            // Make sure we stay in the zoom level boundaries
+            zoomLevel = Math.min(Math.max(zoomLevel, self.options.map.zoom.minLevel), self.options.map.zoom.maxLevel);
 
-            if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
-                coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
-                zoomOptions.x = coords.x;
-                zoomOptions.y = coords.y;
-            }
+            // Compute relative zoom level
+            relativeZoomLevel = 1 + zoomLevel * self.options.map.zoom.step;
 
-            if (zoomOptions.x === undefined)
-                zoomOptions.x = self.currentViewBox.x + self.currentViewBox.w / 2;
+            // Compute panWidth / panHeight
+            panWidth = self.mapConf.width / relativeZoomLevel;
+            panHeight = self.mapConf.height / relativeZoomLevel;
 
-            if (zoomOptions.y === undefined)
-                zoomOptions.y = (self.currentViewBox.y + self.currentViewBox.h / 2);
-
-            if (newLevel === 0) {
+            if (zoomLevel === 0) {
                 panX = 0;
                 panY = 0;
-            } else if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
-                offsetX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-                offsetY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (zoomLevel - previousZoomLevel)) / zoomLevel;
-
-                panX = Math.min(Math.max(0, offsetX), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                panY = Math.min(Math.max(0, offsetY), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
             } else {
-                panX = Math.min(Math.max(0, zoomOptions.x - (self.mapConf.width / zoomLevel) / 2), (self.mapConf.width - (self.mapConf.width / zoomLevel)));
-                panY = Math.min(Math.max(0, zoomOptions.y - (self.mapConf.height / zoomLevel) / 2), (self.mapConf.height - (self.mapConf.height / zoomLevel)));
+                if (zoomOptions.fixedCenter !== undefined && zoomOptions.fixedCenter === true) {
+                    panX = self.zoomData.panX + ((zoomOptions.x - self.zoomData.panX) * (relativeZoomLevel - previousRelativeZoomLevel)) / relativeZoomLevel;
+                    panY = self.zoomData.panY + ((zoomOptions.y - self.zoomData.panY) * (relativeZoomLevel - previousRelativeZoomLevel)) / relativeZoomLevel;
+                } else {
+                    panX = zoomOptions.x - panWidth / 2;
+                    panY = zoomOptions.y - panHeight / 2;
+                }
+
+                // Make sure we stay in the map boundaries
+                panX = Math.min(Math.max(0, panX), self.mapConf.width - panWidth);
+                panY = Math.min(Math.max(0, panY), self.mapConf.height - panHeight);
             }
 
             // Update zoom level of the map
-            if (zoomLevel === previousZoomLevel && panX === self.zoomData.panX && panY === self.zoomData.panY) return;
+            if (relativeZoomLevel === previousRelativeZoomLevel && panX === self.zoomData.panX && panY === self.zoomData.panY) return;
 
             if (animDuration > 0) {
-                self.animateViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel, animDuration, self.options.map.zoom.animEasing);
+                self.animateViewBox(panX, panY, panWidth, panHeight, animDuration, self.options.map.zoom.animEasing);
             } else {
-                self.setViewBox(panX, panY, self.mapConf.width / zoomLevel, self.mapConf.height / zoomLevel);
+                self.setViewBox(panX, panY, panWidth, panHeight);
                 clearTimeout(self.zoomTO);
                 self.zoomTO = setTimeout(function () {
                     self.$map.trigger("afterZoom", {
                         x1: panX,
                         y1: panY,
-                        x2: (panX + (self.mapConf.width / zoomLevel)),
-                        y2: (panY + (self.mapConf.height / zoomLevel))
+                        x2: panX + panWidth,
+                        y2: panY + panHeight
                     });
                 }, 150);
             }
 
             $.extend(self.zoomData, {
-                zoomLevel: newLevel,
+                zoomLevel: zoomLevel,
                 panX: panX,
                 panY: panY,
-                zoomX: panX + self.currentViewBox.w / 2,
-                zoomY: panY + self.currentViewBox.h / 2
+                zoomX: panX + panWidth / 2,
+                zoomY: panY + panHeight / 2
             });
         },
 
@@ -1298,7 +1367,11 @@
                 }
 
                 if (p1.plotsOn !== undefined && self.areas[p1.plotsOn] !== undefined) {
-                    coordsP1 = self.getCenterCoords(self.areas[p1.plotsOn].mapElem);
+                    var p1BBox = self.getBBoxWithCenter(self.areas[p1.plotsOn].mapElem);
+                    coordsP1 = {
+                        x: p1BBox.cx,
+                        y: p1BBox.cy
+                    };
                 }
                 else if (p1.latitude !== undefined && p1.longitude !== undefined) {
                     coordsP1 = self.mapConf.getCoords(p1.latitude, p1.longitude);
@@ -1308,7 +1381,11 @@
                 }
 
                 if (p2.plotsOn !== undefined && self.areas[p2.plotsOn] !== undefined) {
-                    coordsP2 = self.getCenterCoords(self.areas[p2.plotsOn].mapElem);
+                    var p2BBox = self.getBBoxWithCenter(self.areas[p2.plotsOn].mapElem);
+                    coordsP2 = {
+                        x: p2BBox.cx,
+                        y: p2BBox.cy
+                    };
                 }
                 else if (p2.latitude !== undefined && p2.longitude !== undefined) {
                     coordsP2 = self.mapConf.getCoords(p2.latitude, p2.longitude);
@@ -1484,7 +1561,11 @@
             if (elemOptions.x !== undefined && elemOptions.y !== undefined) {
                 coords = {x: elemOptions.x, y: elemOptions.y};
             } else if (elemOptions.plotsOn !== undefined && self.areas[elemOptions.plotsOn] !== undefined) {
-                coords = self.getCenterCoords(self.areas[elemOptions.plotsOn].mapElem);
+                var plotBBox = self.getBBoxWithCenter(self.areas[elemOptions.plotsOn].mapElem);
+                coords = {
+                    x: plotBBox.cx,
+                    y: plotBBox.cy
+                };
             } else {
                 coords = self.mapConf.getCoords(elemOptions.latitude, elemOptions.longitude);
             }
@@ -2075,16 +2156,15 @@
         },
 
         /*
-         * Get the center coordinates of the element
+         * Get the Boundary Box of an element along with its center coordinates (cx, cy)
          * @param elem the Raphael element
-         * @return object {x, y}
+         * @return object bbox
          */
-        getCenterCoords: function(elem) {
+        getBBoxWithCenter: function(elem) {
             var mapElemBBox = elem.getBBox();
-            return {
-                x: Math.floor(mapElemBBox.x + mapElemBBox.width / 2.0),
-                y: Math.floor(mapElemBBox.y + mapElemBBox.height / 2.0)
-            };
+            mapElemBBox.cx = Math.floor(mapElemBBox.x + mapElemBBox.width / 2.0);
+            mapElemBBox.cy = Math.floor(mapElemBBox.y + mapElemBBox.height / 2.0);
+            return mapElemBBox;
         },
 
         /*

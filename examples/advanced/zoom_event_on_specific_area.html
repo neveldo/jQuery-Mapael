@@ -99,14 +99,24 @@
             $maparea2 = $(".mapcontainer");
             $maparea2.mapael({
                 map: {
-                    name: "france_departments"
-                    , zoom: {
+                    name: "france_departments",
+                    zoom: {
                         enabled: true,
-                        maxLevel: 10
-                    }
-                    , defaultPlot: {
+                        maxLevel: 25
+                    },
+                    defaultPlot: {
                         attrs: {
                             opacity: 0.6
+                        }
+                    },
+                    defaultArea: {
+                        eventHandlers: {
+                            click: function (e, id) {
+                                $maparea2.trigger('zoom', {
+                                    area: id,
+                                    areaMargin: 10
+                                });
+                            }
                         }
                     }
                 },
@@ -131,7 +141,11 @@
             });
 
             $('#gotoparis').on('click', function () {
-                $maparea2.trigger('zoom', {level: 10, latitude: 48.86, longitude: 2.3444});
+                $maparea2.trigger('zoom', {level: 10, plot: 'paris'});
+            });
+
+            $('#gotogironde').on('click', function () {
+                $maparea2.trigger('zoom', {area: 'department-33'});
             });
 
             $('#clearzoom').on('click', function () {
@@ -145,10 +159,12 @@
 <body>
 <div class="container">
 
-    <h1>Use 'zoom' event in order to zoom on specific areas of the map</h1>
-    <input type="button" value="Zoom on Paris area" id="gotoparis"/>
-    <input type="button" value="Zoom on Lyon area" id="gotolyon"/>
+    <h1>Use 'zoom' event in order to zoom on specific coordinate, plot or area</h1>
+    <input type="button" value="Zoom on Paris" id="gotoparis"/>
+    <input type="button" value="Zoom on Lyon" id="gotolyon"/>
+    <input type="button" value="Zoom on Gironde department" id="gotogironde"/>
     <input type="button" value="Clear zoom" id="clearzoom"/>
+    <span><em>You can also click on an area directly.</em></span>
 
     <div class="mapcontainer">
         <div class="map">
