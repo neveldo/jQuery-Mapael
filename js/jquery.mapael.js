@@ -127,6 +127,23 @@
      * Each mapael object inherits their properties and methods from this prototype
      */
     Mapael.prototype = {
+
+        /* Filtering TimeOut value in ms
+         * Used for mouseover trigger over elements */
+        MouseOverFilteringTO: 120,
+        /* Filtering TimeOut value in ms
+         * Used for afterPanning trigger when panning */
+        panningFilteringTO: 150,
+        /* Filtering TimeOut value in ms
+         * Used for mouseup/touchend trigger when panning */
+        panningEndFilteringTO: 50,
+        /* Filtering TimeOut value in ms
+         * Used for afterZoom trigger when zooming */
+        zoomFilteringTO: 150,
+        /* Filtering TimeOut value in ms
+         * Used for when resizing window */
+        resizeFilteringTO: 150,
+
         /*
          * Initialize the plugin
          * Called by the constructor
@@ -327,7 +344,7 @@
                 // setTimeout to wait for the user to finish its resizing
                 self.resizeTO = setTimeout(function () {
                     self.$map.trigger("resizeEnd");
-                }, 150);
+                }, self.resizeFilteringTO);
             };
 
             // Attach resize handler
@@ -416,7 +433,7 @@
                             self.elemEnter(self.legends[legendIndex].elems[id]);
                         }
                     }
-                }, 120);
+                }, self.MouseOverFilteringTO);
             });
 
             /* Attach mousemove event delegation
@@ -675,7 +692,7 @@
                 mousedown = false;
                 setTimeout(function () {
                     self.panning = false;
-                }, 50);
+                }, self.panningEndFilteringTO);
             });
 
             self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart." + pluginName : ""), function (e) {
@@ -730,7 +747,7 @@
                                 x2: (panX + self.currentViewBox.w),
                                 y2: (panY + self.currentViewBox.h)
                             });
-                        }, 150);
+                        }, self.panningFilteringTO);
 
                         previousX = pageX;
                         previousY = pageY;
@@ -926,7 +943,7 @@
                         x2: panX + panWidth,
                         y2: panY + panHeight
                     });
-                }, 150);
+                }, self.zoomFilteringTO);
             }
 
             $.extend(self.zoomData, {
