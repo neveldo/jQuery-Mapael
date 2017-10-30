@@ -548,7 +548,10 @@
             if (elem.options.text && elem.options.text.content !== undefined) {
                 // Set a text label in the area
                 var textPosition = self.getTextPosition(elem.mapElem.getBBox(), elem.options.text.position, elem.options.text.margin);
-                elem.options.text.attrs["text-anchor"] = textPosition.textAnchor;
+                elem.options.text.attrs.text = elem.options.text.content;
+                elem.options.text.attrs.x = textPosition.x;
+                elem.options.text.attrs.y = textPosition.y;
+                elem.options.text.attrs['text-anchor'] = textPosition.textAnchor;
                 // Draw text
                 elem.textElem = self.paper.text(textPosition.x, textPosition.y, elem.options.text.content);
                 // Apply SVG attributes to text element
@@ -1470,7 +1473,6 @@
         updateElem: function (elem, animDuration) {
             var self = this;
             var mapElemBBox;
-            var textPosition;
             var plotOffsetX;
             var plotOffsetY;
 
@@ -1492,11 +1494,11 @@
 
             // Update the label
             if (elem.textElem) {
-                if (elem.options.text !== undefined && elem.options.text.content !== undefined && elem.options.text.content !== elem.textElem.attrs.text)
-                    elem.textElem.attr({text: elem.options.text.content});
+                // Update text attr
+                elem.options.text.attrs.text = elem.options.text.content;
 
+                // Get mapElem size, and apply an offset to handle future width/height change
                 mapElemBBox = elem.mapElem.getBBox();
-
                 if (elem.options.size || (elem.options.width && elem.options.height)) {
                     if (elem.options.type === "image" || elem.options.type === "svg") {
                         plotOffsetX = (elem.options.width - mapElemBBox.width) / 2;
@@ -1511,17 +1513,18 @@
                     mapElemBBox.y2 += plotOffsetY;
                 }
 
-                textPosition = self.getTextPosition(mapElemBBox, elem.options.text.position, elem.options.text.margin);
-                if (textPosition.x !== elem.textElem.attrs.x || textPosition.y !== elem.textElem.attrs.y) {
-                    self.animate(elem.textElem, {
-                        x: textPosition.x,
-                        y: textPosition.y,
-                        'text-anchor': textPosition.textAnchor
-                    }, animDuration);
-                }
+                // Update position attr
+                var textPosition = self.getTextPosition(mapElemBBox, elem.options.text.position, elem.options.text.margin);
+                elem.options.text.attrs.x = textPosition.x;
+                elem.options.text.attrs.y = textPosition.y;
+                elem.options.text.attrs['text-anchor'] = textPosition.textAnchor;
 
+                // Update text element attrs and attrsHover
                 self.setHoverOptions(elem.textElem, elem.options.text.attrs, elem.options.text.attrsHover);
-                self.animate(elem.textElem, elem.options.text.attrs, animDuration);
+
+                if (self.isAttrsChanged(elem.textElem.attrs, elem.options.text.attrs)) {
+                    self.animate(elem.textElem, elem.options.text.attrs, animDuration);
+                }
             }
 
             // Update elements attrs and attrsHover
