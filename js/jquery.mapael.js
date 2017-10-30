@@ -858,16 +858,9 @@
 
                 if (zoomOptions.plot !== undefined) {
                     if (self.plots[zoomOptions.plot] === undefined) throw new Error("Unknown plot '" + zoomOptions.plot + "'");
-                    var plotElem = self.plots[zoomOptions.plot].mapElem;
 
-                    if (plotElem.type === 'circle') {
-                        zoomOptions.x = plotElem.attr('cx');
-                        zoomOptions.y = plotElem.attr('cy');
-                    } else {
-                        var plotCenter = self.getBBoxWithCenter(plotElem);
-                        zoomOptions.x = plotCenter.cx;
-                        zoomOptions.y = plotCenter.cy;
-                    }
+                    zoomOptions.x = self.plots[zoomOptions.plot].coords.x;
+                    zoomOptions.y = self.plots[zoomOptions.plot].coords.y;
                 } else {
                     if (zoomOptions.latitude !== undefined && zoomOptions.longitude !== undefined) {
                         var coords = self.mapConf.getCoords(zoomOptions.latitude, zoomOptions.longitude);
@@ -1550,7 +1543,7 @@
         drawPlot: function (id) {
             var self = this;
             var plot = {};
-            var coords = {};
+
             // Get plot options and store it
             plot.options = self.getElemOptions(
                 self.options.map.defaultPlot,
@@ -1558,30 +1551,35 @@
                 self.options.legend.plot
             );
 
+            // Get plot coords and store it
+            plot.coords = {};
             if (plot.options.x !== undefined && plot.options.y !== undefined) {
-                coords = {x: plot.options.x, y: plot.options.y};
+                plot.coords = {
+                    x: plot.options.x,
+                    y: plot.options.y
+                };
             } else if (plot.options.plotsOn !== undefined && self.areas[plot.options.plotsOn] !== undefined) {
                 var plotBBox = self.getBBoxWithCenter(self.areas[plot.options.plotsOn].mapElem);
-                coords = {
+                plot.coords = {
                     x: plotBBox.cx,
                     y: plotBBox.cy
                 };
             } else {
-                coords = self.mapConf.getCoords(plot.options.latitude, plot.options.longitude);
+                plot.coords = self.mapConf.getCoords(plot.options.latitude, plot.options.longitude);
             }
 
             if (plot.options.type === "square") {
                 plot.mapElem = self.paper.rect(
-                        coords.x - (plot.options.size / 2),
-                        coords.y - (plot.options.size / 2),
+                        plot.coords.x - (plot.options.size / 2),
+                        plot.coords.y - (plot.options.size / 2),
                         plot.options.size,
                         plot.options.size
                     );
             } else if (plot.options.type === "image") {
                 plot.mapElem = self.paper.image(
                         plot.options.url,
-                        coords.x - plot.options.width / 2,
-                        coords.y - plot.options.height / 2,
+                        plot.coords.x - plot.options.width / 2,
+                        plot.coords.y - plot.options.height / 2,
                         plot.options.width,
                         plot.options.height
                     );
@@ -1595,10 +1593,14 @@
                 plot.mapElem.originalWidth = plotBBox.width;
                 plot.mapElem.originalHeight = plotBBox.height;
 
-                plot.mapElem.baseTransform = "m" + (plot.options.width / plot.mapElem.originalWidth) + ",0,0," + (plot.options.height / plot.mapElem.originalHeight) + "," + (coords.x - plot.options.width / 2) + "," + (coords.y - plot.options.height / 2);
+                plot.mapElem.baseTransform = "m" + (plot.options.width / plot.mapElem.originalWidth) + ",0,0," +
+                                                   (plot.options.height / plot.mapElem.originalHeight) + "," +
+                                                   (plot.coords.x - plot.options.width / 2) + "," +
+                                                   (plot.coords.y - plot.options.height / 2);
+                
                 plot.options.attrs.transform = plot.mapElem.baseTransform + plot.options.attrs.transform;
             } else { // Default = circle
-                plot.mapElem = self.paper.circle(coords.x, coords.y, plot.options.size / 2);
+                plot.mapElem = self.paper.circle(plot.coords.x, plot.coords.y, plot.options.size / 2);
             }
             self.initElem(id, 'plot', plot);
             return plot;
