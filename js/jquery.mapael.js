@@ -818,7 +818,7 @@
                  */
                 if (self.areas[zoomOptions.area] === undefined) throw new Error("Unknown area '" + zoomOptions.area + "'");
                 var areaMargin = (zoomOptions.areaMargin !== undefined) ? zoomOptions.areaMargin : 10;
-                var areaBBox = self.getBBoxWithCenter(self.areas[zoomOptions.area].mapElem);
+                var areaBBox = self.areas[zoomOptions.area].mapElem.getBBox();
                 var areaFullWidth = areaBBox.width + 2 * areaMargin;
                 var areaFullHeight = areaBBox.height + 2 * areaMargin;
 
@@ -1363,7 +1363,7 @@
                 }
 
                 if (p1.plotsOn !== undefined && self.areas[p1.plotsOn] !== undefined) {
-                    var p1BBox = self.getBBoxWithCenter(self.areas[p1.plotsOn].mapElem);
+                    var p1BBox = self.areas[p1.plotsOn].mapElem.getBBox();
                     coordsP1 = {
                         x: p1BBox.cx,
                         y: p1BBox.cy
@@ -1377,7 +1377,7 @@
                 }
 
                 if (p2.plotsOn !== undefined && self.areas[p2.plotsOn] !== undefined) {
-                    var p2BBox = self.getBBoxWithCenter(self.areas[p2.plotsOn].mapElem);
+                    var p2BBox = self.areas[p2.plotsOn].mapElem.getBBox();
                     coordsP2 = {
                         x: p2BBox.cx,
                         y: p2BBox.cy
@@ -1559,10 +1559,10 @@
                     y: plot.options.y
                 };
             } else if (plot.options.plotsOn !== undefined && self.areas[plot.options.plotsOn] !== undefined) {
-                var plotBBox = self.getBBoxWithCenter(self.areas[plot.options.plotsOn].mapElem);
+                var areaBBox = self.areas[plot.options.plotsOn].mapElem.getBBox();
                 plot.coords = {
-                    x: plotBBox.cx,
-                    y: plotBBox.cy
+                    x: areaBBox.cx,
+                    y: areaBBox.cy
                 };
             } else {
                 plot.coords = self.mapConf.getCoords(plot.options.latitude, plot.options.longitude);
@@ -1597,7 +1597,7 @@
                                                    (plot.options.height / plot.mapElem.originalHeight) + "," +
                                                    (plot.coords.x - plot.options.width / 2) + "," +
                                                    (plot.coords.y - plot.options.height / 2);
-                
+
                 plot.options.attrs.transform = plot.mapElem.baseTransform + plot.options.attrs.transform;
             } else { // Default = circle
                 plot.mapElem = self.paper.circle(plot.coords.x, plot.coords.y, plot.options.size / 2);
@@ -2144,18 +2144,6 @@
                 }
             }
             return options;
-        },
-
-        /*
-         * Get the Boundary Box of an element along with its center coordinates (cx, cy)
-         * @param elem the Raphael element
-         * @return object bbox
-         */
-        getBBoxWithCenter: function(elem) {
-            var mapElemBBox = elem.getBBox();
-            mapElemBBox.cx = Math.floor(mapElemBBox.x + mapElemBBox.width / 2.0);
-            mapElemBBox.cy = Math.floor(mapElemBBox.y + mapElemBBox.height / 2.0);
-            return mapElemBBox;
         },
 
         /*
