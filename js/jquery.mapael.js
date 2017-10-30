@@ -571,11 +571,6 @@
 
             // Set hover option for textElem
             if (elem.textElem) self.setHoverOptions(elem.textElem, elem.options.text.attrs, elem.options.text.attrsHover);
-
-            // Init the tooltip
-            if (elem.options.tooltip) {
-                elem.tooltip = elem.options.tooltip;
-            }
         },
 
         /*
@@ -1543,11 +1538,6 @@
                 elem.mapElem.transform("m" + (elem.options.width / elem.mapElem.originalWidth) + ",0,0," + (elem.options.height / elem.mapElem.originalHeight) + "," + mapElemBBox.x + "," + mapElemBBox.y);
             }
 
-            // Update the tooltip
-            if (elem.options.tooltip) {
-                elem.tooltip = elem.options.tooltip;
-            }
-
             // Update the cssClass
             if (elem.options.cssClass !== undefined) {
                 $(elem.mapElem.node).removeClass().addClass(elem.options.cssClass);
@@ -2020,18 +2010,18 @@
             }
 
             /* Handle tooltip init */
-            if (elem.tooltip !== undefined) {
+            if (elem.options.tooltip !== undefined) {
                 var content = '';
                 // Reset classes
                 self.$tooltip.removeClass().addClass(self.options.map.tooltip.cssClass);
                 // Get content
-                if (elem.tooltip.content !== undefined) {
+                if (elem.options.tooltip.content !== undefined) {
                     // if tooltip.content is function, call it. Otherwise, assign it directly.
-                    if (typeof elem.tooltip.content === "function") content = elem.tooltip.content(elem.mapElem);
-                    else content = elem.tooltip.content;
+                    if (typeof elem.options.tooltip.content === "function") content = elem.options.tooltip.content(elem.mapElem);
+                    else content = elem.options.tooltip.content;
                 }
-                if (elem.tooltip.cssClass !== undefined) {
-                    self.$tooltip.addClass(elem.tooltip.cssClass);
+                if (elem.options.tooltip.cssClass !== undefined) {
+                    self.$tooltip.addClass(elem.options.tooltip.cssClass);
                 }
                 self.$tooltip.html(content).css("display", "block");
             }
@@ -2051,18 +2041,18 @@
             if (elem === undefined) return;
 
             /* Handle tooltip position update */
-            if (elem.tooltip !== undefined) {
+            if (elem.options.tooltip !== undefined) {
                 var mouseX = event.pageX;
                 var mouseY = event.pageY;
 
                 var offsetLeft = 10;
                 var offsetTop = 20;
-                if (typeof elem.tooltip.offset === "object") {
-                    if (typeof elem.tooltip.offset.left !== "undefined") {
-                        offsetLeft = elem.tooltip.offset.left;
+                if (typeof elem.options.tooltip.offset === "object") {
+                    if (typeof elem.options.tooltip.offset.left !== "undefined") {
+                        offsetLeft = elem.options.tooltip.offset.left;
                     }
-                    if (typeof elem.tooltip.offset.top !== "undefined") {
-                        offsetTop = elem.tooltip.offset.top;
+                    if (typeof elem.options.tooltip.offset.top !== "undefined") {
+                        offsetTop = elem.options.tooltip.offset.top;
                     }
                 }
 
@@ -2073,11 +2063,11 @@
                                     mouseY - self.$map.offset().top + offsetTop)
                 };
 
-                if (typeof elem.tooltip.overflow === "object") {
-                    if (elem.tooltip.overflow.right === true) {
+                if (typeof elem.options.tooltip.overflow === "object") {
+                    if (elem.options.tooltip.overflow.right === true) {
                         tooltipPosition.left = mouseX - self.$map.offset().left + 10;
                     }
-                    if (elem.tooltip.overflow.bottom === true) {
+                    if (elem.options.tooltip.overflow.bottom === true) {
                         tooltipPosition.top = mouseY - self.$map.offset().top + 20;
                     }
                 }
@@ -2105,7 +2095,7 @@
             }
 
             /* reset tooltip */
-            if (elem.tooltip !== undefined) {
+            if (elem.options.tooltip !== undefined) {
                 self.$tooltip.css({
                     'display': 'none',
                     'top': -1000,
