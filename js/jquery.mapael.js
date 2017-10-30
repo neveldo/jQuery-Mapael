@@ -1978,8 +1978,9 @@
 
             if ((opts.hideOtherElems === undefined || opts.hideOtherElems === true) && legendOptions.exclusive === true ) {
                 $("[data-type='legend-elem'][data-hidden=0]", self.$container).each(function () {
-                    if ($(this).attr('data-id') !== id) {
-                        $(this).trigger("click", {hideOtherElems: false});
+                    var $elem = $(this);
+                    if ($elem.attr('data-id') !== id) {
+                        $elem.trigger("click", {hideOtherElems: false});
                     }
                 });
             }
