@@ -313,6 +313,7 @@
             self.areas = undefined;
             self.plots = undefined;
             self.links = undefined;
+            self.customEventHandlers = undefined;
         },
 
         handleMapResizing: function () {
