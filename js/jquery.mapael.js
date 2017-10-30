@@ -76,9 +76,6 @@
         // Panning: tell if panning action is in progress
         self.panning = false;
 
-        // Panning TimeOut handler (used to set and clear)
-        self.panningTO = 0;
-
         // Animate view box
         self.zoomAnimID = null; // Interval handler (used to set and clear)
         self.zoomAnimStartTime = null; // Animation start time
@@ -684,14 +681,20 @@
             });
 
             // Panning
+            var panningMouseUpTO = null;
+            var panningMouseMoveTO = null;
             $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend." + pluginName : ""), function () {
                 mousedown = false;
-                setTimeout(function () {
+                clearTimeout(panningMouseUpTO);
+                clearTimeout(panningMouseMoveTO);
+                panningMouseUpTO = setTimeout(function () {
                     self.panning = false;
                 }, self.panningEndFilteringTO);
             });
 
             self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart." + pluginName : ""), function (e) {
+                clearTimeout(panningMouseUpTO);
+                clearTimeout(panningMouseMoveTO);
                 if (e.pageX !== undefined) {
                     mousedown = true;
                     previousX = e.pageX;
@@ -707,6 +710,9 @@
                 var currentLevel = self.zoomData.zoomLevel;
                 var pageX = 0;
                 var pageY = 0;
+
+                clearTimeout(panningMouseUpTO);
+                clearTimeout(panningMouseMoveTO);
 
                 if (e.pageX !== undefined) {
                     pageX = e.pageX;
@@ -735,8 +741,7 @@
                         });
                         self.setViewBox(panX, panY, self.currentViewBox.w, self.currentViewBox.h);
 
-                        clearTimeout(self.panningTO);
-                        self.panningTO = setTimeout(function () {
+                        panningMouseMoveTO = setTimeout(function () {
                             self.$map.trigger("afterPanning", {
                                 x1: panX,
                                 y1: panY,
