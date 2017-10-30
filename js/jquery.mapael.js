@@ -506,14 +506,10 @@
                         self.customEventHandlers[eventName][type] !== undefined &&
                         self.customEventHandlers[eventName][type][id] !== undefined)
                     {
-                        var customEventHandler = self.customEventHandlers[eventName][type][id];
+                        // Get back related elem
+                        var elem = self.customEventHandlers[eventName][type][id];
                         // Run callback provided by user
-                        customEventHandler.elemOptions.eventHandlers[eventName](
-                            e, id,
-                            customEventHandler.mapElem,
-                            customEventHandler.textElem,
-                            customEventHandler.elemOptions
-                        );
+                        elem.options.eventHandlers[eventName](e, id, elem.mapElem, elem.textElem, elem.options);
                     }
                 });
             });
@@ -523,9 +519,9 @@
         /*
          * Init the element "elem" on the map (drawing text, setting attributes, events, tooltip, ...)
          *
-         * @param id string element's id
-         * @param type string element's type
-         * @param elem object the element object (with mapElem) to update
+         * @param id the id of the element
+         * @param type the type of the element (area, plot, link)
+         * @param elem object the element object (with mapElem), it will be updated
          */
         initElem: function (id, type, elem) {
             var self = this;
@@ -546,7 +542,7 @@
             }
 
             // Set user event handlers
-            if (elem.options.eventHandlers) self.setEventHandlers(id, type, elem.options, elem.mapElem, elem.textElem);
+            if (elem.options.eventHandlers) self.setEventHandlers(id, type, elem);
 
             // Set hover option for mapElem
             self.setHoverOptions(elem.mapElem, elem.options.attrs, elem.options.attrsHover);
@@ -1618,20 +1614,14 @@
          * Set user defined handlers for events on areas and plots
          * @param id the id of the element
          * @param type the type of the element (area, plot, link)
-         * @param elemOptions the element parameters
-         * @param mapElem the map element to set callback on
-         * @param textElem the optional text within the map element
+         * @param elem the element object {mapElem, textElem, options, ...}
          */
-        setEventHandlers: function (id, type, elemOptions, mapElem, textElem) {
+        setEventHandlers: function (id, type, elem) {
             var self = this;
-            $.each(elemOptions.eventHandlers, function (event) {
+            $.each(elem.options.eventHandlers, function (event) {
                 if (self.customEventHandlers[event] === undefined) self.customEventHandlers[event] = {};
                 if (self.customEventHandlers[event][type] === undefined) self.customEventHandlers[event][type] = {};
-                self.customEventHandlers[event][type][id] = {
-                    mapElem: mapElem,
-                    textElem: textElem,
-                    elemOptions: elemOptions
-                };
+                self.customEventHandlers[event][type][id] = elem;
             });
         },
 
