@@ -1227,30 +1227,14 @@
                         (typeof opt.mapOptions.legend === "object" && typeof opt.mapOptions.legend.plot === "object")
                     )) || opt.replaceOptions === true
                 ) {
-                    var elemOptions = self.getElemOptions(
+                    self.plots[id].options = self.getElemOptions(
                         self.options.map.defaultPlot,
                         (self.options.plots[id] ? self.options.plots[id] : {}),
                         self.options.legend.plot
                     );
-                    if (elemOptions.type === "square") {
-                        elemOptions.attrs.width = elemOptions.size;
-                        elemOptions.attrs.height = elemOptions.size;
-                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.size - self.plots[id].mapElem.attrs.width) / 2;
-                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.size - self.plots[id].mapElem.attrs.height) / 2;
-                    } else if (elemOptions.type === "image") {
-                        elemOptions.attrs.width = elemOptions.width;
-                        elemOptions.attrs.height = elemOptions.height;
-                        elemOptions.attrs.x = self.plots[id].mapElem.attrs.x - (elemOptions.width - self.plots[id].mapElem.attrs.width) / 2;
-                        elemOptions.attrs.y = self.plots[id].mapElem.attrs.y - (elemOptions.height - self.plots[id].mapElem.attrs.height) / 2;
-                    } else if (elemOptions.type === "svg") {
-                        if (elemOptions.attrs.transform !== undefined) {
-                            elemOptions.attrs.transform = self.plots[id].mapElem.baseTransform + elemOptions.attrs.transform;
-                        }
-                    }else { // Default : circle
-                        elemOptions.attrs.r = elemOptions.size / 2;
-                    }
 
-                    self.plots[id].options = elemOptions;
+                    self.setPlotCoords(self.plots[id]);
+                    self.setPlotAttributes(self.plots[id]);
 
                     self.updateElem(self.plots[id], animDuration);
                 }
@@ -1334,6 +1318,75 @@
             self.initDelegatedCustomEvents();
 
             if (opt.afterUpdate) opt.afterUpdate(self.$container, self.paper, self.areas, self.plots, self.options, self.links);
+        },
+
+        /*
+         * Set plot coordinates
+         * @param plot object plot element
+         */
+        setPlotCoords: function(plot) {
+            var self = this;
+
+            if (plot.options.x !== undefined && plot.options.y !== undefined) {
+                plot.coords = {
+                    x: plot.options.x,
+                    y: plot.options.y
+                };
+            } else if (plot.options.plotsOn !== undefined && self.areas[plot.options.plotsOn] !== undefined) {
+                var areaBBox = self.areas[plot.options.plotsOn].mapElem.getBBox();
+                plot.coords = {
+                    x: areaBBox.cx,
+                    y: areaBBox.cy
+                };
+            } else {
+                plot.coords = self.mapConf.getCoords(plot.options.latitude, plot.options.longitude);
+            }
+        },
+
+        /*
+         * Set plot size attributes according to its type
+         * Note: for SVG, plot.mapElem needs to exists beforehand
+         * @param plot object plot element
+         */
+        setPlotAttributes: function(plot) {
+            if (plot.options.type === "square") {
+                plot.options.attrs.width = plot.options.size;
+                plot.options.attrs.height = plot.options.size;
+                plot.options.attrs.x = plot.coords.x - (plot.options.size / 2);
+                plot.options.attrs.y = plot.coords.y - (plot.options.size / 2);
+            } else if (plot.options.type === "image") {
+                plot.options.attrs.src = plot.options.url;
+                plot.options.attrs.width = plot.options.width;
+                plot.options.attrs.height = plot.options.height;
+                plot.options.attrs.x = plot.coords.x - (plot.options.width / 2);
+                plot.options.attrs.y = plot.coords.y - (plot.options.height / 2);
+            } else if (plot.options.type === "svg") {
+                plot.options.attrs.path = plot.options.path;
+
+                // Init transform string
+                if (plot.options.attrs.transform === undefined) {
+                    plot.options.attrs.transform = "";
+                }
+
+                // Retrieve original boundary box if not defined
+                if (plot.mapElem.originalBBox === undefined) {
+                    plot.mapElem.originalBBox = plot.mapElem.getBBox();
+                }
+
+                // The base transform will resize the SVG path to the one specified by width/height
+                // and also move the path to the actual coordinates
+                plot.mapElem.baseTransform = "m" + (plot.options.width / plot.mapElem.originalBBox.width) + ",0,0," +
+                                                   (plot.options.height / plot.mapElem.originalBBox.height) + "," +
+                                                   (plot.coords.x - plot.options.width / 2) + "," +
+                                                   (plot.coords.y - plot.options.height / 2);
+
+                plot.options.attrs.transform = plot.mapElem.baseTransform + plot.options.attrs.transform;
+
+            } else { // Default : circle
+                plot.options.attrs.x = plot.coords.x;
+                plot.options.attrs.y = plot.coords.y;
+                plot.options.attrs.r = plot.options.size / 2;
+            }
         },
 
         /*
@@ -1522,15 +1575,6 @@
                 self.animate(elem.mapElem, elem.options.attrs, animDuration);
             }
 
-            // Update dimensions of SVG plots
-            if (elem.options.type === "svg") {
-
-                if (mapElemBBox === undefined) {
-                    mapElemBBox = elem.mapElem.getBBox();
-                }
-                elem.mapElem.transform("m" + (elem.options.width / elem.mapElem.originalWidth) + ",0,0," + (elem.options.height / elem.mapElem.originalHeight) + "," + mapElemBBox.x + "," + mapElemBBox.y);
-            }
-
             // Update the cssClass
             if (elem.options.cssClass !== undefined) {
                 $(elem.mapElem.node).removeClass().addClass(elem.options.cssClass);
@@ -1551,58 +1595,46 @@
                 self.options.legend.plot
             );
 
-            // Get plot coords and store it
-            plot.coords = {};
-            if (plot.options.x !== undefined && plot.options.y !== undefined) {
-                plot.coords = {
-                    x: plot.options.x,
-                    y: plot.options.y
-                };
-            } else if (plot.options.plotsOn !== undefined && self.areas[plot.options.plotsOn] !== undefined) {
-                var areaBBox = self.areas[plot.options.plotsOn].mapElem.getBBox();
-                plot.coords = {
-                    x: areaBBox.cx,
-                    y: areaBBox.cy
-                };
-            } else {
-                plot.coords = self.mapConf.getCoords(plot.options.latitude, plot.options.longitude);
+            // Set plot coords
+            self.setPlotCoords(plot);
+
+            // Draw SVG before setPlotAttributes()
+            if (plot.options.type === "svg") {
+                plot.mapElem = self.paper.path(plot.options.path);
             }
 
+            // Set plot size attrs
+            self.setPlotAttributes(plot);
+
+            // Draw other types of plots
             if (plot.options.type === "square") {
                 plot.mapElem = self.paper.rect(
-                        plot.coords.x - (plot.options.size / 2),
-                        plot.coords.y - (plot.options.size / 2),
-                        plot.options.size,
-                        plot.options.size
-                    );
+                    plot.options.attrs.x,
+                    plot.options.attrs.y,
+                    plot.options.attrs.width,
+                    plot.options.attrs.height
+                );
             } else if (plot.options.type === "image") {
                 plot.mapElem = self.paper.image(
-                        plot.options.url,
-                        plot.coords.x - plot.options.width / 2,
-                        plot.coords.y - plot.options.height / 2,
-                        plot.options.width,
-                        plot.options.height
-                    );
+                    plot.options.attrs.src,
+                    plot.options.attrs.x,
+                    plot.options.attrs.y,
+                    plot.options.attrs.width,
+                    plot.options.attrs.height
+                );
             } else if (plot.options.type === "svg") {
-                if (plot.options.attrs.transform === undefined) {
-                    plot.options.attrs.transform = "";
-                }
-
-                plot.mapElem = self.paper.path(plot.options.path);
-                var plotBBox = plot.mapElem.getBBox();
-                plot.mapElem.originalWidth = plotBBox.width;
-                plot.mapElem.originalHeight = plotBBox.height;
-
-                plot.mapElem.baseTransform = "m" + (plot.options.width / plot.mapElem.originalWidth) + ",0,0," +
-                                                   (plot.options.height / plot.mapElem.originalHeight) + "," +
-                                                   (plot.coords.x - plot.options.width / 2) + "," +
-                                                   (plot.coords.y - plot.options.height / 2);
-
-                plot.options.attrs.transform = plot.mapElem.baseTransform + plot.options.attrs.transform;
-            } else { // Default = circle
-                plot.mapElem = self.paper.circle(plot.coords.x, plot.coords.y, plot.options.size / 2);
+                // Nothing to do
+            } else {
+                // Default = circle
+                plot.mapElem = self.paper.circle(
+                    plot.options.attrs.x,
+                    plot.options.attrs.y,
+                    plot.options.attrs.r
+                );
             }
+
             self.initElem(id, 'plot', plot);
+
             return plot;
         },
 
