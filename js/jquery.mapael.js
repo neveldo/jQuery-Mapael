@@ -526,11 +526,6 @@
         initElem: function (id, type, elem) {
             var self = this;
 
-            // Assign value attribute to element
-            if (elem.options.value !== undefined){
-                elem.value = elem.options.value;
-            }
-
             // Init the label related to the element
             if (elem.options.text && elem.options.text.content !== undefined) {
                 // Set a text label in the area
@@ -1022,7 +1017,7 @@
                 }
                 // Loop through each elements
                 $.each(elems, function (id) {
-                    var elemValue = elems[id].value;
+                    var elemValue = elems[id].options.value;
                     // set value with one valueIndex to 0 if not object
                     if (typeof elemValue !== "object") {
                         elemValue = [elemValue];
@@ -1470,9 +1465,6 @@
             var plotOffsetX;
             var plotOffsetY;
 
-            if (elem.options.value !== undefined)
-                elem.value = elem.options.value;
-
             if (elem.options.toFront === true) {
                 elem.mapElem.toFront();
             }
@@ -1917,10 +1909,10 @@
                 // Set to empty object if undefined
                 if (hiddenBy === undefined) hiddenBy = {};
 
-                if ($.isArray(mapElems[y].value)) {
-                    elemValue = mapElems[y].value[legendIndex];
+                if ($.isArray(mapElems[y].options.value)) {
+                    elemValue = mapElems[y].options.value[legendIndex];
                 } else {
-                    elemValue = mapElems[y].value;
+                    elemValue = mapElems[y].options.value;
                 }
 
                 // Hide elements whose value matches with the slice of the clicked legend item
