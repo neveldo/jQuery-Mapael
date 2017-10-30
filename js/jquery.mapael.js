@@ -526,6 +526,12 @@
         initElem: function (id, type, elem) {
             var self = this;
 
+            // If an HTML link exists for this element, add cursor attributes
+            if (elem.options.href) {
+                elem.options.attrs.cursor = "pointer";
+                if (elem.options.text) elem.options.text.attrs.cursor = "pointer";
+            }
+
             // Init the label related to the element
             if (elem.options.text && elem.options.text.content !== undefined) {
                 // Set a text label in the area
@@ -548,14 +554,6 @@
             // Init the tooltip
             if (elem.options.tooltip) {
                 elem.tooltip = elem.options.tooltip;
-            }
-
-            // Init the link
-            if (elem.options.href) {
-                elem.href = elem.options.href;
-                elem.target = elem.options.target;
-                elem.mapElem.attr({cursor: "pointer"});
-                if (elem.textElem) elem.textElem.attr({cursor: "pointer"});
             }
 
             if (elem.options.cssClass !== undefined) {
@@ -1469,6 +1467,18 @@
                 elem.mapElem.toFront();
             }
 
+            // Set the cursor attribute related to the HTML link
+            if (elem.options.href !== undefined) {
+                elem.options.attrs.cursor = "pointer";
+                if (elem.options.text) elem.options.text.attrs.cursor = "pointer";
+            } else {
+                // No HTML links, check if a cursor was defined to pointer
+                if (elem.mapElem.attrs.cursor === 'pointer') {
+                    elem.options.attrs.cursor = "auto";
+                    if (elem.options.text) elem.options.text.attrs.cursor = "auto";
+                }
+            }
+
             // Update the label
             if (elem.textElem) {
                 if (elem.options.text !== undefined && elem.options.text.content !== undefined && elem.options.text.content !== elem.textElem.attrs.text)
@@ -1522,17 +1532,6 @@
             // Update the tooltip
             if (elem.options.tooltip) {
                 elem.tooltip = elem.options.tooltip;
-            }
-
-            // Update the link
-            if (elem.options.href !== undefined) {
-                elem.href = elem.options.href;
-                elem.target = elem.options.target;
-                elem.mapElem.attr({cursor: "pointer"});
-                if (elem.textElem) elem.textElem.attr({cursor: "pointer"});
-            } else {
-                elem.mapElem.attr({cursor: "auto"});
-                if (elem.textElem) elem.textElem.attr({cursor: "auto"});
             }
 
             // Update the cssClass
@@ -2116,8 +2115,8 @@
             if (elem === undefined) return;
 
             /* Handle click when href defined */
-            if (!self.panning && elem.href !== undefined) {
-                window.open(elem.href, elem.target);
+            if (!self.panning && elem.options.href !== undefined) {
+                window.open(elem.options.href, elem.options.target);
             }
         },
 
