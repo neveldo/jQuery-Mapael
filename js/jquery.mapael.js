@@ -197,7 +197,7 @@
                     self.options.legend.area
                 );
                 // draw area
-                self.areas[id].mapElem = self.paper.path(self.mapConf.elems[id]).attr(self.areas[id].options.attrs);
+                self.areas[id].mapElem = self.paper.path(self.mapConf.elems[id]);
             });
 
             // Hook that allows to add custom processing on the map
@@ -525,6 +525,7 @@
          */
         initElem: function (id, type, elem) {
             var self = this;
+            var $mapElem = $(elem.mapElem.node);
 
             // If an HTML link exists for this element, add cursor attributes
             if (elem.options.href) {
@@ -532,14 +533,31 @@
                 if (elem.options.text) elem.options.text.attrs.cursor = "pointer";
             }
 
+            // Set SVG attributes to map element
+            elem.mapElem.attr(elem.options.attrs);
+            // Set DOM attributes to map element
+            $mapElem.attr({
+                "data-id": id,
+                "data-type": type
+            });
+            if (elem.options.cssClass !== undefined) {
+                $mapElem.addClass(elem.options.cssClass);
+            }
+
             // Init the label related to the element
             if (elem.options.text && elem.options.text.content !== undefined) {
                 // Set a text label in the area
                 var textPosition = self.getTextPosition(elem.mapElem.getBBox(), elem.options.text.position, elem.options.text.margin);
                 elem.options.text.attrs["text-anchor"] = textPosition.textAnchor;
-                elem.textElem = self.paper.text(textPosition.x, textPosition.y, elem.options.text.content).attr(elem.options.text.attrs);
-                $(elem.textElem.node).attr("data-id", id);
-                $(elem.textElem.node).attr("data-type", type + '-text');
+                // Draw text
+                elem.textElem = self.paper.text(textPosition.x, textPosition.y, elem.options.text.content);
+                // Apply SVG attributes to text element
+                elem.textElem.attr(elem.options.text.attrs);
+                // Apply DOM attributes
+                $(elem.textElem.node).attr({
+                    "data-id": id,
+                    "data-type": type + '-text'
+                });
             }
 
             // Set user event handlers
@@ -555,13 +573,6 @@
             if (elem.options.tooltip) {
                 elem.tooltip = elem.options.tooltip;
             }
-
-            if (elem.options.cssClass !== undefined) {
-                $(elem.mapElem.node).addClass(elem.options.cssClass);
-            }
-
-            $(elem.mapElem.node).attr("data-id", id);
-            $(elem.mapElem.node).attr("data-type", type);
         },
 
         /*
@@ -1434,7 +1445,7 @@
                 y = acd * x + bcd;
             }
 
-            link.mapElem = self.paper.path("m " + xa + "," + ya + " C " + x + "," + y + " " + xb + "," + yb + " " + xb + "," + yb + "").attr(elemOptions.attrs);
+            link.mapElem = self.paper.path("m " + xa + "," + ya + " C " + x + "," + y + " " + xb + "," + yb + " " + xb + "," + yb + "");
 
             self.initElem(id, 'link', link);
 
@@ -1572,7 +1583,7 @@
                         coords.y - (plot.options.size / 2),
                         plot.options.size,
                         plot.options.size
-                    ).attr(plot.options.attrs);
+                    );
             } else if (plot.options.type === "image") {
                 plot.mapElem = self.paper.image(
                         plot.options.url,
@@ -1580,7 +1591,7 @@
                         coords.y - plot.options.height / 2,
                         plot.options.width,
                         plot.options.height
-                    ).attr(plot.options.attrs);
+                    );
             } else if (plot.options.type === "svg") {
                 if (plot.options.attrs.transform === undefined) {
                     plot.options.attrs.transform = "";
@@ -1593,9 +1604,8 @@
 
                 plot.mapElem.baseTransform = "m" + (plot.options.width / plot.mapElem.originalWidth) + ",0,0," + (plot.options.height / plot.mapElem.originalHeight) + "," + (coords.x - plot.options.width / 2) + "," + (coords.y - plot.options.height / 2);
                 plot.options.attrs.transform = plot.mapElem.baseTransform + plot.options.attrs.transform;
-                plot.mapElem.attr(plot.options.attrs);
             } else { // Default = circle
-                plot.mapElem = self.paper.circle(coords.x, coords.y, plot.options.size / 2).attr(plot.options.attrs);
+                plot.mapElem = self.paper.circle(coords.x, coords.y, plot.options.size / 2);
             }
             self.initElem(id, 'plot', plot);
             return plot;
