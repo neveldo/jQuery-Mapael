@@ -73,9 +73,6 @@
             x: 0, y: 0, w: 0, h: 0
         };
 
-        // resize TimeOut handler (used to set and clear)
-        self.resizeTO = 0;
-
         // Panning: tell if panning action is in progress
         self.panning = false;
 
@@ -200,7 +197,7 @@
                 self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
             } else {
                 // Responsive: handle resizing of the map
-                self.handleMapResizing();
+                self.initResponsiveSize();
             }
 
             // Draw map areas
@@ -332,26 +329,12 @@
             self.links = undefined;
         },
 
-        handleMapResizing: function () {
+        initResponsiveSize: function () {
             var self = this;
+            var resizeTO = null;
 
-            // onResizeEvent: call when the window element trigger the resize event
-            // We create it inside this function (and not in the prototype) in order to have a closure
-            // Otherwise, in the prototype, 'this' when triggered is *not* the mapael object but the global window
-            self.onResizeEvent = function () {
-                // Clear any previous setTimeout (avoid too much triggering)
-                clearTimeout(self.resizeTO);
-                // setTimeout to wait for the user to finish its resizing
-                self.resizeTO = setTimeout(function () {
-                    self.$map.trigger("resizeEnd");
-                }, self.resizeFilteringTO);
-            };
-
-            // Attach resize handler
-            $(window).on("resize." + pluginName, self.onResizeEvent);
-
-            // Attach resize end handler, and call it once
-            self.$map.on("resizeEnd." + pluginName, function (e, isInit) {
+            // Function that actually handle the resizing
+            var handleResize = function(isInit) {
                 var containerWidth = self.$map.width();
 
                 if (self.paper.width !== containerWidth) {
@@ -364,7 +347,20 @@
                         self.createLegends("plot", self.plots, newScale);
                     }
                 }
-            }).trigger("resizeEnd", [true]);
+            };
+
+            // Attach resize handler
+            $(window).on("resize." + pluginName, function() {
+                // Clear any previous setTimeout (avoid too much triggering)
+                clearTimeout(resizeTO);
+                // setTimeout to wait for the user to finish its resizing
+                resizeTO = setTimeout(function () {
+                    handleResize();
+                }, self.resizeFilteringTO);
+            });
+
+            // Call once
+            handleResize(true);
         },
 
         /*
