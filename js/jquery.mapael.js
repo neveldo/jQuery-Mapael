@@ -313,6 +313,7 @@
             self.areas = undefined;
             self.plots = undefined;
             self.links = undefined;
+            self.customEventHandlers = undefined;
         },
 
         handleMapResizing: function () {
@@ -500,7 +501,7 @@
                 self.$container.off(fullEventName).on(fullEventName, "[data-id]", function (e) {
                     var $elem = $(this);
                     var id = $elem.attr('data-id');
-                    var type = $elem.attr('data-type');
+                    var type = $elem.attr('data-type').replace('-text', '');
 
                     if (!self.panning &&
                         self.customEventHandlers[eventName][type] !== undefined &&
