@@ -73,14 +73,8 @@
             x: 0, y: 0, w: 0, h: 0
         };
 
-        // resize TimeOut handler (used to set and clear)
-        self.resizeTO = 0;
-
         // Panning: tell if panning action is in progress
         self.panning = false;
-
-        // Panning TimeOut handler (used to set and clear)
-        self.panningTO = 0;
 
         // Animate view box
         self.zoomAnimID = null; // Interval handler (used to set and clear)
@@ -127,6 +121,23 @@
      * Each mapael object inherits their properties and methods from this prototype
      */
     Mapael.prototype = {
+
+        /* Filtering TimeOut value in ms
+         * Used for mouseover trigger over elements */
+        MouseOverFilteringTO: 120,
+        /* Filtering TimeOut value in ms
+         * Used for afterPanning trigger when panning */
+        panningFilteringTO: 150,
+        /* Filtering TimeOut value in ms
+         * Used for mouseup/touchend trigger when panning */
+        panningEndFilteringTO: 50,
+        /* Filtering TimeOut value in ms
+         * Used for afterZoom trigger when zooming */
+        zoomFilteringTO: 150,
+        /* Filtering TimeOut value in ms
+         * Used for when resizing window */
+        resizeFilteringTO: 150,
+
         /*
          * Initialize the plugin
          * Called by the constructor
@@ -183,7 +194,7 @@
                 self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
             } else {
                 // Responsive: handle resizing of the map
-                self.handleMapResizing();
+                self.initResponsiveSize();
             }
 
             // Draw map areas
@@ -316,26 +327,12 @@
             self.customEventHandlers = undefined;
         },
 
-        handleMapResizing: function () {
+        initResponsiveSize: function () {
             var self = this;
+            var resizeTO = null;
 
-            // onResizeEvent: call when the window element trigger the resize event
-            // We create it inside this function (and not in the prototype) in order to have a closure
-            // Otherwise, in the prototype, 'this' when triggered is *not* the mapael object but the global window
-            self.onResizeEvent = function () {
-                // Clear any previous setTimeout (avoid too much triggering)
-                clearTimeout(self.resizeTO);
-                // setTimeout to wait for the user to finish its resizing
-                self.resizeTO = setTimeout(function () {
-                    self.$map.trigger("resizeEnd");
-                }, 150);
-            };
-
-            // Attach resize handler
-            $(window).on("resize." + pluginName, self.onResizeEvent);
-
-            // Attach resize end handler, and call it once
-            self.$map.on("resizeEnd." + pluginName, function (e, isInit) {
+            // Function that actually handle the resizing
+            var handleResize = function(isInit) {
                 var containerWidth = self.$map.width();
 
                 if (self.paper.width !== containerWidth) {
@@ -348,7 +345,20 @@
                         self.createLegends("plot", self.plots, newScale);
                     }
                 }
-            }).trigger("resizeEnd", [true]);
+            };
+
+            // Attach resize handler
+            $(window).on("resize." + pluginName, function() {
+                // Clear any previous setTimeout (avoid too much triggering)
+                clearTimeout(resizeTO);
+                // setTimeout to wait for the user to finish its resizing
+                resizeTO = setTimeout(function () {
+                    handleResize();
+                }, self.resizeFilteringTO);
+            });
+
+            // Call once
+            handleResize(true);
         },
 
         /*
@@ -417,7 +427,7 @@
                             self.elemEnter(self.legends[legendIndex].elems[id]);
                         }
                     }
-                }, 120);
+                }, self.MouseOverFilteringTO);
             });
 
             /* Attach mousemove event delegation
@@ -672,14 +682,20 @@
             });
 
             // Panning
+            var panningMouseUpTO = null;
+            var panningMouseMoveTO = null;
             $("body").on("mouseup." + pluginName + (zoomOptions.touch ? " touchend." + pluginName : ""), function () {
                 mousedown = false;
-                setTimeout(function () {
+                clearTimeout(panningMouseUpTO);
+                clearTimeout(panningMouseMoveTO);
+                panningMouseUpTO = setTimeout(function () {
                     self.panning = false;
-                }, 50);
+                }, self.panningEndFilteringTO);
             });
 
             self.$map.on("mousedown." + pluginName + (zoomOptions.touch ? " touchstart." + pluginName : ""), function (e) {
+                clearTimeout(panningMouseUpTO);
+                clearTimeout(panningMouseMoveTO);
                 if (e.pageX !== undefined) {
                     mousedown = true;
                     previousX = e.pageX;
@@ -695,6 +711,9 @@
                 var currentLevel = self.zoomData.zoomLevel;
                 var pageX = 0;
                 var pageY = 0;
+
+                clearTimeout(panningMouseUpTO);
+                clearTimeout(panningMouseMoveTO);
 
                 if (e.pageX !== undefined) {
                     pageX = e.pageX;
@@ -723,15 +742,14 @@
                         });
                         self.setViewBox(panX, panY, self.currentViewBox.w, self.currentViewBox.h);
 
-                        clearTimeout(self.panningTO);
-                        self.panningTO = setTimeout(function () {
+                        panningMouseMoveTO = setTimeout(function () {
                             self.$map.trigger("afterPanning", {
                                 x1: panX,
                                 y1: panY,
                                 x2: (panX + self.currentViewBox.w),
                                 y2: (panY + self.currentViewBox.h)
                             });
-                        }, 150);
+                        }, self.panningFilteringTO);
 
                         previousX = pageX;
                         previousY = pageY;
@@ -927,7 +945,7 @@
                         x2: panX + panWidth,
                         y2: panY + panHeight
                     });
-                }, 150);
+                }, self.zoomFilteringTO);
             }
 
             $.extend(self.zoomData, {
