@@ -478,12 +478,8 @@
                 var id = $elem.attr('data-id');
                 var type = $elem.attr('data-type');
 
-                if (type === 'area' || type === 'area-text') {
-                    self.elemClick(self.areas[id]);
-                } else if (type === 'plot' || type === 'plot-text') {
-                    self.elemClick(self.plots[id]);
-                } else if (type === 'link' || type === 'link-text') {
-                    self.elemClick(self.links[id]);
+                if (dataTypeToElementMapping[type] !== undefined) {
+                    self.elemClick(dataTypeToElementMapping[type][id]);
                 } else if (type === 'legend-elem' || type === 'legend-label') {
                     var legendIndex = $elem.attr('data-legend-id');
                     var legendType = $elem.attr('data-legend-type');
