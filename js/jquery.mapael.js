@@ -421,11 +421,8 @@
                         self.elemEnter(dataTypeToElementMapping[type][id]);
                     } else if (type === 'legend-elem' || type === 'legend-label') {
                         var legendIndex = $elem.attr('data-legend-id');
-                        if (self.legends[legendIndex] !== undefined &&
-                            self.legends[legendIndex].elems[id] !== undefined)
-                        {
-                            self.elemEnter(self.legends[legendIndex].elems[id]);
-                        }
+                        var legendType = $elem.attr('data-legend-type');
+                        self.elemEnter(self.legends[legendType][legendIndex].elems[id]);
                     }
                 }, self.MouseOverFilteringTO);
             });
@@ -468,11 +465,8 @@
                     self.elemOut(dataTypeToElementMapping[type][id]);
                 } else if (type === 'legend-elem' || type === 'legend-label') {
                     var legendIndex = $elem.attr('data-legend-id');
-                    if (self.legends[legendIndex] !== undefined &&
-                        self.legends[legendIndex].elems[id] !== undefined)
-                    {
-                        self.elemOut(self.legends[legendIndex].elems[id]);
-                    }
+                    var legendType = $elem.attr('data-legend-type');
+                    self.elemOut(self.legends[legendType][legendIndex].elems[id]);
                 }
             });
 
@@ -2047,6 +2041,7 @@
 
         /*
          * Set the behaviour when mouse enters element ("mouseover" event)
+         * It may be an area, a plot, a link or a legend element
          * @param elem the map element
          */
         elemEnter: function (elem) {
@@ -2064,7 +2059,7 @@
             }
 
             /* Handle tooltip init */
-            if (elem.options.tooltip !== undefined) {
+            if (elem.options && elem.options.tooltip !== undefined) {
                 var content = '';
                 // Reset classes
                 self.$tooltip.removeClass().addClass(self.options.map.tooltip.cssClass);
@@ -2132,6 +2127,7 @@
 
         /*
          * Set the behaviour when mouse leaves element ("mouseout" event)
+         * It may be an area, a plot, a link or a legend element
          * @param elem the map element
          */
         elemOut: function (elem) {
@@ -2149,7 +2145,7 @@
             }
 
             /* reset tooltip */
-            if (elem.options.tooltip !== undefined) {
+            if (elem.options && elem.options.tooltip !== undefined) {
                 self.$tooltip.css({
                     'display': 'none',
                     'top': -1000,
@@ -2165,6 +2161,7 @@
 
         /*
          * Set the behaviour when mouse clicks element ("click" event)
+         * It may be an area, a plot or a link (but not a legend element which has its own function)
          * @param elem the map element
          */
         elemClick: function (elem) {
