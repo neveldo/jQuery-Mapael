@@ -70,11 +70,11 @@ $(function() {
             }
         };
 
-        $p1 = $(".mapcontainer .map svg [data-id='p1']");
-        $p2 = $(".mapcontainer .map svg [data-id='p2']");
-        $p3 = $(".mapcontainer .map svg [data-id='p3']");
-        $p4 = $(".mapcontainer .map svg [data-id='p4']");
-        $p5 = $(".mapcontainer .map svg [data-id='p5']");
+        var $p1 = $(".mapcontainer .map svg [data-id='p1']");
+        var $p2 = $(".mapcontainer .map svg [data-id='p2']");
+        var $p3 = $(".mapcontainer .map svg [data-id='p3']");
+        var $p4 = $(".mapcontainer .map svg [data-id='p4']");
+        var $p5 = $(".mapcontainer .map svg [data-id='p5']");
 
         // No range
         opt.ranges.plot = {};
