@@ -8,9 +8,22 @@
  */
 $(function() {
 
-    QUnit.module("Plots");
+    QUnit.module("Plots", {
+        beforeEach: function() {
+            this.$map = $(".mapcontainer");
+        },
+        afterEach: function() {
+            if (this.$map && this.$map.data) {
+                var mapael = this.$map.data('mapael');
+                if (mapael) {
+                    mapael.destroy();
+                }
+            }
+        }
+    });
 
     QUnit.test("Test adding Image plot", function(assert) {
+        var self = this;
 
         var CST_PLOTS = {
             // Image plot
@@ -30,14 +43,14 @@ $(function() {
             }
         };
 
-        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+        self.$map.mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             },
             plots: CST_PLOTS
         }));
 
-        var $plot_paris = $(".mapcontainer .map svg image[data-id='paris']");
+        var $plot_paris = self.$map.find(".map svg image[data-id='paris']");
 
         /* PARIS PLOT */
         assert.ok($plot_paris[0], "Paris plot: created");
@@ -50,6 +63,7 @@ $(function() {
 
 
     QUnit.test("Test adding SVG plots", function(assert) {
+        var self = this;
 
         var CST_PLOTS = {
             // SVG plot
@@ -64,14 +78,14 @@ $(function() {
             }
         };
 
-        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+        self.$map.mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             },
             plots: CST_PLOTS
         }));
 
-        var $plot_limoge = $(".mapcontainer .map svg path[data-id='limoge']");
+        var $plot_limoge = self.$map.find(".map svg path[data-id='limoge']");
 
         /* LIMOGE PLOT */
         assert.ok($plot_limoge[0], "limoge plot: created");
@@ -83,6 +97,7 @@ $(function() {
 
 
     QUnit.test("Test adding Cicle plots", function(assert) {
+        var self = this;
 
         var CST_PLOTS = {
             // Circle plot
@@ -100,15 +115,15 @@ $(function() {
             }
         };
 
-        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+        self.$map.mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             },
             plots: CST_PLOTS
         }));
 
-        var $plot_lyon = $(".mapcontainer .map svg circle[data-id='lyon']");
-        var $plot_bordeaux = $(".mapcontainer .map svg circle[data-id='bordeaux']");
+        var $plot_lyon = self.$map.find(".map svg circle[data-id='lyon']");
+        var $plot_bordeaux = self.$map.find(".map svg circle[data-id='bordeaux']");
 
         /* LYON PLOT */
         assert.ok($plot_lyon[0], "lyon plot: created");
@@ -122,6 +137,7 @@ $(function() {
 
 
     QUnit.test("Test adding Square plots", function(assert) {
+        var self = this;
 
         var CST_PLOTS = {
             // Square plot
@@ -133,14 +149,14 @@ $(function() {
             }
         };
 
-        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+        self.$map.mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             },
             plots: CST_PLOTS
         }));
 
-        var $plot_rennes = $(".mapcontainer .map svg rect[data-id='rennes']");
+        var $plot_rennes = self.$map.find(".map svg rect[data-id='rennes']");
 
         /* RENNES PLOT */
         assert.ok($plot_rennes[0], "rennes plot: created");
@@ -151,6 +167,7 @@ $(function() {
 
 
     QUnit.test("Test adding X,Y plots", function(assert) {
+        var self = this;
 
         var CST_PLOTS = {
             // Plot positioned by x and y instead of latitude, longitude
@@ -160,14 +177,14 @@ $(function() {
             }
         };
 
-        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+        self.$map.mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             },
             plots: CST_PLOTS
         }));
 
-        var $plot_plotxy = $(".mapcontainer .map svg circle[data-id='plotxy']");
+        var $plot_plotxy = self.$map.find(".map svg circle[data-id='plotxy']");
 
         /* PLOTXY PLOT */
         assert.ok($plot_plotxy[0], "plotxy plot: created");
@@ -178,6 +195,7 @@ $(function() {
 
 
     QUnit.test("Test adding plots with text", function(assert) {
+        var self = this;
 
         var CST_PLOTS = {
             // Circle plot
@@ -231,22 +249,22 @@ $(function() {
             }
         };
 
-        $(".mapcontainer").mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
+        self.$map.mapael($.extend(true, {}, CST_MAPCONF_NOANIMDURATION, {
             map: {
                 name: "france_departments"
             },
             plots: CST_PLOTS
         }));
 
-        var $plot_lyon = $(".mapcontainer .map svg circle[data-id='lyon']");
-        var $plot_rennes = $(".mapcontainer .map svg rect[data-id='rennes']");
-        var $plot_plotxy = $(".mapcontainer .map svg circle[data-id='plotxy']");
-        var $plot_bordeaux = $(".mapcontainer .map svg circle[data-id='bordeaux']");
+        var $plot_lyon = self.$map.find(".map svg circle[data-id='lyon']");
+        var $plot_rennes = self.$map.find(".map svg rect[data-id='rennes']");
+        var $plot_plotxy = self.$map.find(".map svg circle[data-id='plotxy']");
+        var $plot_bordeaux = self.$map.find(".map svg circle[data-id='bordeaux']");
 
-        var $plot_txt_lyon = $(".mapcontainer .map svg text[data-id='lyon']");
-        var $plot_txt_rennes = $(".mapcontainer .map svg text[data-id='rennes']");
-        var $plot_txt_plotxy = $(".mapcontainer .map svg text[data-id='plotxy']");
-        var $plot_txt_bordeaux = $(".mapcontainer .map svg text[data-id='bordeaux']");
+        var $plot_txt_lyon = self.$map.find(".map svg text[data-id='lyon']");
+        var $plot_txt_rennes = self.$map.find(".map svg text[data-id='rennes']");
+        var $plot_txt_plotxy = self.$map.find(".map svg text[data-id='plotxy']");
+        var $plot_txt_bordeaux = self.$map.find(".map svg text[data-id='bordeaux']");
 
         /* LYON PLOT TEXT */
         assert.ok($plot_txt_lyon[0], "lyon text: created");
