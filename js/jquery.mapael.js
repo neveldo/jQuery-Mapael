@@ -347,15 +347,17 @@
                 }
             };
 
-            // Attach resize handler
-            $(window).on("resize." + pluginName, function() {
+            self.onResizeEvent = function() {
                 // Clear any previous setTimeout (avoid too much triggering)
                 clearTimeout(resizeTO);
                 // setTimeout to wait for the user to finish its resizing
                 resizeTO = setTimeout(function () {
                     handleResize();
                 }, self.resizeFilteringTO);
-            });
+            };
+
+            // Attach resize handler
+            $(window).on("resize." + pluginName, self.onResizeEvent);
 
             // Call once
             handleResize(true);
