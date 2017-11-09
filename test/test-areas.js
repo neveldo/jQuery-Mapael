@@ -8,19 +8,7 @@
  */
 $(function() {
 
-    QUnit.module("Areas", {
-        beforeEach: function() {
-            this.$map = $(".mapcontainer");
-        },
-        afterEach: function() {
-            if (this.$map && this.$map.data) {
-                var mapael = this.$map.data('mapael');
-                if (mapael) {
-                    mapael.destroy();
-                }
-            }
-        }
-    });
+    QUnit.module("Areas", CST_MODULE_OPTS);
 
     QUnit.test("defaultArea option override", function(assert) {
         var self = this;

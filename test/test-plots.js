@@ -8,19 +8,7 @@
  */
 $(function() {
 
-    QUnit.module("Plots", {
-        beforeEach: function() {
-            this.$map = $(".mapcontainer");
-        },
-        afterEach: function() {
-            if (this.$map && this.$map.data) {
-                var mapael = this.$map.data('mapael');
-                if (mapael) {
-                    mapael.destroy();
-                }
-            }
-        }
-    });
+    QUnit.module("Plots", CST_MODULE_OPTS);
 
     QUnit.test("Test adding Image plot", function(assert) {
         var self = this;

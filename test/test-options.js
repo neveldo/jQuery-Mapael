@@ -11,19 +11,7 @@
  */
 $(function() {
 
-    QUnit.module("Options", {
-        beforeEach: function() {
-            this.$map = $(".mapcontainer");
-        },
-        afterEach: function() {
-            if (this.$map && this.$map.data) {
-                var mapael = this.$map.data('mapael');
-                if (mapael) {
-                    mapael.destroy();
-                }
-            }
-        }
-    });
+    QUnit.module("Options", CST_MODULE_OPTS);
 
     QUnit.test("Force width", function(assert) {
         var self = this;

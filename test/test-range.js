@@ -7,19 +7,7 @@
  */
 $(function() {
 
-    QUnit.module("Range event", {
-        beforeEach: function() {
-            this.$map = $(".mapcontainer");
-        },
-        afterEach: function() {
-            if (this.$map && this.$map.data) {
-                var mapael = this.$map.data('mapael');
-                if (mapael) {
-                    mapael.destroy();
-                }
-            }
-        }
-    });
+    QUnit.module("Range event", CST_MODULE_OPTS);
 
     QUnit.test("Check callback", function(assert) {
         var self = this;
