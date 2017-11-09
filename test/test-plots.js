@@ -236,14 +236,14 @@ $(function() {
                     content: "33",
                     position: "inner",
                     attrs: {
-                        "font-size": 16
-                        , "font-weight": "bold"
-                        , fill: "#ffffff"
+                        "font-size": 16,
+                        "font-weight": "bold",
+                        fill: "#ffffff"
                     },
                     attrsHover: {
-                        "font-size": 16
-                        , "font-weight": "bold"
-                        , fill: "#ffffff"
+                        "font-size": 16,
+                        "font-weight": "bold",
+                        fill: "#ffffff"
                     }
                 }
             }

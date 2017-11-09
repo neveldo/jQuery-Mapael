@@ -17,24 +17,14 @@ CST_MAPCONF_NOANIMDURATION = {
         defaultArea : {
             attrsHover : {
                 animDuration : 0
-            }
-            , text : {
+            },
+            text : {
                 attrsHover : {
                     animDuration : 0
                 }
             }
-        }
-        , defaultPlot : {
-            attrsHover : {
-                animDuration : 0
-            }
-            , text : {
-                attrsHover : {
-                    animDuration : 0
-                }
-            }
-        }
-        , defaultLink : {
+        },
+        defaultPlot : {
             attrsHover : {
                 animDuration : 0
             },
@@ -43,8 +33,18 @@ CST_MAPCONF_NOANIMDURATION = {
                     animDuration : 0
                 }
             }
-        }
-        , zoom : {
+        },
+        defaultLink : {
+            attrsHover : {
+                animDuration : 0
+            },
+            text : {
+                attrsHover : {
+                    animDuration : 0
+                }
+            }
+        },
+        zoom : {
             animDuration : 0
         }
     }

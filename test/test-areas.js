@@ -30,16 +30,16 @@ $(function() {
             attrs: {
                 fill: "#f4f4e8",
                 stroke: "#ced8d0"
-            }
-            , attrsHover: {
+            },
+            attrsHover: {
                 fill: "#a4e100",
                 stroke: "#aaaaaa"
-            }
-            , text: {
+            },
+            text: {
                 attrs: {
                     fill: "#505444"
-                }
-                , attrsHover: {
+                },
+                attrsHover: {
                     fill: "#000"
                 }
             }
