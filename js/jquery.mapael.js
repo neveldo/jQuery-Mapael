@@ -185,18 +185,6 @@
             if (self.options.map.tooltip.css) self.$tooltip.css(self.options.map.tooltip.css);
             self.setViewBox(0, 0, self.mapConf.width, self.mapConf.height);
 
-            // Handle map size
-            if (self.options.map.width) {
-                // NOT responsive: map has a fixed width
-                self.paper.setSize(self.options.map.width, self.mapConf.height * (self.options.map.width / self.mapConf.width));
-
-                // Create the legends for plots taking into account the scale of the map
-                self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
-            } else {
-                // Responsive: handle resizing of the map
-                self.initResponsiveSize();
-            }
-
             // Draw map areas
             $.each(self.mapConf.elems, function (id) {
                 // Init area object
@@ -228,6 +216,18 @@
                 self.plots[id] = self.drawPlot(id);
             });
 
+            // Handle map size
+            if (self.options.map.width) {
+                // NOT responsive: map has a fixed width
+                self.paper.setSize(self.options.map.width, self.mapConf.height * (self.options.map.width / self.mapConf.width));
+
+                // Create the legends for plots taking into account the scale of the map
+                self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
+            } else {
+                // Responsive: handle resizing of the map
+                self.initResponsiveSize();
+            }
+            
             // Attach zoom event
             self.$container.on("zoom." + pluginName, function (e, zoomOptions) {
                 self.onZoomEvent(e, zoomOptions);
