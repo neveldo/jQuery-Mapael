@@ -1486,7 +1486,8 @@
                                           (plot.coords.y - plot.options.height / 2);
 
                 // Handle plot scaling
-                if (self.options.map.zoom.scalePlots === true && self.zoomData.zoomLevel > 1 && plot.id) {
+                // Note: plot.id may not be defined (usually at beginning, from initElem)
+                if (self.options.map.zoom.scalePlots === true && plot.id) {
                     plot.mapElem.transformWithoutZoomScaling = baseTransform + plot.options.attrs.transform;
                     if (plot.textElem) {
                         plot.textElem.transformWithoutZoomScaling = plot.options.text.attrs.transform;
