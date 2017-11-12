@@ -189,9 +189,6 @@
             if (self.options.map.width) {
                 // NOT responsive: map has a fixed width
                 self.paper.setSize(self.options.map.width, self.mapConf.height * (self.options.map.width / self.mapConf.width));
-
-                // Create the legends for plots taking into account the scale of the map
-                self.createLegends("plot", self.plots, (self.options.map.width / self.mapConf.width));
             } else {
                 // Responsive: handle resizing of the map
                 self.initResponsiveSize();
@@ -248,6 +245,9 @@
 
             // Create the legends for areas
             self.createLegends("area", self.areas, 1);
+
+            // Create the legends for plots taking into account the scale of the map
+            self.createLegends("plot", self.plots, self.paper.width / self.mapConf.width);
 
             // Attach update event
             self.$container.on("update." + pluginName, function (e, opt) {
@@ -341,7 +341,8 @@
                     self.paper.setSize(containerWidth, self.mapConf.height * newScale);
 
                     // Create plots legend again to take into account the new scale
-                    if (isInit || self.options.legend.redrawOnResize) {
+                    // Do not do this on init (it will be done later)
+                    if (isInit !== true && self.options.legend.redrawOnResize) {
                         self.createLegends("plot", self.plots, newScale);
                     }
                 }
