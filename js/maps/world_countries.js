@@ -10,6 +10,9 @@
  *
  * @author Vincent Brouté
  * @source https://commons.wikimedia.org/wiki/File:BlankMap-World6-Equirectangular.svg
+ *
+ * @deprecated : this map will be definitely moved to 'mapael-maps' repository starting from the next major release (3.0.0).
+ * You can use instead https://github.com/neveldo/mapael-maps/blob/master/world/world_countries.js
  */
 (function (factory) {
     if (typeof exports === 'object') {

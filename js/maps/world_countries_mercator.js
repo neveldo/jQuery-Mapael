@@ -7,6 +7,9 @@
  * Mercator projection
  *
  * @source http://www.amcharts.com/svg-maps/?map=world
+ *
+ * @deprecated : this map will be definitely moved to 'mapael-maps' repository starting from the next major release (3.0.0).
+ * You can use instead https://github.com/neveldo/mapael-maps/blob/master/world/world_countries_mercator.js
  */
 (function (factory) {
     if (typeof exports === 'object') {

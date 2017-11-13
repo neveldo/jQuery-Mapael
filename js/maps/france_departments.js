@@ -8,6 +8,9 @@
  *
  * @author Vincent Brouté
  * @source http://fr.m.wikipedia.org/wiki/Fichier:France_location_map-Departements.svg
+ *
+ * @deprecated : this map will be definitely moved to 'mapael-maps' repository starting from the next major release (3.0.0).
+ * You can use instead https://github.com/neveldo/mapael-maps/blob/master/france/france_departments.js
  */
 (function (factory) {
     if (typeof exports === 'object') {
