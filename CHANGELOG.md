@@ -3,16 +3,16 @@ Change log for jQuery-Mapael
 
 ## 2.2.0 - xxx
 
-- Feature : Added the ability to zoom on a specific plot or a specific area through the `zoom` event ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/32eb4d939fdb6b4c5ed3d967f1f8e58b51845bce))
-- Feature : The cssClass option can now be updated when trigerring an 'update' event ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/40d569619655942481c6811e))
-- Feature : Added links to the parameter of the `afterUpdate` hook ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/105cea82dfe6434f52fc6cc1f0e7214e04c7cbec))
-- Performance : Optimised overall Zoom performances ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/4c39bba72c2d63fd30ef1dc0a67e408ac2dbd430))
-- Performance: use event delegation ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/5c669155fe064be165b3f93c45c2553c723d031c))
-- Improvement : Provide a better version of the map of the World ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/7e413999e3e151921e94522ae86dd9259b382eb0))
-- Improvement : Better dependencies / installation instructions ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/28d08fe42a7846d31bf25d3f2fd028c728737fd4))
-- Improvement : Mapael version is now accessible through $.mapael.version ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/da039772e811d32444b7f913de15997d89954fea))
-- Bugfix : Fixed behaviour of the 'clicked' legend option with plots ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/a74e84de266a5c83c9c8aa95419be453fa5c7ad6))
-- Bugfix : Fixed the update event when plotsOn option used ([Licht-T & Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/c86809aa91156c40185aab861e1e9ccfd465b3e0))
+- **Feature :** Added the ability to zoom on a specific plot or a specific area through the `zoom` event ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/32eb4d939fdb6b4c5ed3d967f1f8e58b51845bce))
+- **Feature :** The cssClass option can now be updated when trigerring an 'update' event ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/40d569619655942481c6811e))
+- **Feature :** Added links to the parameter of the `afterUpdate` hook ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/105cea82dfe6434f52fc6cc1f0e7214e04c7cbec))
+- **Performance :** Optimised overall Zoom performances ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/4c39bba72c2d63fd30ef1dc0a67e408ac2dbd430))
+- **Performance:** use event delegation ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/5c669155fe064be165b3f93c45c2553c723d031c))
+- **Improvement :** Provide a better version of the map of the World ([neveldo](https://github.com/neveldo/jQuery-Mapael/commit/7e413999e3e151921e94522ae86dd9259b382eb0))
+- **Improvement :** Better dependencies / installation instructions ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/28d08fe42a7846d31bf25d3f2fd028c728737fd4))
+- **Improvement :** Mapael version is now accessible through $.mapael.version ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/da039772e811d32444b7f913de15997d89954fea))
+- **Bugfix :** Fixed behaviour of the 'clicked' legend option with plots ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/a74e84de266a5c83c9c8aa95419be453fa5c7ad6))
+- **Bugfix :** Fixed the update event when plotsOn option used ([Licht-T & Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/c86809aa91156c40185aab861e1e9ccfd465b3e0))
 
 ## 2.1.0 - March 13, 2017
 
