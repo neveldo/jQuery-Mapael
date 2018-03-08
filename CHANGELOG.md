@@ -1,7 +1,7 @@
 # ChangeLog
 Change log for jQuery-Mapael
 
-## 2.2.0 - xxx
+## 2.2.0 - March 8, 2018
 
 - **Feature :** Added the ability to zoom on a specific plot or a specific area through the `zoom` event ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/32eb4d939fdb6b4c5ed3d967f1f8e58b51845bce))
 - **Feature :** The cssClass option can now be updated when trigerring an 'update' event ([Indigo744](https://github.com/neveldo/jQuery-Mapael/commit/40d569619655942481c6811e))
