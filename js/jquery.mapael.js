@@ -5,7 +5,7 @@
  *
  * Version: 2.2.0
  *
- * Copyright (c) 2017 Vincent Brouté (https://www.vincentbroute.fr/mapael)
+ * Copyright (c) 2018 Vincent Brouté (https://www.vincentbroute.fr/mapael)
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
  *
  * Thanks to Indigo744
