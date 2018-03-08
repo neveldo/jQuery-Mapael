@@ -47,13 +47,13 @@ must be loaded **before** Mapael in order to work properly.
 
 Include in your project page one of these tags:
 ```html
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mapael/2.1.0/js/jquery.mapael.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/jquery-mapael@2.1.0/js/jquery.mapael.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-mapael/2.2.0/js/jquery.mapael.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/jquery-mapael@2.2.0/js/jquery.mapael.min.js"></script>
 ```
 
 #### Using self-hosted
 
-Download the [latest version](https://github.com/neveldo/jQuery-Mapael/releases/tag/2.1.0) 
+Download the [latest version](https://github.com/neveldo/jQuery-Mapael/releases/tag/2.2.0) 
 and extract `jquery.mapael.min.js` in your project.
 
 Then, add the script to your page (update the path as needed):
