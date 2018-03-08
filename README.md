@@ -162,7 +162,7 @@ Want to contribute? See the [CONTRIBUTING](https://github.com/neveldo/jQuery-Map
 
 ## License
 
-Copyright (C) 2013-2017 [Vincent Brouté](https://www.vincentbroute.fr)
+Copyright (C) 2013-2018 [Vincent Brouté](https://www.vincentbroute.fr)
 
 jQuery Mapael is licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
