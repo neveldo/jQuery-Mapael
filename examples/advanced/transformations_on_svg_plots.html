@@ -100,7 +100,8 @@
                     name: "usa_states"
                     , zoom: {
                         enabled: true,
-                        maxLevel: 20
+                        maxLevel: 20,
+                        scalePlots: true
                     }
                     , defaultArea: {
                         attrs: {
@@ -202,7 +203,7 @@
                 var deletedPlots = ["paris", "lyon"];
 
                 $(".mapcontainer").trigger('update', [{
-                    mapOptions: {map: {defaultPlot:{attrs:{transform:'r55'}}}}, 
+                    mapOptions: {map: {defaultPlot: {attrs: {transform: 'r55'}}}},
                     animDuration: 1000
                 }]);
             });
@@ -217,7 +218,7 @@
 <div class="container">
 
     <h1>Map with some transformations performed on SVG plotted points</h1>
-<input type="button" value="Update elements" id="refresh"/>
+    <input type="button" value="Update elements" id="refresh"/>
     <div class="mapcontainer">
         <div class="map">
             <span>Alternative content for the map</span>

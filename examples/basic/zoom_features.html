@@ -100,7 +100,8 @@
                     // Enable zoom on the map
                     , zoom: {
                         enabled: true,
-                        maxLevel: 10
+                        maxLevel: 10,
+                        scalePlots: true
                     }
                     // Set default plots and areas style
                     , defaultPlot: {
@@ -166,10 +167,11 @@
                         latitude: 48.86,
                         longitude: 2.3444,
                         attrs: {
-                            opacity: 1
+                            opacity: 1,
+                            transform: "s0.75"
                         },
                         attrsHover: {
-                            transform: "s1.5"
+                            transform: "...s1.5"
                         }
                     },
                     // SVG plot
