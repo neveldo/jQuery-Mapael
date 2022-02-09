@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/neveldo/jQuery-Mapael.svg?branch=master)](https://travis-ci.org/neveldo/jQuery-Mapael)
 [![CDNJS](https://img.shields.io/cdnjs/v/jquery-mapael.svg)](https://cdnjs.com/libraries/jquery-mapael)
 
+⚠️ Important note : I do not maintain jQuery Mapael anymore. However, feel free to submit a pull request if you need a bugfix or a security fix. More information : *[Ending an Open Source project (Mapael)](https://www.vincentbroute.fr/blog/ending-an-open-source-project-mapael/)*.
+
 The complete documentation is available on [Mapael website](https://www.vincentbroute.fr/mapael) (repository:  ['neveldo/mapael-documentation'](https://github.com/neveldo/mapael-documentation)).
 
 Additional maps are stored in the repository ['neveldo/mapael-maps'](https://github.com/neveldo/mapael-maps).
@@ -162,7 +164,7 @@ Want to contribute? See the [CONTRIBUTING](https://github.com/neveldo/jQuery-Map
 
 ## License
 
-Copyright (C) 2013-2020 [Vincent Brouté](https://www.vincentbroute.fr)
+Copyright (C) 2013-2022 [Vincent Brouté](https://www.vincentbroute.fr)
 
 jQuery Mapael is licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
 
