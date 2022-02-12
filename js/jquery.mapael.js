@@ -66,7 +66,8 @@
             zoomX: 0,
             zoomY: 0,
             panX: 0,
-            panY: 0
+            panY: 0,
+            scaling: false
         };
 
         self.currentViewBox = {
@@ -531,6 +532,9 @@
             var self = this;
             var $mapElem = $(elem.mapElem.node);
 
+            // Store element id
+            elem.id = id;
+
             // If an HTML link exists for this element, add cursor attributes
             if (elem.options.href) {
                 elem.options.attrs.cursor = "pointer";
@@ -604,7 +608,8 @@
             $.extend(self.zoomData, {
                 zoomLevel: 0,
                 panX: 0,
-                panY: 0
+                panY: 0,
+                scaling: false
             });
 
             // init zoom buttons
@@ -940,7 +945,94 @@
                 panX: panX,
                 panY: panY,
                 zoomX: panX + panWidth / 2,
-                zoomY: panY + panHeight / 2
+                zoomY: panY + panHeight / 2,
+                scaling: false
+            });
+
+            // Check if we should scale plots
+            if (self.options.map.zoom.scalePlots === true) {
+                // Scaling: inverse fn of zoom value since we need to reduce size when increasing zoom
+                self.zoomData.scaling = 1 / relativeZoomLevel;
+                self.handlePlotsScaling(animDuration);
+            }
+        },
+
+        /*
+         * Get the plot scaling transform string
+         *
+         * @param id int plot id
+         * @return string
+         */
+        getPlotScalingTransform: function(id) {
+            var self = this;
+
+            // Assign scale string
+            var scaleStr = 's' + self.zoomData.scaling;
+
+            // If text is defined, we need to udpdate the transform string to add center x,y
+            if (self.plots[id].textElem) {
+                // Get BBox of malelem to get the center coordinates (cx, cy)
+                var mapElemBBox = self.plots[id].mapElem.getBBox();
+                // Transform strinf format is
+                //      s[Scale on x],[Scale on y],[Scale center on X],[Scale center on Y]
+                scaleStr += "," + self.zoomData.scaling + "," + mapElemBBox.cx + "," + mapElemBBox.cy;
+            }
+
+            return scaleStr;
+        },
+
+        /*
+         * Handle scaling of plots
+         * Apply a scaling transformation on plots depending on zoom level
+         *
+         * @param animDuration int animation duration in ms
+         */
+        handlePlotsScaling: function(animDuration) {
+            var self = this;
+
+            $.each(self.plots, function(id) {
+                // Assign scale string
+                var scaleStr = self.getPlotScalingTransform(id);
+
+                // Save once transform if defined
+                if (self.plots[id].mapElem.transformWithoutZoomScaling === undefined) {
+                    if (self.plots[id].options.attrs.transform) {
+                        self.plots[id].mapElem.transformWithoutZoomScaling = self.plots[id].options.attrs.transform;
+                    } else {
+                        self.plots[id].mapElem.transformWithoutZoomScaling = '';
+                    }
+                }
+
+                // If text is defined, we need to update the transform string to add center x,y
+                if (self.plots[id].textElem) {
+
+                    // Save once transform if defined
+                    if (self.plots[id].textElem.transformWithoutZoomScaling === undefined) {
+                        if (self.plots[id].options.text.attrs.transform) {
+                            self.plots[id].textElem.transformWithoutZoomScaling = self.plots[id].options.text.attrs.transform;
+                        } else {
+                            self.plots[id].textElem.transformWithoutZoomScaling = '';
+                        }
+                    }
+
+                    // Set text transform value
+                    self.plots[id].options.text.attrs.transform = self.plots[id].textElem.transformWithoutZoomScaling + scaleStr;
+
+                    // Update text Hover options
+                    self.setHoverOptions(self.plots[id].textElem, self.plots[id].options.text.attrs, self.plots[id].options.text.attrsHover);
+
+                    // Apply text transform
+                    self.animate(self.plots[id].textElem, {transform: scaleStr}, animDuration);
+                }
+
+                // Set base transform value
+                self.plots[id].options.attrs.transform = self.plots[id].mapElem.transformWithoutZoomScaling + scaleStr;
+
+                // Update Hover options
+                self.setHoverOptions(self.plots[id].mapElem, self.plots[id].options.attrs, self.plots[id].options.attrsHover);
+
+                // Apply transform
+                self.animate(self.plots[id].mapElem, {transform: self.plots[id].options.attrs.transform}, animDuration);
             });
         },
 
@@ -1361,6 +1453,8 @@
          * @param plot object plot element
          */
         setPlotAttributes: function(plot) {
+            var self = this;
+
             if (plot.options.type === "square") {
                 plot.options.attrs.width = plot.options.size;
                 plot.options.attrs.height = plot.options.size;
@@ -1387,12 +1481,22 @@
 
                 // The base transform will resize the SVG path to the one specified by width/height
                 // and also move the path to the actual coordinates
-                plot.mapElem.baseTransform = "m" + (plot.options.width / plot.mapElem.originalBBox.width) + ",0,0," +
-                                                   (plot.options.height / plot.mapElem.originalBBox.height) + "," +
-                                                   (plot.coords.x - plot.options.width / 2) + "," +
-                                                   (plot.coords.y - plot.options.height / 2);
+                var baseTransform = "m" + (plot.options.width / plot.mapElem.originalBBox.width) + ",0,0," +
+                                          (plot.options.height / plot.mapElem.originalBBox.height) + "," +
+                                          (plot.coords.x - plot.options.width / 2) + "," +
+                                          (plot.coords.y - plot.options.height / 2);
 
-                plot.options.attrs.transform = plot.mapElem.baseTransform + plot.options.attrs.transform;
+                // Handle plot scaling
+                // Note: plot.id may not be defined (usually at beginning, from initElem)
+                if (self.options.map.zoom.scalePlots === true && plot.id) {
+                    plot.mapElem.transformWithoutZoomScaling = baseTransform + plot.options.attrs.transform;
+                    if (plot.textElem) {
+                        plot.textElem.transformWithoutZoomScaling = plot.options.text.attrs.transform;
+                    }
+                    baseTransform += self.getPlotScalingTransform(plot.id);
+                }
+
+                plot.options.attrs.transform = baseTransform + plot.options.attrs.transform;
 
             } else { // Default : circle
                 plot.options.attrs.x = plot.coords.x;
@@ -2523,6 +2627,15 @@
             var self = this;
             // Check element
             if (!element) return;
+            // We will keep
+            var oldStrokeWidth;
+            // Check if scalePlots option is set, if we are zoomed in and a stroke width is defined
+            // This is needed because Raphael does not scale the stroke-width when applying a transform
+            if (self.options.map.zoom.scalePlots && self.zoomData.zoomLevel > 0 && attrs['stroke-width'] !== undefined) {
+                // Element is scaled, apply it to stroke width
+                oldStrokeWidth = attrs['stroke-width'];
+                attrs['stroke-width'] *= self.zoomData.scaling;
+            }
             if (duration > 0) {
                 // Filter out non-animated attributes
                 // Note: we don't need to delete from original attribute (they won't be set anyway)
@@ -2537,11 +2650,15 @@
                 element.attr(attrsNonAnimated);
                 // Start animation for all attributes
                 element.animate(attrs, duration, 'linear', function() {
+                    // Restore old stroke-width
+                    if (oldStrokeWidth) attrs['stroke-width'] = oldStrokeWidth;
                     if (callback) callback();
                 });
             } else {
                 // No animation: simply set all attributes...
                 element.attr(attrs);
+                // Restore old stroke-width
+                if (oldStrokeWidth) attrs['stroke-width'] = oldStrokeWidth;
                 // ... and call the callback if needed
                 if (callback) callback();
             }
@@ -2660,6 +2777,7 @@
                     touch: true,
                     animDuration: 200,
                     animEasing: "linear",
+                    scalePlots: false,
                     buttons: {
                         "reset": {
                             cssClass: "zoomButton zoomReset",
